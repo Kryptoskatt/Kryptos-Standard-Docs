@@ -12,9 +12,6 @@ COPY index.html .
 COPY openapi.yaml .
 COPY README.md .
 
-# Copy favicon if it exists (optional)
-COPY favicon.png . 2>/dev/null || :
-
 # Create a custom nginx configuration
 RUN echo 'server { \
     listen 80; \
