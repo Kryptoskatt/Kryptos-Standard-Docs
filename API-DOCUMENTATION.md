@@ -22,7 +22,6 @@ Complete API documentation for Kryptos Connect APIs with authentication, endpoin
 - [Legacy Endpoints (V0)](#legacy-endpoints-v0)
 - [Error Handling](#error-handling)
 - [Code Examples](#code-examples)
-- [Type Definitions](#type-definitions)
 
 ---
 
@@ -57,6 +56,8 @@ All API requests should be made to this base URL.
 ## Authentication
 
 All endpoints (except `/health`) require API Key authentication.
+
+> **Note:** API key support is currently available for **Enterprise customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
 
 ### Creating API Keys
 
@@ -1238,55 +1239,12 @@ if profiling['success']:
 
 ---
 
-## Type Definitions
-
-Complete TypeScript type definitions are available in the `/types` directory:
-
-- **asset.ts** - Asset types (crypto, NFT, fiat)
-- **transaction.ts** - Transaction and ledger types
-- **holdings.ts** - Portfolio holdings types
-- **defi.ts** - DeFi protocol types
-- **nft-balance.ts** - NFT collection types
-- **tax.ts** - Tax calculation types
-
-**Installation:**
-
-```bash
-npm install @kryptos/types
-```
-
-**Usage:**
-
-```typescript
-import {
-  Asset,
-  Transaction,
-  HoldingsType,
-  DefiHolding,
-  NFTBalance,
-} from "@kryptos/types";
-```
-
----
-
 ## Support
 
-- **Email:** [support@kryptoskatt.com](mailto:support@kryptoskatt.com)
-- **Documentation:** [https://docs.kryptos.io](https://docs.kryptos.io)
-- **GitHub:** [https://github.com/kryptoskatt](https://github.com/kryptoskatt)
-- **Discord:** [https://discord.gg/kryptos](https://discord.gg/kryptos)
-
----
-
-## Changelog
-
-### Version 1.0.0 (Current)
-
-- Initial release with V0 and V1 endpoints
-- Support for holdings, transactions, DeFi, NFT, and profiling
-- API Key authentication
-- Pagination support for all list endpoints
-- V2 data format transformation for V1 endpoints
+- **📧 Email:** [support@kryptos.io](mailto:support@kryptos.io)
+- **🌐 Website:** [https://kryptos.io](https://kryptos.io)
+- **💻 GitHub:** [https://github.com/kryptoskatt](https://github.com/kryptoskatt)
+- **📖 Interactive Docs:** [https://connect.kryptos.io/docs/](https://connect.kryptos.io/docs/)
 
 ---
 
