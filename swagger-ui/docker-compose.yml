@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  swagger-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kryptos-swagger-ui
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "com.kryptos.description=Kryptos Connect API Documentation"
+      - "com.kryptos.service=swagger-ui"
