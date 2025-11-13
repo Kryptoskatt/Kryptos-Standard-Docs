@@ -75,7 +75,7 @@ import {
 **Step 5:** **Copy your key** (shown only once!)
 
 ```
-Example: sk_live_1234567890abcdefghijklmnop
+Example: kryptos_live_xxxxxxxxxxxxxxxxxxxx
 ```
 
 **Complete Guide:** See [API-DOCUMENTATION.md#creating-api-keys](./API-DOCUMENTATION.md#creating-api-keys)

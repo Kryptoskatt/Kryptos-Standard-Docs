@@ -84,7 +84,7 @@ Your API key will only be displayed **once**. Copy and store it securely!
 :::
 
 ```
-Example API Key: sk_live_1234567890abcdefghijklmnop
+Example API Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx
 ```
 
 #### API Key Permissions
@@ -113,7 +113,7 @@ X-API-Key: your_api_key_here
 
 ```bash
 curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
-  -H "X-API-Key: sk_live_1234567890abcdefghijklmnop"
+  -H "X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
 ---
