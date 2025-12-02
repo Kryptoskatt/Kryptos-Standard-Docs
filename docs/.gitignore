@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.firebase/
 
 # Build output
 build/
@@ -24,4 +25,5 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
 
