@@ -1,0 +1,167 @@
+/* Custom CSS for Kryptos Docs */
+
+:root {
+  --ifm-color-primary: #10b981;
+  --ifm-color-primary-dark: #059669;
+  --ifm-color-primary-darker: #047857;
+  --ifm-color-primary-darkest: #065f46;
+  --ifm-color-primary-light: #34d399;
+  --ifm-color-primary-lighter: #6ee7b7;
+  --ifm-color-primary-lightest: #a7f3d0;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(16, 185, 129, 0.1);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #10b981;
+  --ifm-color-primary-dark: #0ea472;
+  --ifm-color-primary-darker: #0d9b6c;
+  --ifm-color-primary-darkest: #0b8059;
+  --ifm-color-primary-light: #2ec08f;
+  --ifm-color-primary-lighter: #3cc496;
+  --ifm-color-primary-lightest: #5dd3a9;
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+  --ifm-navbar-background-color: #010409;
+  --ifm-footer-background-color: #010409;
+  --ifm-toc-border-color: #30363d;
+  --ifm-color-emphasis-300: #30363d;
+}
+
+/* Navbar */
+.navbar {
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.navbar__title {
+  font-weight: 600;
+}
+
+/* Sidebar */
+.menu__link {
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.menu__link--active {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Code blocks */
+.prism-code {
+  border-radius: 8px;
+}
+
+code {
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th,
+table td {
+  border: 1px solid var(--ifm-toc-border-color);
+  padding: 12px;
+}
+
+table th {
+  background-color: var(--ifm-background-surface-color);
+}
+
+/* API Method badges */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-monospace);
+  text-transform: uppercase;
+}
+
+.badge--get {
+  background-color: #10b981;
+  color: #000;
+}
+
+.badge--post {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.badge--put {
+  background-color: #f59e0b;
+  color: #000;
+}
+
+.badge--delete {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+/* Endpoint headers */
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.endpoint-header h2 {
+  margin: 0;
+}
+
+/* Admonitions */
+.alert {
+  border-radius: 8px;
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Cards */
+.card {
+  background-color: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Scope badges */
+.scope-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--ifm-font-family-monospace);
+  background-color: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+  margin: 2px;
+}
+
