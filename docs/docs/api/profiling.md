@@ -1,14 +1,14 @@
 ---
 id: profiling
-title: Profiling
+title: Portfolio Insights
 sidebar_position: 7
 ---
 
-# User Profiling
+# Portfolio Insights
 
 <span className="badge badge--get">GET</span> `/v1/profiling`
 
-Get comprehensive user analytics and classification.
+Get comprehensive portfolio analytics and user classification.
 
 **Required Permission:** `read:analytics`
 
@@ -27,9 +27,9 @@ curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
 {
   "user_id": "user_123",
   "base_currency": "USD",
-  "user_classification": "Defi Hodler",
+  "user_classification": "DeFi Hodler",
   "summary": {
-    "classification": "Defi Hodler",
+    "classification": "DeFi Hodler",
     "portfolio_overview": {
       "total_value": 275000,
       "currency": "USD",
@@ -72,7 +72,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
         { "label": "Transfer", "count": 67 }
       ]
     },
-    "summary_text": "Defi Hodler with medium portfolio (275,000 USD). DeFi dominant at 54.5%. Portfolio up 2.80% (24h). High activity - 45 transactions this month."
+    "summary_text": "DeFi Hodler with medium portfolio ($275,000 USD). DeFi dominant at 54.5%. Portfolio up 2.80% (24h). High activity with 45 transactions this month."
   }
 }
 ```
@@ -81,20 +81,20 @@ curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
 
 | Classification | Description |
 |----------------|-------------|
-| **NFT Maniac** | Heavy NFT portfolio (>30% NFT holdings) |
+| **NFT Enthusiast** | Heavy NFT portfolio (>30% NFT holdings) |
 | **DeFi Hodler** | Significant DeFi positions (>40% DeFi holdings) |
 | **Futures Trader** | Active futures trading patterns |
-| **BTC Keeper** | Bitcoin-dominant portfolio (>60% BTC) |
-| **Degen** | High-frequency diverse trading activity |
-| **Hodler** | Long-term holding with low activity |
+| **BTC Maximalist** | Bitcoin-dominant portfolio (>60% BTC) |
+| **Active Trader** | High-frequency diverse trading activity |
+| **Long-term Holder** | Long-term holding with low activity |
 
 ## Portfolio Size Categories
 
 | Category | Value Range |
 |----------|-------------|
 | Small | < $10,000 |
-| Medium | $10,000 - $500,000 |
-| Large | $500,000 - $5,000,000 |
+| Medium | $10,000 – $500,000 |
+| Large | $500,000 – $5,000,000 |
 | Whale | > $5,000,000 |
 
 ## Activity Levels
@@ -102,7 +102,6 @@ curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
 | Level | Description |
 |-------|-------------|
 | Low | < 5 transactions/month |
-| Medium | 5-20 transactions/month |
+| Medium | 5–20 transactions/month |
 | High | > 20 transactions/month |
-
 
