@@ -44,27 +44,59 @@ open API-DOCUMENTATION.md
 
 ---
 
-## 🔑 Creating API Keys
+## 🔐 Authentication
+
+Kryptos Connect APIs support two authentication methods:
+
+### Option 1: OAuth 2.0 (Kryptos Connect)
+
+Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data with their consent.
+
+| Endpoint          | URL                                        |
+| ----------------- | ------------------------------------------ |
+| **Authorization** | `https://connect.kryptos.io/oidc/auth`     |
+| **Token**         | `https://connect.kryptos.io/oidc/token`    |
+| **UserInfo**      | `https://connect.kryptos.io/oidc/userinfo` |
+
+**Available Scopes:**
+- **Core:** `openid`, `profile`, `email`, `offline_access`
+- **Data (Read):** `holdings:read`, `transactions:read`, `defi-portfolio:read`, `nft-portfolio:read`, `ledger:read`, `tax:read`, `integrations:read`
+- **Data (Write):** `holdings:write`, `transactions:write`, `defi-portfolio:write`, `nft-portfolio:write`, `ledger:write`, `tax:write`, `integrations:write`
+
+**Quick Example:**
+
+```bash
+# 1. Redirect user to authorize (with PKCE)
+GET https://connect.kryptos.io/oidc/auth?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=openid+holdings:read+transactions:read&code_challenge=CODE_CHALLENGE&code_challenge_method=S256
+
+# 2. Exchange code for token
+curl -X POST https://connect.kryptos.io/oidc/token \
+  -d "grant_type=authorization_code&code=AUTH_CODE&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&code_verifier=CODE_VERIFIER"
+
+# 3. Call API with token
+curl https://connect.kryptos.io/api/v1/holdings \
+  -H "Authorization: Bearer ACCESS_TOKEN" \
+  -H "X-Client-Id: YOUR_CLIENT_ID" \
+  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+```
+
+**Full OAuth Guide:** See [API-DOCUMENTATION.md#oauth-20-authentication](./API-DOCUMENTATION.md#oauth-20-authentication-kryptos-connect)
+
+---
+
+### Option 2: API Keys (Enterprise)
 
 > **Note:** API key support is currently available for **Enterprise customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
 
-**Step 1:** Log in to [enterprise.kryptos.io](https://enterprise.kryptos.io)
+**Steps:**
 
-**Step 2:** Navigate to **Settings** → **API Keys**
-
-**Step 3:** Click **"Create New API Key"**
-
-**Step 4:** Configure your key:
-
-- Name your key (e.g., "Production API")
-- Select permissions (`read:holdings`, `read:transactions`, etc.)
-- Optional: Set IP restrictions
-- Optional: Set expiration date
-
-**Step 5:** **Copy your key** (shown only once!)
+1. Log in to [enterprise.kryptos.io](https://enterprise.kryptos.io)
+2. Navigate to **Settings** → **API Keys**
+3. Click **"Create New API Key"**
+4. Configure permissions and copy your key
 
 ```
-Example: kryptos_live_xxxxxxxxxxxxxxxxxxxx
+X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx
 ```
 
 **Complete Guide:** See [API-DOCUMENTATION.md#creating-api-keys](./API-DOCUMENTATION.md#creating-api-keys)

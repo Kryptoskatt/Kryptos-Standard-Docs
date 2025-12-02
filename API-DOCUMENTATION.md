@@ -55,7 +55,222 @@ All API requests should be made to this base URL.
 
 ## Authentication
 
-All endpoints (except `/health`) require API Key authentication.
+All endpoints (except `/health`) require authentication. Two methods are supported:
+
+1. **API Key Authentication** - For Enterprise customers with direct API access
+2. **OAuth 2.0 Authentication** - For applications accessing user data with consent
+
+---
+
+### OAuth 2.0 Authentication (Kryptos Connect)
+
+Use OAuth 2.0 authorization code flow to access user portfolio data with their consent.
+
+#### OAuth Endpoints
+
+| Endpoint          | URL                                        |
+| ----------------- | ------------------------------------------ |
+| **Authorization** | `https://connect.kryptos.io/oidc/auth`     |
+| **Token**         | `https://connect.kryptos.io/oidc/token`    |
+| **UserInfo**      | `https://connect.kryptos.io/oidc/userinfo` |
+
+#### Available Scopes
+
+**Core Scopes:**
+
+| Scope            | Description                              |
+| ---------------- | ---------------------------------------- |
+| `openid`         | Basic OpenID Connect access (required)   |
+| `profile`        | User profile (name, picture, updated_at) |
+| `email`          | Email address and verified status        |
+| `offline_access` | Allow refresh tokens for offline access  |
+
+**Data Scopes (Granular Read/Write):**
+
+| Resource       | Read Scope            | Write Scope            | Description                      |
+| -------------- | --------------------- | ---------------------- | -------------------------------- |
+| Holdings       | `holdings:read`       | `holdings:write`       | Portfolio holdings and balances  |
+| Transactions   | `transactions:read`   | `transactions:write`   | Transaction history and trades   |
+| DeFi Portfolio | `defi-portfolio:read` | `defi-portfolio:write` | DeFi positions, staking, LP      |
+| NFT Portfolio  | `nft-portfolio:read`  | `nft-portfolio:write`  | NFT collections and metadata     |
+| Ledger         | `ledger:read`         | `ledger:write`         | Accounting ledger entries        |
+| Tax            | `tax:read`            | `tax:write`            | Tax calculations and reports     |
+| Integrations   | `integrations:read`   | `integrations:write`   | Third-party exchange connections |
+
+#### OAuth Flow
+
+**Step 1: Redirect to Authorization**
+
+```
+GET https://connect.kryptos.io/oidc/auth?
+  response_type=code&
+  client_id=YOUR_CLIENT_ID&
+  redirect_uri=YOUR_REDIRECT_URI&
+  scope=openid profile holdings:read transactions:read offline_access&
+  state=RANDOM_STATE&
+  code_challenge=CODE_CHALLENGE&
+  code_challenge_method=S256
+```
+
+**Step 2: Exchange Code for Token**
+
+```bash
+curl -X POST https://connect.kryptos.io/oidc/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code" \
+  -d "code=AUTH_CODE" \
+  -d "redirect_uri=YOUR_REDIRECT_URI" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "code_verifier=CODE_VERIFIER"
+```
+
+**Step 3: Call APIs with Access Token**
+
+```bash
+curl -X GET https://connect.kryptos.io/api/v1/holdings \
+  -H "Authorization: Bearer ACCESS_TOKEN" \
+  -H "X-Client-Id: YOUR_CLIENT_ID" \
+  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+```
+
+#### OAuth Code Examples
+
+<details>
+<summary>JavaScript/Node.js</summary>
+
+```javascript
+class KryptosOAuthClient {
+  constructor(clientId, clientSecret) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.baseUrl = "https://connect.kryptos.io";
+    this.accessToken = null;
+  }
+
+  getAuthUrl(
+    redirectUri,
+    codeChallenge,
+    scopes = [
+      "openid",
+      "profile",
+      "holdings:read",
+      "transactions:read",
+      "offline_access",
+    ]
+  ) {
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: this.clientId,
+      redirect_uri: redirectUri,
+      scope: scopes.join(" "),
+      state: Math.random().toString(36).substring(7),
+      code_challenge: codeChallenge,
+      code_challenge_method: "S256",
+    });
+    return `${this.baseUrl}/oidc/auth?${params}`;
+  }
+
+  async exchangeCode(code, redirectUri, codeVerifier) {
+    const response = await fetch(`${this.baseUrl}/oidc/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: redirectUri,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        code_verifier: codeVerifier,
+      }),
+    });
+    const tokens = await response.json();
+    this.accessToken = tokens.access_token;
+    return tokens;
+  }
+
+  async getHoldings() {
+    const response = await fetch(`${this.baseUrl}/api/v1/holdings`, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        "X-Client-Id": this.clientId,
+        "X-Client-Secret": this.clientSecret,
+      },
+    });
+    return response.json();
+  }
+}
+
+// Usage
+const client = new KryptosOAuthClient("your_client_id", "your_client_secret");
+const authUrl = client.getAuthUrl("http://localhost:3000/callback");
+// Redirect user to authUrl, then handle callback...
+```
+
+</details>
+
+<details>
+<summary>Python</summary>
+
+```python
+import requests
+from urllib.parse import urlencode
+
+class KryptosOAuthClient:
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.base_url = 'https://connect.kryptos.io'
+        self.access_token = None
+
+    def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'holdings:read', 'transactions:read', 'offline_access']):
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': redirect_uri,
+            'scope': ' '.join(scopes),
+            'state': 'random_state_value',
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'
+        }
+        return f"{self.base_url}/oidc/auth?{urlencode(params)}"
+
+    def exchange_code(self, code, redirect_uri, code_verifier):
+        response = requests.post(
+            f"{self.base_url}/oidc/token",
+            data={
+                'grant_type': 'authorization_code',
+                'code': code,
+                'redirect_uri': redirect_uri,
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'code_verifier': code_verifier
+            }
+        )
+        tokens = response.json()
+        self.access_token = tokens['access_token']
+        return tokens
+
+    def get_holdings(self):
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'X-Client-Id': self.client_id,
+            'X-Client-Secret': self.client_secret
+        }
+        response = requests.get(f"{self.base_url}/api/v1/holdings", headers=headers)
+        return response.json()
+
+# Usage
+client = KryptosOAuthClient('your_client_id', 'your_client_secret')
+auth_url = client.get_auth_url('http://localhost:8000/callback')
+print(f"Visit: {auth_url}")
+```
+
+</details>
+
+---
+
+### API Key Authentication (Enterprise)
 
 > **Note:** API key support is currently available for **Enterprise customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
 
@@ -1243,7 +1458,7 @@ if profiling['success']:
 
 - **📧 Email:** [support@kryptos.io](mailto:support@kryptos.io)
 - **🌐 Website:** [https://kryptos.io](https://kryptos.io)
-- **💻 GitHub:** [https://github.com/kryptoskatt](https://github.com/kryptoskatt)
+- **💻 GitHub:** [https://github.com/Kryptoskatt/Kryptos-Standard-Docs](https://github.com/Kryptoskatt/Kryptos-Standard-Docs)
 - **📖 Interactive Docs:** [https://connect.kryptos.io/docs/](https://connect.kryptos.io/docs/)
 
 ---
