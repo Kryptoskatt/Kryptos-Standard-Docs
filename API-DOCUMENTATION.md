@@ -18,7 +18,7 @@ Complete API documentation for Kryptos Connect APIs with authentication, endpoin
   - [Transactions](#transactions)
   - [DeFi Holdings](#defi-holdings)
   - [NFT Holdings](#nft-holdings)
-  - [User Profiling](#user-profiling)
+  - [Portfolio Insights](#portfolio-insights)
 - [Legacy Endpoints (V0)](#legacy-endpoints-v0)
 - [Error Handling](#error-handling)
 - [Code Examples](#code-examples)
@@ -33,7 +33,7 @@ Kryptos Connect APIs provide comprehensive access to cryptocurrency portfolio da
 - **Transaction History** - Complete transaction records with advanced filtering
 - **DeFi Integration** - Lending, staking, farming, and derivatives positions
 - **NFT Management** - Collection tracking with metadata and sales history
-- **User Analytics** - Portfolio profiling and classification
+- **Portfolio Insights** - Analytics and user classification
 - **Tax Calculations** - Cost basis, P&L, and tax reporting data
 
 ### API Versions
@@ -983,9 +983,9 @@ for nft in response.json()['holdings']:
 
 ---
 
-### User Profiling
+### Portfolio Insights
 
-Get comprehensive user analytics and classification.
+Get comprehensive portfolio analytics and user classification.
 
 **Endpoint:**
 

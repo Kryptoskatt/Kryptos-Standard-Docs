@@ -120,7 +120,7 @@ https://connect.kryptos.io/api
 | `/v1/transactions`  | GET    | Get transaction history     | `read:transactions` |
 | `/v1/defi-holdings` | GET    | Get DeFi positions          | `read:defi`         |
 | `/v1/nft-holdings`  | GET    | Get NFT holdings            | `read:nft`          |
-| `/v1/profiling`     | GET    | Get user analytics          | `read:analytics`    |
+| `/v1/profiling`     | GET    | Get portfolio insights      | `read:analytics`    |
 
 ### V0 Endpoints (Legacy Format)
 
