@@ -105,3 +105,5 @@ curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
 | Medium | 5–20 transactions/month |
 | High | > 20 transactions/month |
 
+
+

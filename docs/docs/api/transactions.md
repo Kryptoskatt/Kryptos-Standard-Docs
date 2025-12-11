@@ -39,6 +39,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc"
 | `timeStart` | number | Start timestamp (Unix ms) |
 | `timeEnd` | number | End timestamp (Unix ms) |
 | `limit` | number | Max results (1-1000, default: 100) |
+| `offset` | number | Number of records to skip (min: 0, default: 0) |
 
 ## Response
 
@@ -117,9 +118,42 @@ curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc"
       "rawTrx": {}
     }
   ],
+  "pagination": {
+    "limit": 100,
+    "offset": 0,
+    "returned_count": 1
+  },
   "user_id": "user_123",
   "timestamp": 1640995200000
 }
+```
+
+## Pagination
+
+The response includes a `pagination` object with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit` | number | Maximum number of results requested |
+| `offset` | number | Number of records skipped |
+| `returned_count` | number | Actual number of transactions returned |
+
+### Pagination Example
+
+To retrieve transactions in pages of 50:
+
+```bash
+# First page
+curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=0" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
+
+# Second page
+curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=50" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
+
+# Third page
+curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=100" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
 ## Transaction Labels
