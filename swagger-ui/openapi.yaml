@@ -53,6 +53,8 @@ tags:
     description: NFT collection management with V2 format
   - name: V1 - Profiling
     description: User analytics and profiling endpoints (V2 format)
+  - name: V1 - Integrations
+    description: Connected wallets and exchanges endpoints (V2 format)
 
 security:
   - ApiKeyAuth: []
@@ -1567,6 +1569,175 @@ paths:
             response = requests.get(
                 'https://connect.kryptos.io/api/v1/profiling',
                 headers=headers
+            )
+            print(response.json())
+
+  /v1/integrations:
+    get:
+      tags:
+        - V1 - Integrations
+      summary: Get connected integrations
+      description: |
+        **V2 FORMAT** - Modern standardized data structure
+
+        Retrieve a paginated list of user-connected wallets and exchanges with metadata,
+        sync status, and transaction counts. Supports fuzzy search across multiple fields.
+      operationId: getIntegrations
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page (max 200)
+          schema:
+            type: integer
+            default: 25
+            minimum: 1
+            maximum: 200
+        - name: searchedKey
+          in: query
+          description: Search term for fuzzy search across alias, address, account name, wallet ID, and exchange name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Integrations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        provider:
+                          type: string
+                        providerPublicName:
+                          type: string
+                        publicAddress:
+                          type: string
+                        walletId:
+                          type: string
+                        logoUrl:
+                          type: string
+                        isContract:
+                          type: boolean
+                        alias:
+                          type: string
+                        status:
+                          type: string
+                        addedOn:
+                          type: integer
+                          format: int64
+                        lastSyncedAt:
+                          type: integer
+                          format: int64
+                        category:
+                          type: string
+                          enum: [exchange, wallet, blockchain, unknown]
+                        type:
+                          type: string
+                          enum: [api, csv]
+                        totalTransactions:
+                          type: integer
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      pageSize:
+                        type: integer
+                      totalCount:
+                        type: integer
+                      hasNextPage:
+                        type: boolean
+                      hasPreviousPage:
+                        type: boolean
+                  user_id:
+                    type: string
+                  timestamp:
+                    type: integer
+                    format: int64
+              example:
+                data:
+                  - provider: "binance"
+                    providerPublicName: "Binance"
+                    publicAddress: null
+                    walletId: "wallet_abc123"
+                    logoUrl: "https://..."
+                    isContract: false
+                    alias: "Main Trading Account"
+                    status: "active"
+                    addedOn: 1640995200000
+                    lastSyncedAt: 1672531200000
+                    category: "exchange"
+                    type: "api"
+                    totalTransactions: 1542
+                  - provider: "ethereum"
+                    providerPublicName: "Ethereum"
+                    publicAddress: "0x1234...abcd"
+                    walletId: "wallet_def456"
+                    logoUrl: "https://..."
+                    isContract: false
+                    alias: "DeFi Wallet"
+                    status: "active"
+                    addedOn: 1641081600000
+                    lastSyncedAt: 1672617600000
+                    category: "blockchain"
+                    type: "api"
+                    totalTransactions: 328
+                pagination:
+                  page: 1
+                  pageSize: 25
+                  totalCount: 12
+                  hasNextPage: false
+                  hasPreviousPage: false
+                user_id: "user_123"
+                timestamp: 1672531200000
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      x-code-samples:
+        - lang: JavaScript
+          label: Axios
+          source: |
+            const axios = require('axios');
+
+            const response = await axios.get('https://connect.kryptos.io/api/v1/integrations', {
+              headers: {
+                'X-API-Key': 'your_api_key_here'
+              },
+              params: {
+                page: 1,
+                pageSize: 25
+              }
+            });
+            console.log(response.data);
+        - lang: Python
+          source: |
+            import requests
+
+            headers = {
+                'X-API-Key': 'your_api_key_here'
+            }
+            params = {
+                'page': 1,
+                'pageSize': 25
+            }
+            response = requests.get(
+                'https://connect.kryptos.io/api/v1/integrations',
+                headers=headers,
+                params=params
             )
             print(response.json())
 
