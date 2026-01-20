@@ -25,6 +25,7 @@ const sidebars = {
         "api/defi-holdings",
         "api/nft-holdings",
         "api/profiling",
+        "api/integrations",
       ],
     },
     {
