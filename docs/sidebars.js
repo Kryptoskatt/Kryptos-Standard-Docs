@@ -45,6 +45,7 @@ const sidebars = {
       collapsed: false,
       items: ["reference/errors", "reference/types"],
     },
+    "changelog",
   ],
 };
 
