@@ -8,6 +8,8 @@ sidebar_position: 8
 
 <span className="badge badge--get">GET</span> `/v1/integrations`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Retrieve a paginated list of user-connected wallets and exchanges with metadata, sync status, and transaction counts.
 
 **Required Permission:** `integrations:read`

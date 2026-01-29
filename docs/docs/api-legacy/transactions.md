@@ -10,6 +10,8 @@ sidebar_position: 2
 This endpoint will be deprecated. Use `/v1/transactions` for new integrations. Migrate to V1 when made live.
 :::
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 ## GET Transactions
 
 <span className="badge badge--get">GET</span> `/v0/transactions`
@@ -28,7 +30,7 @@ Same as `/v1/transactions`
 
 Create new transactions manually.
 
-**Required Permission:** `write:transactions`
+**Required Permission:** `transactions:write`
 
 ### Request Body
 

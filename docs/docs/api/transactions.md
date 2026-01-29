@@ -8,9 +8,11 @@ sidebar_position: 4
 
 <span className="badge badge--get">GET</span> `/v1/transactions`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Retrieve user's transaction history with advanced filtering options.
 
-**Required Permission:** `read:transactions`
+**Required Permission:** `transactions:read`
 
 ## Request
 

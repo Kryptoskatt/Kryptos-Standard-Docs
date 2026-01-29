@@ -15,13 +15,13 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 | Endpoint          | URL                                                      |
 | ----------------- | -------------------------------------------------------- |
-| **Authorization** | `https://connect.kryptos.io/oidc/auth`                   |
-| **Token**         | `https://connect.kryptos.io/oidc/token`                  |
-| **UserInfo**      | `https://connect.kryptos.io/oidc/userinfo`               |
-| **Revocation**    | `https://connect.kryptos.io/oidc/token/revocation`       |
-| **Introspection** | `https://connect.kryptos.io/oidc/token/introspection`    |
-| **Discovery**     | `https://connect.kryptos.io/oidc/.well-known/openid_configuration` |
-| **JWKS**          | `https://connect.kryptos.io/oidc/jwks`                   |
+| **Authorization** | `https://oauth.kryptos.io/oidc/auth`                     |
+| **Token**         | `https://oauth.kryptos.io/oidc/token`                    |
+| **UserInfo**      | `https://oauth.kryptos.io/oidc/userinfo`                 |
+| **Revocation**    | `https://oauth.kryptos.io/oidc/token/revocation`         |
+| **Introspection** | `https://oauth.kryptos.io/oidc/token/introspection`      |
+| **Discovery**     | `https://oauth.kryptos.io/oidc/.well-known/openid_configuration` |
+| **JWKS**          | `https://oauth.kryptos.io/oidc/jwks`                     |
 
 ## Available Scopes
 
@@ -36,15 +36,16 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 ### Data Scopes (Granular Read/Write)
 
-| Resource         | Read Scope              | Write Scope              | Description                          |
-| ---------------- | ----------------------- | ------------------------ | ------------------------------------ |
-| Holdings         | `holdings:read`         | `holdings:write`         | Portfolio holdings and balances      |
-| Transactions     | `transactions:read`     | `transactions:write`     | Transaction history and trades       |
-| DeFi Portfolio   | `defi-portfolio:read`   | `defi-portfolio:write`   | DeFi positions, staking, LP pools    |
-| NFT Portfolio    | `nft-portfolio:read`    | `nft-portfolio:write`    | NFT collections and metadata         |
-| Ledger           | `ledger:read`           | `ledger:write`           | Accounting ledger entries            |
-| Tax              | `tax:read`              | `tax:write`              | Tax calculations and reports         |
-| Integrations     | `integrations:read`     | `integrations:write`     | Third-party exchange connections     |
+| Resource      | Read Scope          | Write Scope          | Description                          |
+| ------------- | ------------------- | -------------------- | ------------------------------------ |
+| Portfolios    | `portfolios:read`   | `portfolios:write`   | Portfolio holdings and balances      |
+| Transactions  | `transactions:read` | `transactions:write` | Transaction history and trades       |
+| Integrations  | `integrations:read` | `integrations:write` | Connected wallets and exchanges      |
+| Tax           | `tax:read`          | `tax:write`          | Tax calculations and reports         |
+| Accounting    | `accounting:read`   | `accounting:write`   | Accounting ledger entries            |
+| Reports       | `reports:read`      | `reports:write`      | Generated reports and exports        |
+| Workspace     | `workspace:read`    | `workspace:write`    | Workspace settings and configuration |
+| Users         | `users:read`        | `users:write`        | User profile and preferences         |
 
 ## Authorization Flow
 
@@ -132,19 +133,19 @@ function generatePKCE() {
 Redirect the user to the authorization endpoint:
 
 ```
-GET https://connect.kryptos.io/oidc/auth?
+GET https://oauth.kryptos.io/oidc/auth?
   response_type=code&
   client_id=YOUR_CLIENT_ID&
   redirect_uri=YOUR_REDIRECT_URI&
-  scope=openid profile email holdings:read transactions:read defi-portfolio:read nft-portfolio:read offline_access&
+  scope=openid profile email portfolios:read transactions:read integrations:read offline_access&
   state=RANDOM_STATE&
   code_challenge=CODE_CHALLENGE&
   code_challenge_method=S256
 ```
 
 **Example Scope Combinations:**
-- **Read-only:** `openid profile holdings:read transactions:read`
-- **Full access:** `openid profile holdings:read holdings:write transactions:read transactions:write`
+- **Read-only:** `openid profile portfolios:read transactions:read`
+- **Full access:** `openid profile portfolios:read portfolios:write transactions:read transactions:write`
 
 | Parameter               | Required | Description                              |
 | ----------------------- | -------- | ---------------------------------------- |
@@ -161,7 +162,7 @@ GET https://connect.kryptos.io/oidc/auth?
 After the user authorizes, they're redirected to your `redirect_uri` with an authorization code. Exchange it for tokens:
 
 ```bash
-curl -X POST https://connect.kryptos.io/oidc/token \
+curl -X POST https://oauth.kryptos.io/oidc/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTH_CODE" \
@@ -180,7 +181,7 @@ curl -X POST https://connect.kryptos.io/oidc/token \
   "expires_in": 86400,
   "refresh_token": "def50200...",
   "id_token": "eyJhbGciOiJSUzI1NiIs...",
-  "scope": "openid profile holdings:read transactions:read"
+  "scope": "openid profile portfolios:read transactions:read"
 }
 ```
 
@@ -220,7 +221,8 @@ class KryptosClient {
   constructor(clientId, clientSecret) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.baseUrl = 'https://connect.kryptos.io';
+    this.oauthUrl = 'https://oauth.kryptos.io';
+    this.apiUrl = 'https://connect.kryptos.io';
     this.accessToken = null;
   }
 
@@ -248,14 +250,13 @@ class KryptosClient {
   // Get authorization URL
   // Scopes use granular :read and :write format
   getAuthUrl(redirectUri, codeChallenge, scopes = [
-    'openid',              // Required - basic OIDC
-    'profile',             // Read: name, picture
-    'email',               // Read: email address
-    'holdings:read',       // Read: portfolio holdings
-    'transactions:read',   // Read: transaction history
-    'defi-portfolio:read', // Read: DeFi positions
-    'nft-portfolio:read',  // Read: NFT collections
-    'offline_access'       // Enable refresh tokens
+    'openid',             // Required - basic OIDC
+    'profile',            // Read: name, picture
+    'email',              // Read: email address
+    'portfolios:read',    // Read: portfolio holdings
+    'transactions:read',  // Read: transaction history
+    'integrations:read',  // Read: connected wallets/exchanges
+    'offline_access'      // Enable refresh tokens
   ]) {
     const params = new URLSearchParams({
       response_type: 'code',
@@ -266,12 +267,12 @@ class KryptosClient {
       code_challenge: codeChallenge,
       code_challenge_method: 'S256'
     });
-    return `${this.baseUrl}/oidc/auth?${params}`;
+    return `${this.oauthUrl}/oidc/auth?${params}`;
   }
 
   // Exchange authorization code for tokens
   async exchangeCode(code, redirectUri, codeVerifier) {
-    const response = await fetch(`${this.baseUrl}/oidc/token`, {
+    const response = await fetch(`${this.oauthUrl}/oidc/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -291,7 +292,7 @@ class KryptosClient {
 
   // Get user holdings
   async getHoldings() {
-    const response = await fetch(`${this.baseUrl}/api/v1/holdings`, {
+    const response = await fetch(`${this.apiUrl}/api/v1/holdings`, {
       headers: {
         'Authorization': `Bearer ${this.accessToken}`,
         'X-Client-Id': this.clientId,
@@ -303,7 +304,7 @@ class KryptosClient {
 
   // Get user info
   async getUserInfo() {
-    const response = await fetch(`${this.baseUrl}/api/v1/userinfo`, {
+    const response = await fetch(`${this.apiUrl}/api/v1/userinfo`, {
       headers: {
         'Authorization': `Bearer ${this.accessToken}`,
         'X-Client-Id': this.clientId,
@@ -346,7 +347,8 @@ class KryptosClient:
     def __init__(self, client_id, client_secret):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.base_url = 'https://connect.kryptos.io'
+        self.oauth_url = 'https://oauth.kryptos.io'
+        self.api_url = 'https://connect.kryptos.io'
         self.access_token = None
 
     def generate_pkce(self):
@@ -357,7 +359,7 @@ class KryptosClient:
         ).decode().rstrip('=')
         return verifier, challenge
 
-    def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'holdings:read', 'transactions:read', 'offline_access']):
+    def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'portfolios:read', 'transactions:read', 'offline_access']):
         params = {
             'response_type': 'code',
             'client_id': self.client_id,
@@ -367,7 +369,7 @@ class KryptosClient:
             'code_challenge': code_challenge,
             'code_challenge_method': 'S256'
         }
-        return f"{self.base_url}/oidc/auth?{urlencode(params)}"
+        return f"{self.oauth_url}/oidc/auth?{urlencode(params)}"
 
     def exchange_code(self, code, redirect_uri, code_verifier):
         data = {
@@ -380,7 +382,7 @@ class KryptosClient:
         }
         
         response = requests.post(
-            f"{self.base_url}/oidc/token",
+            f"{self.oauth_url}/oidc/token",
             data=data,
             headers={'Content-Type': 'application/x-www-form-urlencoded'}
         )
@@ -395,7 +397,7 @@ class KryptosClient:
             'X-Client-Id': self.client_id,
             'X-Client-Secret': self.client_secret
         }
-        response = requests.get(f"{self.base_url}/api/v1/holdings", headers=headers)
+        response = requests.get(f"{self.api_url}/api/v1/holdings", headers=headers)
         return response.json()
 
     def get_userinfo(self):
@@ -404,7 +406,7 @@ class KryptosClient:
             'X-Client-Id': self.client_id,
             'X-Client-Secret': self.client_secret
         }
-        response = requests.get(f"{self.base_url}/api/v1/userinfo", headers=headers)
+        response = requests.get(f"{self.api_url}/api/v1/userinfo", headers=headers)
         return response.json()
 
 # Usage
@@ -431,7 +433,8 @@ print(f"Visit: {auth_url}")
 class KryptosClient {
     private $clientId;
     private $clientSecret;
-    private $baseUrl = 'https://connect.kryptos.io';
+    private $oauthUrl = 'https://oauth.kryptos.io';
+    private $apiUrl = 'https://connect.kryptos.io';
     private $accessToken;
     
     public function __construct($clientId, $clientSecret) {
@@ -447,7 +450,7 @@ class KryptosClient {
         return ['verifier' => $verifier, 'challenge' => $challenge];
     }
     
-    public function getAuthUrl($redirectUri, $codeChallenge, $scopes = ['openid', 'profile', 'holdings:read', 'transactions:read', 'offline_access']) {
+    public function getAuthUrl($redirectUri, $codeChallenge, $scopes = ['openid', 'profile', 'portfolios:read', 'transactions:read', 'offline_access']) {
         $params = http_build_query([
             'response_type' => 'code',
             'client_id' => $this->clientId,
@@ -457,7 +460,7 @@ class KryptosClient {
             'code_challenge' => $codeChallenge,
             'code_challenge_method' => 'S256'
         ]);
-        return $this->baseUrl . '/oidc/auth?' . $params;
+        return $this->oauthUrl . '/oidc/auth?' . $params;
     }
     
     public function exchangeCode($code, $redirectUri, $codeVerifier) {
@@ -471,7 +474,7 @@ class KryptosClient {
         ];
         
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->baseUrl . '/oidc/token');
+        curl_setopt($ch, CURLOPT_URL, $this->oauthUrl . '/oidc/token');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -497,7 +500,7 @@ class KryptosClient {
     
     private function makeApiCall($endpoint) {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->baseUrl . $endpoint);
+        curl_setopt($ch, CURLOPT_URL, $this->apiUrl . $endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $this->accessToken,
@@ -549,7 +552,8 @@ import (
 type KryptosClient struct {
     ClientID     string
     ClientSecret string
-    BaseURL      string
+    OAuthURL     string
+    APIURL       string
     AccessToken  string
 }
 
@@ -557,7 +561,8 @@ func NewKryptosClient(clientID, clientSecret string) *KryptosClient {
     return &KryptosClient{
         ClientID:     clientID,
         ClientSecret: clientSecret,
-        BaseURL:      "https://connect.kryptos.io",
+        OAuthURL:     "https://oauth.kryptos.io",
+        APIURL:       "https://connect.kryptos.io",
     }
 }
 
@@ -581,7 +586,7 @@ func (c *KryptosClient) GetAuthURL(redirectURI, codeChallenge string, scopes []s
         "code_challenge":        {codeChallenge},
         "code_challenge_method": {"S256"},
     }
-    return fmt.Sprintf("%s/oidc/auth?%s", c.BaseURL, params.Encode())
+    return fmt.Sprintf("%s/oidc/auth?%s", c.OAuthURL, params.Encode())
 }
 
 func (c *KryptosClient) ExchangeCode(code, redirectURI, codeVerifier string) error {
@@ -594,7 +599,7 @@ func (c *KryptosClient) ExchangeCode(code, redirectURI, codeVerifier string) err
         "code_verifier": {codeVerifier},
     }
     
-    resp, err := http.PostForm(c.BaseURL+"/oidc/token", data)
+    resp, err := http.PostForm(c.OAuthURL+"/oidc/token", data)
     if err != nil {
         return err
     }
@@ -611,7 +616,7 @@ func (c *KryptosClient) GetHoldings() (map[string]interface{}, error) {
 }
 
 func (c *KryptosClient) makeAPICall(endpoint string) (map[string]interface{}, error) {
-    req, _ := http.NewRequest("GET", c.BaseURL+endpoint, nil)
+    req, _ := http.NewRequest("GET", c.APIURL+endpoint, nil)
     req.Header.Set("Authorization", "Bearer "+c.AccessToken)
     req.Header.Set("X-Client-Id", c.ClientID)
     req.Header.Set("X-Client-Secret", c.ClientSecret)
@@ -637,7 +642,7 @@ func main() {
     
     // 2. Get auth URL
     authURL := client.GetAuthURL("http://localhost:8080/callback", challenge, 
-        []string{"openid", "profile", "holdings:read", "transactions:read", "offline_access"})
+        []string{"openid", "profile", "portfolios:read", "transactions:read", "offline_access"})
     fmt.Println("Visit:", authURL)
     
     // 3. After callback, exchange code
@@ -658,17 +663,17 @@ func main() {
 
 # Step 2: Redirect user to authorization URL
 # Open in browser:
-# https://connect.kryptos.io/oidc/auth?\
+# https://oauth.kryptos.io/oidc/auth?\
 #   response_type=code&\
 #   client_id=YOUR_CLIENT_ID&\
 #   redirect_uri=YOUR_REDIRECT_URI&\
-#   scope=openid%20profile%20holdings:read%20transactions:read%20offline_access&\
+#   scope=openid%20profile%20portfolios:read%20transactions:read%20offline_access&\
 #   state=RANDOM_STATE&\
 #   code_challenge=CODE_CHALLENGE&\
 #   code_challenge_method=S256
 
 # Step 3: Exchange code for token
-curl -X POST https://connect.kryptos.io/oidc/token \
+curl -X POST https://oauth.kryptos.io/oidc/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTH_CODE_FROM_CALLBACK" \
@@ -698,7 +703,7 @@ curl -X GET https://connect.kryptos.io/api/v1/userinfo \
 Access tokens expire after 24 hours. Use refresh tokens to get new ones:
 
 ```bash
-curl -X POST https://connect.kryptos.io/oidc/token \
+curl -X POST https://oauth.kryptos.io/oidc/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=refresh_token" \
   -d "client_id=YOUR_CLIENT_ID" \
@@ -711,7 +716,7 @@ curl -X POST https://connect.kryptos.io/oidc/token \
 Revoke tokens when user logs out:
 
 ```bash
-curl -X POST https://connect.kryptos.io/oidc/token/revocation \
+curl -X POST https://oauth.kryptos.io/oidc/token/revocation \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "token=TOKEN_TO_REVOKE" \
   -d "client_id=YOUR_CLIENT_ID" \
@@ -723,7 +728,7 @@ curl -X POST https://connect.kryptos.io/oidc/token/revocation \
 Get user information using access token:
 
 ```bash
-curl -X GET https://connect.kryptos.io/oidc/userinfo \
+curl -X GET https://oauth.kryptos.io/oidc/userinfo \
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
@@ -737,13 +742,14 @@ curl -X GET https://connect.kryptos.io/oidc/userinfo \
   "email_verified": true,
   "picture": "https://example.com/avatar.jpg",
   "updated_at": 1642248600,
-  "holdings_access": true,
+  "portfolios_access": true,
   "transactions_access": true,
-  "defi_portfolio_access": true,
-  "nft_portfolio_access": false,
-  "ledger_access": false,
+  "integrations_access": true,
   "tax_access": true,
-  "integrations_access": true
+  "accounting_access": false,
+  "reports_access": true,
+  "workspace_access": false,
+  "users_access": false
 }
 ```
 

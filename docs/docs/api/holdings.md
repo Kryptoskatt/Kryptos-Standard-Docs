@@ -8,9 +8,11 @@ sidebar_position: 3
 
 <span className="badge badge--get">GET</span> `/v1/holdings`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Get comprehensive cryptocurrency holdings with asset distribution across wallets, cost basis, and performance metrics.
 
-**Required Permission:** `read:holdings`
+**Required Permission:** `portfolios:read`
 
 ## Request
 

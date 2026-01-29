@@ -3,8 +3,8 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Kryptos Connect",
-  tagline: "API Documentation",
+  title: "Kryptos Connect API",
+  tagline: "Developer Documentation",
   favicon: "img/favicon.png",
 
   url: "https://docs.kryptos.io",
@@ -44,12 +44,17 @@ const config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: "Kryptos Connect",
+      title: "Kryptos Connect API",
       logo: {
         alt: "Kryptos",
         src: "img/logo.png",
       },
       items: [
+        {
+          href: "https://dashboard.kryptos.io/",
+          label: "Developer Portal",
+          position: "right",
+        },
         {
           href: "https://github.com/Kryptoskatt/Kryptos-Standard-Docs",
           position: "right",

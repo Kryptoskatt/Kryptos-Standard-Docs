@@ -8,9 +8,11 @@ sidebar_position: 7
 
 <span className="badge badge--get">GET</span> `/v1/profiling`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Get comprehensive portfolio analytics and user classification.
 
-**Required Permission:** `read:analytics`
+**Required Permission:** `portfolios:read`
 
 ## Request
 

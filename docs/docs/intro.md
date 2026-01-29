@@ -40,11 +40,13 @@ Kryptos Connect is ideal for:
 
 **Key Features:**
 
-- 🔐 Secure OAuth 2.0 authorization flow
-- 📊 User-consented data sharing
-- 🧩 Single widget integration
-- 📋 Standardized data format
-- 🛡️ Granular permission scopes
+- Secure OAuth 2.0 authorization flow
+- User-consented data sharing
+- Single widget integration
+- Standardized data format
+- Granular permission scopes
+
+[Get Started →](/developer-portal)
 :::
 
 ## API Versions
@@ -58,13 +60,15 @@ Kryptos Connect is ideal for:
 
 Get up and running in minutes:
 
-**1. Register your application** → Obtain `client_id` and `client_secret`
+**1. Sign up on the [Developer Portal](https://dashboard.kryptos.io/)** → Create your account
 
-**2. Implement OAuth flow** → Redirect users to authorize access
+**2. Create a workspace** → Set up your development environment
 
-**3. Exchange code for tokens** → Receive `access_token` and `refresh_token`
+**3. Register your application** → Obtain `client_id` and `client_secret`
 
-**4. Call the API** → Fetch portfolio data with a single request
+**4. Implement OAuth flow** → Redirect users to authorize access
+
+**5. Call the API** → Fetch portfolio data with a single request
 
 ```bash
 curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
@@ -75,20 +79,25 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
 
 That's it! You're now ready to access user portfolio data.
 
+:::info Step-by-Step Guide
+New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/developer-portal)** for detailed instructions with screenshots.
+:::
+
 ## Features
 
 | Feature | Description |
 |---------|-------------|
 | **11 Endpoints** | Complete API coverage |
 | **2 Auth Methods** | OAuth 2.0 & API Key |
-| **11 OAuth Scopes** | Granular permissions |
+| **16 OAuth Scopes** | Granular read/write permissions |
 | **TypeScript Types** | Full type definitions |
 
 ## Next Steps
 
-1. **[Set up Authentication](/authentication/oauth)** – Configure OAuth 2.0 or API Key
-2. **[Explore Endpoints](/api/health)** – Browse the API reference
-3. **[View Types](/reference/types)** – TypeScript definitions
+1. **[Developer Portal Setup](/developer-portal)** – Create your account and get credentials
+2. **[Set up Authentication](/authentication/oauth)** – Configure OAuth 2.0 flow
+3. **[Explore Endpoints](/api/health)** – Browse the API reference
+4. **[View Types](/reference/types)** – TypeScript definitions
 
 ## Support
 

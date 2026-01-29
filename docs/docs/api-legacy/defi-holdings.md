@@ -8,6 +8,8 @@ sidebar_position: 4
 
 <span className="badge badge--get">GET</span> `/v0/defi-holdings`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 :::warning Legacy Endpoint
 This endpoint will be deprecated. Use `/v1/defi-holdings` for new integrations. Migrate to V1 when made live.
 :::

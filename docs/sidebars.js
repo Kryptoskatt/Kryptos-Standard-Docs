@@ -5,7 +5,7 @@ const sidebars = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["intro", "base-url"],
+      items: ["intro", "developer-portal"],
     },
     {
       type: "category",

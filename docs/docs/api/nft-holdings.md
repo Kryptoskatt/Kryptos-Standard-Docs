@@ -8,9 +8,11 @@ sidebar_position: 6
 
 <span className="badge badge--get">GET</span> `/v1/nft-holdings`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Retrieve user's NFT collection with metadata.
 
-**Required Permission:** `read:nft`
+**Required Permission:** `portfolios:read`
 
 ## Request
 

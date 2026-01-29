@@ -8,9 +8,11 @@ sidebar_position: 2
 
 <span className="badge badge--get">GET</span> `/v1/userinfo`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Get authenticated user's profile information.
 
-**Required Permission:** `read:profile`
+**Required Permission:** `users:read`
 
 ## Request
 

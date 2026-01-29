@@ -70,9 +70,9 @@ Use OAuth 2.0 authorization code flow to access user portfolio data with their c
 
 | Endpoint          | URL                                        |
 | ----------------- | ------------------------------------------ |
-| **Authorization** | `https://connect.kryptos.io/oidc/auth`     |
-| **Token**         | `https://connect.kryptos.io/oidc/token`    |
-| **UserInfo**      | `https://connect.kryptos.io/oidc/userinfo` |
+| **Authorization** | `https://oauth.kryptos.io/oidc/auth`       |
+| **Token**         | `https://oauth.kryptos.io/oidc/token`      |
+| **UserInfo**      | `https://oauth.kryptos.io/oidc/userinfo`   |
 
 #### Available Scopes
 
@@ -87,26 +87,27 @@ Use OAuth 2.0 authorization code flow to access user portfolio data with their c
 
 **Data Scopes (Granular Read/Write):**
 
-| Resource       | Read Scope            | Write Scope            | Description                      |
-| -------------- | --------------------- | ---------------------- | -------------------------------- |
-| Holdings       | `holdings:read`       | `holdings:write`       | Portfolio holdings and balances  |
-| Transactions   | `transactions:read`   | `transactions:write`   | Transaction history and trades   |
-| DeFi Portfolio | `defi-portfolio:read` | `defi-portfolio:write` | DeFi positions, staking, LP      |
-| NFT Portfolio  | `nft-portfolio:read`  | `nft-portfolio:write`  | NFT collections and metadata     |
-| Ledger         | `ledger:read`         | `ledger:write`         | Accounting ledger entries        |
-| Tax            | `tax:read`            | `tax:write`            | Tax calculations and reports     |
-| Integrations   | `integrations:read`   | `integrations:write`   | Third-party exchange connections |
+| Resource     | Read Scope          | Write Scope          | Description                          |
+| ------------ | ------------------- | -------------------- | ------------------------------------ |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings and balances      |
+| Transactions | `transactions:read` | `transactions:write` | Transaction history and trades       |
+| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges      |
+| Tax          | `tax:read`          | `tax:write`          | Tax calculations and reports         |
+| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger entries            |
+| Reports      | `reports:read`      | `reports:write`      | Generated reports and exports        |
+| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings and configuration |
+| Users        | `users:read`        | `users:write`        | User profile and preferences         |
 
 #### OAuth Flow
 
 **Step 1: Redirect to Authorization**
 
 ```
-GET https://connect.kryptos.io/oidc/auth?
+GET https://oauth.kryptos.io/oidc/auth?
   response_type=code&
   client_id=YOUR_CLIENT_ID&
   redirect_uri=YOUR_REDIRECT_URI&
-  scope=openid profile holdings:read transactions:read offline_access&
+  scope=openid profile portfolios:read transactions:read offline_access&
   state=RANDOM_STATE&
   code_challenge=CODE_CHALLENGE&
   code_challenge_method=S256
@@ -115,7 +116,7 @@ GET https://connect.kryptos.io/oidc/auth?
 **Step 2: Exchange Code for Token**
 
 ```bash
-curl -X POST https://connect.kryptos.io/oidc/token \
+curl -X POST https://oauth.kryptos.io/oidc/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTH_CODE" \
@@ -144,7 +145,8 @@ class KryptosOAuthClient {
   constructor(clientId, clientSecret) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.baseUrl = "https://connect.kryptos.io";
+    this.oauthUrl = "https://oauth.kryptos.io";
+    this.apiUrl = "https://connect.kryptos.io";
     this.accessToken = null;
   }
 
@@ -154,7 +156,7 @@ class KryptosOAuthClient {
     scopes = [
       "openid",
       "profile",
-      "holdings:read",
+      "portfolios:read",
       "transactions:read",
       "offline_access",
     ]
@@ -168,11 +170,11 @@ class KryptosOAuthClient {
       code_challenge: codeChallenge,
       code_challenge_method: "S256",
     });
-    return `${this.baseUrl}/oidc/auth?${params}`;
+    return `${this.oauthUrl}/oidc/auth?${params}`;
   }
 
   async exchangeCode(code, redirectUri, codeVerifier) {
-    const response = await fetch(`${this.baseUrl}/oidc/token`, {
+    const response = await fetch(`${this.oauthUrl}/oidc/token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
@@ -190,7 +192,7 @@ class KryptosOAuthClient {
   }
 
   async getHoldings() {
-    const response = await fetch(`${this.baseUrl}/api/v1/holdings`, {
+    const response = await fetch(`${this.apiUrl}/api/v1/holdings`, {
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
         "X-Client-Id": this.clientId,
@@ -220,10 +222,11 @@ class KryptosOAuthClient:
     def __init__(self, client_id, client_secret):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.base_url = 'https://connect.kryptos.io'
+        self.oauth_url = 'https://oauth.kryptos.io'
+        self.api_url = 'https://connect.kryptos.io'
         self.access_token = None
 
-    def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'holdings:read', 'transactions:read', 'offline_access']):
+    def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'portfolios:read', 'transactions:read', 'offline_access']):
         params = {
             'response_type': 'code',
             'client_id': self.client_id,
@@ -233,11 +236,11 @@ class KryptosOAuthClient:
             'code_challenge': code_challenge,
             'code_challenge_method': 'S256'
         }
-        return f"{self.base_url}/oidc/auth?{urlencode(params)}"
+        return f"{self.oauth_url}/oidc/auth?{urlencode(params)}"
 
     def exchange_code(self, code, redirect_uri, code_verifier):
         response = requests.post(
-            f"{self.base_url}/oidc/token",
+            f"{self.oauth_url}/oidc/token",
             data={
                 'grant_type': 'authorization_code',
                 'code': code,
@@ -257,7 +260,7 @@ class KryptosOAuthClient:
             'X-Client-Id': self.client_id,
             'X-Client-Secret': self.client_secret
         }
-        response = requests.get(f"{self.base_url}/api/v1/holdings", headers=headers)
+        response = requests.get(f"{self.api_url}/api/v1/holdings", headers=headers)
         return response.json()
 
 # Usage

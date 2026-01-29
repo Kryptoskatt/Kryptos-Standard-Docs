@@ -8,9 +8,11 @@ sidebar_position: 5
 
 <span className="badge badge--get">GET</span> `/v1/defi-holdings`
 
+**Base URL:** `https://connect.kryptos.io/api`
+
 Retrieve user's DeFi positions with protocol details.
 
-**Required Permission:** `read:defi`
+**Required Permission:** `portfolios:read`
 
 ## Request
 
