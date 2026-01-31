@@ -8,7 +8,7 @@ sidebar_position: 4
 
 <span className="badge badge--get">GET</span> `/v1/transactions`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 Retrieve user's transaction history with advanced filtering options.
 
@@ -17,7 +17,7 @@ Retrieve user's transaction history with advanced filtering options.
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/transactions?limit=10&order=desc" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -146,15 +146,15 @@ To retrieve transactions in pages of 50:
 
 ```bash
 # First page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=0" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/transactions?limit=50&offset=0" \
   -H "Authorization: Bearer ACCESS_TOKEN"
 
 # Second page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=50" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/transactions?limit=50&offset=50" \
   -H "Authorization: Bearer ACCESS_TOKEN"
 
 # Third page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=100" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/transactions?limit=50&offset=100" \
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 

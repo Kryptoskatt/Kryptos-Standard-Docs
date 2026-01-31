@@ -10,7 +10,7 @@ sidebar_position: 2
 This endpoint will be deprecated. Use `/v1/transactions` for new integrations. Migrate to V1 when made live.
 :::
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 ## GET Transactions
 

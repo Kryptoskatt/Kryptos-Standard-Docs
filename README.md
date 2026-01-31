@@ -33,7 +33,7 @@ open API-DOCUMENTATION.md
 
 ### 2. Interactive Swagger UI
 
-**🌐 Live Documentation:** [https://connect.kryptos.io/docs/](https://connect.kryptos.io/docs/)
+**🌐 Live Documentation:** [https://connect-api.kryptos.io/docs/](https://connect-api.kryptos.io/docs/)
 
 **Features:**
 
@@ -54,11 +54,12 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 | Endpoint          | URL                                        |
 | ----------------- | ------------------------------------------ |
-| **Authorization** | `https://connect.kryptos.io/oidc/auth`     |
-| **Token**         | `https://connect.kryptos.io/oidc/token`    |
-| **UserInfo**      | `https://connect.kryptos.io/oidc/userinfo` |
+| **Authorization** | `https://connect-api.kryptos.io/oidc/auth`     |
+| **Token**         | `https://connect-api.kryptos.io/oidc/token`    |
+| **UserInfo**      | `https://connect-api.kryptos.io/oidc/userinfo` |
 
 **Available Scopes:**
+
 - **Core:** `openid`, `profile`, `email`, `offline_access`
 - **Data (Read):** `holdings:read`, `transactions:read`, `defi-portfolio:read`, `nft-portfolio:read`, `ledger:read`, `tax:read`, `integrations:read`
 - **Data (Write):** `holdings:write`, `transactions:write`, `defi-portfolio:write`, `nft-portfolio:write`, `ledger:write`, `tax:write`, `integrations:write`
@@ -67,14 +68,14 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 ```bash
 # 1. Redirect user to authorize (with PKCE)
-GET https://connect.kryptos.io/oidc/auth?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=openid+holdings:read+transactions:read&code_challenge=CODE_CHALLENGE&code_challenge_method=S256
+GET https://connect-api.kryptos.io/oidc/auth?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=openid+holdings:read+transactions:read&code_challenge=CODE_CHALLENGE&code_challenge_method=S256
 
 # 2. Exchange code for token
-curl -X POST https://connect.kryptos.io/oidc/token \
+curl -X POST https://connect-api.kryptos.io/oidc/token \
   -d "grant_type=authorization_code&code=AUTH_CODE&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&code_verifier=CODE_VERIFIER"
 
 # 3. Call API with token
-curl https://connect.kryptos.io/api/v1/holdings \
+curl https://connect-api.kryptos.io/api/v1/holdings \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -108,7 +109,7 @@ X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx
 ### Base URL
 
 ```
-https://connect.kryptos.io/api
+https://connect-api.kryptos.io/api
 ```
 
 ### V1 Endpoints (Modern V2 Format)
@@ -147,10 +148,10 @@ const API_KEY = "your_api_key_here";
 // Get Holdings
 async function getHoldings() {
   const response = await axios.get(
-    "https://connect.kryptos.io/api/v1/holdings",
+    "https://connect-api.kryptos.io/api/v1/holdings",
     {
       headers: { "X-API-Key": API_KEY },
-    }
+    },
   );
 
   console.log("Total Value:", response.data.summary.totalValue);
@@ -170,7 +171,7 @@ API_KEY = 'your_api_key_here'
 def get_holdings():
     headers = {'X-API-Key': API_KEY}
     response = requests.get(
-        'https://connect.kryptos.io/api/v1/holdings',
+        'https://connect-api.kryptos.io/api/v1/holdings',
         headers=headers
     )
 
@@ -184,7 +185,7 @@ get_holdings()
 ### cURL
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
   -H "X-API-Key: your_api_key_here"
 ```
 
@@ -232,7 +233,7 @@ const bitcoin: Asset = {
 
 // Use with API responses
 async function getTypedHoldings(): Promise<HoldingsType[]> {
-  const response = await fetch("https://connect.kryptos.io/api/v1/holdings", {
+  const response = await fetch("https://connect-api.kryptos.io/api/v1/holdings", {
     headers: { "X-API-Key": API_KEY },
   });
 

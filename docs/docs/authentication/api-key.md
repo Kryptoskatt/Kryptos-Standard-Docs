@@ -15,7 +15,7 @@ API key support is currently available for **Enterprise customers only**. Contac
 Include your API key in the `X-API-Key` header:
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
   -H "X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
@@ -60,7 +60,7 @@ const API_KEY = process.env.KRYPTOS_API_KEY;
 
 async function getHoldings() {
   const response = await axios.get(
-    'https://connect.kryptos.io/api/v1/holdings',
+    'https://connect-api.kryptos.io/api/v1/holdings',
     {
       headers: { 'X-API-Key': API_KEY }
     }

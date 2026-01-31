@@ -8,7 +8,7 @@ sidebar_position: 8
 
 <span className="badge badge--get">GET</span> `/v1/integrations`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 Retrieve a paginated list of user-connected wallets and exchanges with metadata, sync status, and transaction counts.
 
@@ -17,7 +17,7 @@ Retrieve a paginated list of user-connected wallets and exchanges with metadata,
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?page=1&pageSize=25" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -121,7 +121,7 @@ The `searchedKey` parameter enables fuzzy search across multiple fields:
 - `exchange` - Exchange name
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/integrations?searchedKey=binance" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?searchedKey=binance" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

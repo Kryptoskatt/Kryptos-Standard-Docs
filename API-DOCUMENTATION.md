@@ -46,7 +46,7 @@ Kryptos Connect APIs provide comprehensive access to cryptocurrency portfolio da
 ## Base URL
 
 ```
-https://connect.kryptos.io/api
+https://connect-api.kryptos.io/api
 ```
 
 All API requests should be made to this base URL.
@@ -129,7 +129,7 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
 **Step 3: Call APIs with Access Token**
 
 ```bash
-curl -X GET https://connect.kryptos.io/api/v1/holdings \
+curl -X GET https://connect-api.kryptos.io/api/v1/holdings \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -146,7 +146,7 @@ class KryptosOAuthClient {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.oauthUrl = "https://oauth.kryptos.io";
-    this.apiUrl = "https://connect.kryptos.io";
+    this.apiUrl = "https://connect-api.kryptos.io";
     this.accessToken = null;
   }
 
@@ -223,7 +223,7 @@ class KryptosOAuthClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.oauth_url = 'https://oauth.kryptos.io'
-        self.api_url = 'https://connect.kryptos.io'
+        self.api_url = 'https://connect-api.kryptos.io'
         self.access_token = None
 
     def get_auth_url(self, redirect_uri, code_challenge, scopes=['openid', 'profile', 'portfolios:read', 'transactions:read', 'offline_access']):
@@ -331,7 +331,7 @@ X-API-Key: your_api_key_here
 **Example Request:**
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
   -H "X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
@@ -363,7 +363,7 @@ GET /health
 **Example:**
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/health"
+curl -X GET "https://connect-api.kryptos.io/api/health"
 ```
 
 ---
@@ -404,7 +404,7 @@ GET /v1/userinfo
 ```javascript
 const axios = require("axios");
 
-const response = await axios.get("https://connect.kryptos.io/api/v1/userinfo", {
+const response = await axios.get("https://connect-api.kryptos.io/api/v1/userinfo", {
   headers: {
     "X-API-Key": "your_api_key_here",
   },
@@ -423,7 +423,7 @@ import requests
 
 headers = {'X-API-Key': 'your_api_key_here'}
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/userinfo',
+    'https://connect-api.kryptos.io/api/v1/userinfo',
     headers=headers
 )
 
@@ -512,7 +512,7 @@ GET /v1/holdings
 ```javascript
 const axios = require("axios");
 
-const response = await axios.get("https://connect.kryptos.io/api/v1/holdings", {
+const response = await axios.get("https://connect-api.kryptos.io/api/v1/holdings", {
   headers: {
     "X-API-Key": "your_api_key_here",
   },
@@ -532,7 +532,7 @@ import requests
 
 headers = {'X-API-Key': 'your_api_key_here'}
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/holdings',
+    'https://connect-api.kryptos.io/api/v1/holdings',
     headers=headers
 )
 
@@ -667,7 +667,7 @@ GET /v1/transactions
 const axios = require("axios");
 
 const response = await axios.get(
-  "https://connect.kryptos.io/api/v1/transactions",
+  "https://connect-api.kryptos.io/api/v1/transactions",
   {
     headers: {
       "X-API-Key": "your_api_key_here",
@@ -705,7 +705,7 @@ params = {
 }
 
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/transactions',
+    'https://connect-api.kryptos.io/api/v1/transactions',
     headers=headers,
     params=params
 )
@@ -805,7 +805,7 @@ GET /v1/defi-holdings
 const axios = require("axios");
 
 const response = await axios.get(
-  "https://connect.kryptos.io/api/v1/defi-holdings",
+  "https://connect-api.kryptos.io/api/v1/defi-holdings",
   {
     headers: {
       "X-API-Key": "your_api_key_here",
@@ -832,7 +832,7 @@ headers = {'X-API-Key': 'your_api_key_here'}
 params = {'chain': 'ethereum', 'limit': 10}
 
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/defi-holdings',
+    'https://connect-api.kryptos.io/api/v1/defi-holdings',
     headers=headers,
     params=params
 )
@@ -946,7 +946,7 @@ GET /v1/nft-holdings
 const axios = require("axios");
 
 const response = await axios.get(
-  "https://connect.kryptos.io/api/v1/nft-holdings",
+  "https://connect-api.kryptos.io/api/v1/nft-holdings",
   {
     headers: {
       "X-API-Key": "your_api_key_here",
@@ -973,7 +973,7 @@ headers = {'X-API-Key': 'your_api_key_here'}
 params = {'chain': 'ethereum', 'limit': 10}
 
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/nft-holdings',
+    'https://connect-api.kryptos.io/api/v1/nft-holdings',
     headers=headers,
     params=params
 )
@@ -1078,7 +1078,7 @@ GET /v1/profiling
 const axios = require("axios");
 
 const response = await axios.get(
-  "https://connect.kryptos.io/api/v1/profiling",
+  "https://connect-api.kryptos.io/api/v1/profiling",
   {
     headers: {
       "X-API-Key": "your_api_key_here",
@@ -1104,7 +1104,7 @@ import requests
 
 headers = {'X-API-Key': 'your_api_key_here'}
 response = requests.get(
-    'https://connect.kryptos.io/api/v1/profiling',
+    'https://connect-api.kryptos.io/api/v1/profiling',
     headers=headers
 )
 
@@ -1294,7 +1294,7 @@ const axios = require("axios");
 class KryptosAPI {
   constructor(apiKey) {
     this.apiKey = apiKey;
-    this.baseURL = "https://connect.kryptos.io/api";
+    this.baseURL = "https://connect-api.kryptos.io/api";
     this.client = axios.create({
       baseURL: this.baseURL,
       headers: {
@@ -1388,7 +1388,7 @@ from typing import Dict, Any, Optional
 class KryptosAPI:
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.base_url = 'https://connect.kryptos.io/api'
+        self.base_url = 'https://connect-api.kryptos.io/api'
         self.session = requests.Session()
         self.session.headers.update({'X-API-Key': api_key})
 
@@ -1462,7 +1462,7 @@ if profiling['success']:
 - **📧 Email:** [support@kryptos.io](mailto:support@kryptos.io)
 - **🌐 Website:** [https://kryptos.io](https://kryptos.io)
 - **💻 GitHub:** [https://github.com/Kryptoskatt/Kryptos-Standard-Docs](https://github.com/Kryptoskatt/Kryptos-Standard-Docs)
-- **📖 Interactive Docs:** [https://connect.kryptos.io/docs/](https://connect.kryptos.io/docs/)
+- **📖 Interactive Docs:** [https://connect-api.kryptos.io/docs/](https://connect-api.kryptos.io/docs/)
 
 ---
 

@@ -8,7 +8,7 @@ sidebar_position: 2
 
 <span className="badge badge--get">GET</span> `/v1/userinfo`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 Get authenticated user's profile information.
 
@@ -17,7 +17,7 @@ Get authenticated user's profile information.
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/userinfo" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

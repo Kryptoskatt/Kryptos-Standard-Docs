@@ -51,12 +51,21 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 ### Step 1: Register Your Client
 
-Contact the Kryptos team to register your application and receive:
+Register your application on the [Developer Portal](https://dashboard.kryptos.io/) to receive:
 - `client_id`
 - `client_secret`
-- Approved scopes
+- Default scopes assigned to your client
 
-**Email:** [support@kryptos.io](mailto:support@kryptos.io)
+**Default Client Scopes:**
+
+```
+openid profile offline_access email portfolios:read transactions:read 
+integrations:read tax:read accounting:read reports:read workspace:read users:read
+```
+
+:::info
+More granular scope controls will be added in the future. For custom scope requirements, contact [support@kryptos.io](mailto:support@kryptos.io)
+:::
 
 ### Step 2: Generate PKCE Parameters
 
@@ -197,7 +206,7 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
 Use the access token to call APIs:
 
 ```bash
-curl -X GET https://connect.kryptos.io/api/v1/holdings \
+curl -X GET https://connect-api.kryptos.io/api/v1/holdings \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -222,7 +231,7 @@ class KryptosClient {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.oauthUrl = 'https://oauth.kryptos.io';
-    this.apiUrl = 'https://connect.kryptos.io';
+    this.apiUrl = 'https://connect-api.kryptos.io';
     this.accessToken = null;
   }
 
@@ -348,7 +357,7 @@ class KryptosClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.oauth_url = 'https://oauth.kryptos.io'
-        self.api_url = 'https://connect.kryptos.io'
+        self.api_url = 'https://connect-api.kryptos.io'
         self.access_token = None
 
     def generate_pkce(self):
@@ -434,7 +443,7 @@ class KryptosClient {
     private $clientId;
     private $clientSecret;
     private $oauthUrl = 'https://oauth.kryptos.io';
-    private $apiUrl = 'https://connect.kryptos.io';
+    private $apiUrl = 'https://connect-api.kryptos.io';
     private $accessToken;
     
     public function __construct($clientId, $clientSecret) {
@@ -562,7 +571,7 @@ func NewKryptosClient(clientID, clientSecret string) *KryptosClient {
         ClientID:     clientID,
         ClientSecret: clientSecret,
         OAuthURL:     "https://oauth.kryptos.io",
-        APIURL:       "https://connect.kryptos.io",
+        APIURL:       "https://connect-api.kryptos.io",
     }
 }
 
@@ -683,13 +692,13 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
   -d "code_verifier=YOUR_CODE_VERIFIER"
 
 # Step 4: Call API with access token
-curl -X GET https://connect.kryptos.io/api/v1/holdings \
+curl -X GET https://connect-api.kryptos.io/api/v1/holdings \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
 
 # Get user info
-curl -X GET https://connect.kryptos.io/api/v1/userinfo \
+curl -X GET https://connect-api.kryptos.io/api/v1/userinfo \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

@@ -32,9 +32,39 @@ Click on **Create Client** to register a new OAuth application. Fill in the requ
 
 - **Client Name** - A descriptive name for your application
 - **Redirect URIs** - The callback URLs where users will be redirected after authorization
-- **Scopes** - The permissions your application needs (e.g., `portfolios:read`, `transactions:read`)
+- **Scopes** - The permissions your application needs
 
 ![Create OAuth Client](/img/developer-portal/client-creation.png)
+
+### Default Client Scopes
+
+When you create a new client, the following scopes are assigned by default:
+
+```
+openid profile offline_access email portfolios:read transactions:read 
+integrations:read tax:read accounting:read reports:read workspace:read users:read
+```
+
+**Default Scopes Explained:**
+
+| Scope                | Description                                    |
+| -------------------- | ---------------------------------------------- |
+| `openid`             | Required for OpenID Connect authentication     |
+| `profile`            | User profile information                       |
+| `offline_access`     | Enable refresh tokens for continuous access    |
+| `email`              | User email address                             |
+| `portfolios:read`    | Read portfolio holdings and balances           |
+| `transactions:read`  | Read transaction history                       |
+| `integrations:read`  | Read connected wallets and exchanges           |
+| `tax:read`           | Read tax calculations and reports              |
+| `accounting:read`    | Read accounting ledger entries                 |
+| `reports:read`       | Read generated reports and exports             |
+| `workspace:read`     | Read workspace settings and configuration      |
+| `users:read`         | Read user profile and preferences              |
+
+:::info Future Updates
+We will add more granular scope controls in the future, allowing you to request specific permissions for individual features and data types.
+:::
 
 ## Step 5: Save Your Credentials
 

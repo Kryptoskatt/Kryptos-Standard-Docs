@@ -33,21 +33,24 @@ Kryptos Connect is ideal for:
 | **Risk Assessment** | Analyze portfolio composition for lending, insurance, or compliance |
 | **Financial Advisors** | View client holdings with their consent for advisory services |
 
-## Upcoming: Kryptos Connect Widget
+## Kryptos Connect
 
-:::tip Coming Soon
 **Kryptos Connect** enables users to securely share their crypto portfolio data with third-party applications—with their explicit consent—through a single, easy-to-integrate widget. All data is delivered in a standardized format, making integration seamless for developers.
 
 **Key Features:**
 
 - Secure OAuth 2.0 authorization flow
 - User-consented data sharing
-- Single widget integration
+- Single widget integration via Web SDK and Mobile SDK
+- Native iOS and Android support
 - Standardized data format
 - Granular permission scopes
+- Session management and token refresh
 
-[Get Started →](/developer-portal)
-:::
+**Get Started:**
+
+- **[Kryptos Connect Guide →](/kryptos-connect)** - Complete SDK integration guide
+- **[Developer Portal Setup →](/developer-portal)** - Create your account and get credentials
 
 ## API Versions
 
@@ -71,7 +74,7 @@ Get up and running in minutes:
 **5. Call the API** → Fetch portfolio data with a single request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

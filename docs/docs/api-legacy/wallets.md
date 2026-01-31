@@ -8,7 +8,7 @@ sidebar_position: 1
 
 <span className="badge badge--get">GET</span> `/v0/wallets`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 :::warning Legacy Endpoint
 This endpoint will be deprecated. Use V1 endpoints for new integrations. Migrate to V1 when made live.

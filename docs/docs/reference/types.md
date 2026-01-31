@@ -192,7 +192,7 @@ const bitcoin: Asset = {
 
 // Use with API responses
 async function getTypedHoldings(): Promise<HoldingsType[]> {
-  const response = await fetch("https://connect.kryptos.io/api/v1/holdings", {
+  const response = await fetch("https://connect-api.kryptos.io/api/v1/holdings", {
     headers: { "X-API-Key": API_KEY },
   });
 

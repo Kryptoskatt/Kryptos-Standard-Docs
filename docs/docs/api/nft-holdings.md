@@ -8,7 +8,7 @@ sidebar_position: 6
 
 <span className="badge badge--get">GET</span> `/v1/nft-holdings`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 Retrieve user's NFT collection with metadata.
 
@@ -17,7 +17,7 @@ Retrieve user's NFT collection with metadata.
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/nft-holdings?chain=ethereum&limit=10" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/nft-holdings?chain=ethereum&limit=10" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

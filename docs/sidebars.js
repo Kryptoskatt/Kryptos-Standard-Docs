@@ -5,7 +5,7 @@ const sidebars = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["intro", "developer-portal"],
+      items: ["intro", "kryptos-connect", "developer-portal"],
     },
     {
       type: "category",

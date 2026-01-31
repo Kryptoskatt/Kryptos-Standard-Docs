@@ -8,7 +8,7 @@ sidebar_position: 7
 
 <span className="badge badge--get">GET</span> `/v1/profiling`
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://connect-api.kryptos.io/api`
 
 Get comprehensive portfolio analytics and user classification.
 
@@ -17,7 +17,7 @@ Get comprehensive portfolio analytics and user classification.
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
+curl -X GET "https://connect-api.kryptos.io/api/v1/profiling" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
