@@ -8,7 +8,7 @@ sidebar_position: 3
 
 <span className="badge badge--get">GET</span> `/v0/nft-holdings`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 :::warning Legacy Endpoint
 This endpoint will be deprecated. Use `/v1/nft-holdings` for new integrations. Migrate to V1 when made live.
@@ -18,9 +18,9 @@ Retrieve user's NFT holdings in legacy format.
 
 ## Query Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `limit` | number | Max results (1-1000) |
+| Parameter            | Type    | Description                               |
+| -------------------- | ------- | ----------------------------------------- |
+| `limit`              | number  | Max results (1-1000)                      |
 | `sortByHighestValue` | boolean | Sort by highest USD value (default: true) |
 
 ## Response
@@ -57,4 +57,3 @@ Retrieve user's NFT holdings in legacy format.
   "sorted_by_highest_value": true
 }
 ```
-

@@ -8,7 +8,7 @@ sidebar_position: 3
 
 <span className="badge badge--get">GET</span> `/v1/holdings`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Get comprehensive cryptocurrency holdings with asset distribution across wallets, cost basis, and performance metrics.
 
@@ -17,7 +17,7 @@ Get comprehensive cryptocurrency holdings with asset distribution across wallets
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"

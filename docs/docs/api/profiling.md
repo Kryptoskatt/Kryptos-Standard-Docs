@@ -8,7 +8,7 @@ sidebar_position: 7
 
 <span className="badge badge--get">GET</span> `/v1/profiling`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Get comprehensive portfolio analytics and user classification.
 
@@ -17,7 +17,7 @@ Get comprehensive portfolio analytics and user classification.
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/profiling" \
+curl -X GET "https://connect.kryptos.io/api/v1/profiling" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -81,31 +81,28 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/profiling" \
 
 ## User Classifications
 
-| Classification | Description |
-|----------------|-------------|
-| **NFT Enthusiast** | Heavy NFT portfolio (>30% NFT holdings) |
-| **DeFi Hodler** | Significant DeFi positions (>40% DeFi holdings) |
-| **Futures Trader** | Active futures trading patterns |
-| **BTC Maximalist** | Bitcoin-dominant portfolio (>60% BTC) |
-| **Active Trader** | High-frequency diverse trading activity |
-| **Long-term Holder** | Long-term holding with low activity |
+| Classification       | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| **NFT Enthusiast**   | Heavy NFT portfolio (>30% NFT holdings)         |
+| **DeFi Hodler**      | Significant DeFi positions (>40% DeFi holdings) |
+| **Futures Trader**   | Active futures trading patterns                 |
+| **BTC Maximalist**   | Bitcoin-dominant portfolio (>60% BTC)           |
+| **Active Trader**    | High-frequency diverse trading activity         |
+| **Long-term Holder** | Long-term holding with low activity             |
 
 ## Portfolio Size Categories
 
-| Category | Value Range |
-|----------|-------------|
-| Small | < $10,000 |
-| Medium | $10,000 – $500,000 |
-| Large | $500,000 – $5,000,000 |
-| Whale | > $5,000,000 |
+| Category | Value Range           |
+| -------- | --------------------- |
+| Small    | < $10,000             |
+| Medium   | $10,000 – $500,000    |
+| Large    | $500,000 – $5,000,000 |
+| Whale    | > $5,000,000          |
 
 ## Activity Levels
 
-| Level | Description |
-|-------|-------------|
-| Low | < 5 transactions/month |
+| Level  | Description             |
+| ------ | ----------------------- |
+| Low    | < 5 transactions/month  |
 | Medium | 5–20 transactions/month |
-| High | > 20 transactions/month |
-
-
-
+| High   | > 20 transactions/month |

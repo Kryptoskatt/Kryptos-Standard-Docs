@@ -8,7 +8,7 @@ sidebar_position: 6
 
 <span className="badge badge--get">GET</span> `/v1/nft-holdings`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Retrieve user's NFT collection with metadata.
 
@@ -17,7 +17,7 @@ Retrieve user's NFT collection with metadata.
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/nft-holdings?chain=ethereum&limit=10" \
+curl -X GET "https://connect.kryptos.io/api/v1/nft-holdings?chain=ethereum&limit=10" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -25,15 +25,15 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/nft-holdings?chain=ethereum&l
 
 ## Query Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `source` | string | Filter by data sources (comma-separated, max 30) |
-| `collection` | string | Filter by collections (comma-separated, max 30) |
-| `chain` | string | Filter by blockchain: `ethereum`, `polygon` |
-| `tokenId` | string | Specific token ID |
-| `contract` | string | Contract address |
-| `limit` | number | Max results (1-1000, default: 100) |
-| `offset` | number | Pagination offset (default: 0) |
+| Parameter    | Type   | Description                                      |
+| ------------ | ------ | ------------------------------------------------ |
+| `source`     | string | Filter by data sources (comma-separated, max 30) |
+| `collection` | string | Filter by collections (comma-separated, max 30)  |
+| `chain`      | string | Filter by blockchain: `ethereum`, `polygon`      |
+| `tokenId`    | string | Specific token ID                                |
+| `contract`   | string | Contract address                                 |
+| `limit`      | number | Max results (1-1000, default: 100)               |
+| `offset`     | number | Pagination offset (default: 0)                   |
 
 ## Response
 
@@ -105,11 +105,7 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/nft-holdings?chain=ethereum&l
 
 ## NFT Types
 
-| Type | Description |
-|------|-------------|
-| `ERC-721` | Standard NFT (unique) |
-| `ERC-1155` | Multi-token standard |
-
-
-
-
+| Type       | Description           |
+| ---------- | --------------------- |
+| `ERC-721`  | Standard NFT (unique) |
+| `ERC-1155` | Multi-token standard  |

@@ -8,14 +8,14 @@ sidebar_position: 1
 
 <span className="badge badge--get">GET</span> `/health`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Check the health status of the API service. **No authentication required.**
 
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/health"
+curl -X GET "https://connect.kryptos.io/api/health"
 ```
 
 ## Response

@@ -8,7 +8,7 @@ sidebar_position: 2
 
 <span className="badge badge--get">GET</span> `/v1/userinfo`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Get authenticated user's profile information.
 
@@ -17,7 +17,7 @@ Get authenticated user's profile information.
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/userinfo" \
+curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -41,12 +41,11 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/userinfo" \
 
 ## Response Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `userInfo.sub` | string | User ID |
-| `userInfo.name` | string | User's full name |
-| `userInfo.email` | string | Email address |
-| `userInfo.email_verified` | boolean | Email verification status |
-| `userInfo.preferred_username` | string | Preferred username |
-| `scopes` | array | Granted OAuth scopes |
-
+| Field                         | Type    | Description               |
+| ----------------------------- | ------- | ------------------------- |
+| `userInfo.sub`                | string  | User ID                   |
+| `userInfo.name`               | string  | User's full name          |
+| `userInfo.email`              | string  | Email address             |
+| `userInfo.email_verified`     | boolean | Email verification status |
+| `userInfo.preferred_username` | string  | Preferred username        |
+| `scopes`                      | array   | Granted OAuth scopes      |

@@ -19,13 +19,65 @@ Kryptos Connect provides a seamless way for users to:
 - **Share data securely** using industry-standard OAuth 2.0
 - **Manage integrations** by connecting wallets and exchanges
 - **Control permissions** with granular scope-based access
+- **Long-lived access** with 15-year access tokens (no refresh tokens needed)
 - **Native mobile support** for iOS and Android applications
 
-### Production URL
+### Base URL
 
 ```
 https://connect-api.kryptos.io
 ```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+1. **Register your application** on the [Developer Portal](https://dashboard.kryptos.io/) to receive:
+
+   - `client_id` - Your application identifier
+   - `client_secret` - Your secret key (keep secure, never expose in frontend)
+
+2. **Configure your client** with:
+   - Allowed redirect URIs
+   - Allowed origins for CORS
+   - Required scopes
+
+### Integration Steps
+
+```
+1. CREATE LINK TOKEN (Backend)
+   Your server calls /link-token with client credentials
+   ↓
+2. INITIALIZE WIDGET (Frontend)
+   Pass link_token to the SDK widget
+   ↓
+3. USER AUTHENTICATES
+   User logs in or creates anonymous account
+   ↓
+4. USER GRANTS CONSENT
+   User approves requested permissions
+   ↓
+5. RECEIVE PUBLIC TOKEN
+   Widget returns public_token via onSuccess callback
+   ↓
+6. EXCHANGE TOKEN (Backend)
+   Your server exchanges public_token for access_token
+   ↓
+7. ACCESS DATA
+   Use access_token to call Data APIs
+```
+
+### Authentication Methods
+
+| Method             | Header/Body                               | Used For             |
+| ------------------ | ----------------------------------------- | -------------------- |
+| Client Credentials | `X-Client-Id` + `X-Client-Secret` headers | Creating link tokens |
+| Link Token         | `X-LINK-TOKEN` header                     | Widget operations    |
+| Bearer Token       | `Authorization: Bearer {access_token}`    | Data API calls       |
+
+---
 
 ## Web SDK
 
@@ -60,25 +112,25 @@ yarn add @kryptos_connect/web-sdk
 ### Quick Start
 
 ```javascript
-import KryptosConnect from '@kryptos_connect/web-sdk';
+import KryptosConnect from "@kryptos_connect/web-sdk";
 
 // 1. Initialize the Connect widget
 const kryptosConnect = KryptosConnect.create({
-  linkToken: 'link_token_from_backend', // Get this from your backend
+  linkToken: "link_token_from_backend", // Get this from your backend
   onSuccess: (public_token) => {
     // Send public_token to your backend to exchange for access tokens
-    fetch('/api/exchange-token', {
-      method: 'POST',
+    fetch("/api/exchange-token", {
+      method: "POST",
       body: JSON.stringify({ public_token }),
     });
   },
   onExit: (error) => {
     // Handle user exit or errors
-    console.error('Widget exited:', error);
+    console.error("Widget exited:", error);
   },
   onEvent: (eventName, metadata) => {
     // Track user actions in widget
-    console.log('Event:', eventName, metadata);
+    console.log("Event:", eventName, metadata);
   },
 });
 
@@ -88,28 +140,28 @@ kryptosConnect.open();
 
 ### SDK Configuration
 
-| Option      | Type     | Required | Description                                          |
-| ----------- | -------- | -------- | ---------------------------------------------------- |
-| `linkToken` | string   | Yes      | Link token obtained from your backend                |
-| `onSuccess` | function | Yes      | Callback when user completes authentication          |
-| `onExit`    | function | No       | Callback when widget is closed                       |
-| `onEvent`   | function | No       | Callback for tracking user events                    |
-| `language`  | string   | No       | Widget language (default: 'en')                      |
-| `theme`     | object   | No       | Custom theme configuration                           |
+| Option      | Type     | Required | Description                                 |
+| ----------- | -------- | -------- | ------------------------------------------- |
+| `linkToken` | string   | Yes      | Link token obtained from your backend       |
+| `onSuccess` | function | Yes      | Callback when user completes authentication |
+| `onExit`    | function | No       | Callback when widget is closed              |
+| `onEvent`   | function | No       | Callback for tracking user events           |
+| `language`  | string   | No       | Widget language (default: 'en')             |
+| `theme`     | object   | No       | Custom theme configuration                  |
 
 ### Events
 
 The SDK emits events during the authentication flow:
 
-| Event                 | Description                          |
-| --------------------- | ------------------------------------ |
-| `OPEN`                | Widget opened                        |
-| `EXIT`                | Widget closed                        |
-| `HANDOFF`             | User switched to browser flow        |
-| `SELECT_INSTITUTION`  | User selected exchange/wallet        |
-| `SUBMIT_CREDENTIALS`  | User submitted API credentials       |
-| `SUCCESS`             | Authentication flow completed        |
-| `ERROR`               | An error occurred                    |
+| Event                | Description                    |
+| -------------------- | ------------------------------ |
+| `OPEN`               | Widget opened                  |
+| `EXIT`               | Widget closed                  |
+| `HANDOFF`            | User switched to browser flow  |
+| `SELECT_INSTITUTION` | User selected exchange/wallet  |
+| `SUBMIT_CREDENTIALS` | User submitted API credentials |
+| `SUCCESS`            | Authentication flow completed  |
+| `ERROR`              | An error occurred              |
 
 ---
 
@@ -142,12 +194,12 @@ dependencies {
 ### Quick Start
 
 ```javascript
-import KryptosConnect from '@kryptos_connect/mobile-sdk';
+import KryptosConnect from "@kryptos_connect/mobile-sdk";
 
 // 1. Initialize the Connect SDK
 const initializeKryptos = async () => {
   const linkToken = await fetchLinkTokenFromBackend();
-  
+
   const config = {
     linkToken: linkToken,
     onSuccess: (publicToken) => {
@@ -156,11 +208,11 @@ const initializeKryptos = async () => {
     },
     onExit: (error) => {
       if (error) {
-        console.error('Connection error:', error);
+        console.error("Connection error:", error);
       }
     },
     onEvent: (eventName, metadata) => {
-      console.log('Event:', eventName, metadata);
+      console.log("Event:", eventName, metadata);
     },
   };
 
@@ -175,27 +227,27 @@ const connectWallet = () => {
 
 ### Configuration
 
-| Option      | Type     | Required | Description                                          |
-| ----------- | -------- | -------- | ---------------------------------------------------- |
-| `linkToken` | string   | Yes      | Link token obtained from your backend                |
-| `onSuccess` | function | Yes      | Callback when user completes authentication          |
-| `onExit`    | function | No       | Callback when connection flow is closed              |
-| `onEvent`   | function | No       | Callback for tracking user events                    |
-| `language`  | string   | No       | SDK language (default: device language)              |
-| `theme`     | object   | No       | Custom theme configuration (light/dark)              |
+| Option      | Type     | Required | Description                                 |
+| ----------- | -------- | -------- | ------------------------------------------- |
+| `linkToken` | string   | Yes      | Link token obtained from your backend       |
+| `onSuccess` | function | Yes      | Callback when user completes authentication |
+| `onExit`    | function | No       | Callback when connection flow is closed     |
+| `onEvent`   | function | No       | Callback for tracking user events           |
+| `language`  | string   | No       | SDK language (default: device language)     |
+| `theme`     | object   | No       | Custom theme configuration (light/dark)     |
 
 ### Events
 
 The Mobile SDK emits events during the authentication flow:
 
-| Event                 | Description                          |
-| --------------------- | ------------------------------------ |
-| `OPEN`                | Connection flow opened               |
-| `EXIT`                | Connection flow closed               |
-| `SELECT_INSTITUTION`  | User selected exchange/wallet        |
-| `SUBMIT_CREDENTIALS`  | User submitted API credentials       |
-| `SUCCESS`             | Authentication flow completed        |
-| `ERROR`               | An error occurred                    |
+| Event                | Description                    |
+| -------------------- | ------------------------------ |
+| `OPEN`               | Connection flow opened         |
+| `EXIT`               | Connection flow closed         |
+| `SELECT_INSTITUTION` | User selected exchange/wallet  |
+| `SUBMIT_CREDENTIALS` | User submitted API credentials |
+| `SUCCESS`            | Authentication flow completed  |
+| `ERROR`              | An error occurred              |
 
 ### Features
 
@@ -248,8 +300,8 @@ The Mobile SDK emits events during the authentication flow:
        │                       ├──────────────────────►│
        │                       │                       │
        │                       │◄──────────────────────┤
-       │                       │ access_token          │
-       │◄──────────────────────┤ refresh_token         │
+       │                       │ access_token (15 yr)  │
+       │◄──────────────────────┤ grant_id              │
        │   Success             │                       │
 ```
 
@@ -259,35 +311,42 @@ Create a link token on your backend to initialize the widget.
 
 **Endpoint:** `POST https://connect-api.kryptos.io/link-token`
 
+**Authentication:** Client credentials via `X-Client-Id` and `X-Client-Secret` headers
+
 <Tabs>
 <TabItem value="javascript" label="JavaScript" default>
 
 ```javascript
-const axios = require('axios');
+const axios = require("axios");
 
-async function createLinkToken(userId) {
-  const response = await axios.post(
-    'https://connect-api.kryptos.io/link-token',
-    {
-      client_id: process.env.KRYPTOS_CLIENT_ID,
-      client_secret: process.env.KRYPTOS_CLIENT_SECRET,
-      scopes: 'openid profile offline_access portfolios:read transactions:read integrations:read integrations:write',
-      redirect_uri: 'https://yourapp.com/callback',
-      state: generateRandomState(),
-      metadata: {
-        user_id: userId,
-      },
+async function createLinkToken(userId, existingAccessToken = null) {
+  const payload = {
+    scopes:
+      "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
+    state: generateRandomState(),
+    metadata: {
+      user_id: userId,
     },
+  };
+
+  // Optional: pass existing access token to resume session
+  if (existingAccessToken) {
+    payload.access_token = existingAccessToken;
+  }
+
+  const response = await axios.post(
+    "https://connect-api.kryptos.io/link-token",
+    payload,
     {
       headers: {
-        'Content-Type': 'application/json',
-        'X-Client-Id': process.env.KRYPTOS_CLIENT_ID,
-        'X-Client-Secret': process.env.KRYPTOS_CLIENT_SECRET,
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
       },
     }
   );
 
-  return response.data.data.link_token;
+  return response.data.data;
 }
 ```
 
@@ -298,27 +357,30 @@ async function createLinkToken(userId) {
 import requests
 import os
 
-def create_link_token(user_id):
+def create_link_token(user_id, existing_access_token=None):
+    payload = {
+        'scopes': 'openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read',
+        'state': generate_random_state(),
+        'metadata': {
+            'user_id': user_id,
+        },
+    }
+
+    # Optional: pass existing access token to resume session
+    if existing_access_token:
+        payload['access_token'] = existing_access_token
+
     response = requests.post(
         'https://connect-api.kryptos.io/link-token',
-        json={
-            'client_id': os.getenv('KRYPTOS_CLIENT_ID'),
-            'client_secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
-            'scopes': 'openid profile offline_access portfolios:read transactions:read integrations:read integrations:write',
-            'redirect_uri': 'https://yourapp.com/callback',
-            'state': generate_random_state(),
-            'metadata': {
-                'user_id': user_id,
-            },
-        },
+        json=payload,
         headers={
             'Content-Type': 'application/json',
             'X-Client-Id': os.getenv('KRYPTOS_CLIENT_ID'),
             'X-Client-Secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
         }
     )
-    
-    return response.json()['data']['link_token']
+
+    return response.json()['data']
 ```
 
 </TabItem>
@@ -326,20 +388,22 @@ def create_link_token(user_id):
 
 ```php
 <?php
-function createLinkToken($userId) {
+function createLinkToken($userId, $existingAccessToken = null) {
     $ch = curl_init();
-    
+
     $data = [
-        'client_id' => getenv('KRYPTOS_CLIENT_ID'),
-        'client_secret' => getenv('KRYPTOS_CLIENT_SECRET'),
-        'scopes' => 'openid profile offline_access portfolios:read transactions:read integrations:read integrations:write',
-        'redirect_uri' => 'https://yourapp.com/callback',
+        'scopes' => 'openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read',
         'state' => bin2hex(random_bytes(16)),
         'metadata' => [
             'user_id' => $userId,
         ],
     ];
-    
+
+    // Optional: pass existing access token to resume session
+    if ($existingAccessToken) {
+        $data['access_token'] = $existingAccessToken;
+    }
+
     curl_setopt_array($ch, [
         CURLOPT_URL => 'https://connect-api.kryptos.io/link-token',
         CURLOPT_POST => true,
@@ -351,12 +415,12 @@ function createLinkToken($userId) {
             'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
         ],
     ]);
-    
+
     $response = curl_exec($ch);
     curl_close($ch);
-    
+
     $result = json_decode($response, true);
-    return $result['data']['link_token'];
+    return $result['data'];
 }
 ?>
 ```
@@ -364,7 +428,7 @@ function createLinkToken($userId) {
 </TabItem>
 </Tabs>
 
-**Response:**
+**Response (Fresh Session):**
 
 ```json
 {
@@ -376,11 +440,28 @@ function createLinkToken($userId) {
 }
 ```
 
+**Response (Session Resumed with `access_token`):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "link_token": "link_abc123xyz789",
+    "expires_at": "2024-01-28T10:30:00Z",
+    "user_id": "uuid-user-123",
+    "workspace_id": "uuid-workspace-456",
+    "has_existing_grant": true
+  }
+}
+```
+
 ### Step 2: Exchange Public Token
 
-After the user completes authentication, exchange the public token for access and refresh tokens.
+After the user completes authentication, exchange the public token for a long-lived access token.
 
 **Endpoint:** `POST https://connect-api.kryptos.io/token/exchange`
+
+**Authentication:** Client credentials via headers or body
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript" default>
@@ -388,23 +469,23 @@ After the user completes authentication, exchange the public token for access an
 ```javascript
 async function exchangePublicToken(publicToken) {
   const response = await axios.post(
-    'https://connect-api.kryptos.io/token/exchange',
+    "https://connect-api.kryptos.io/token/exchange",
     {
       public_token: publicToken,
-      client_id: process.env.KRYPTOS_CLIENT_ID,
-      client_secret: process.env.KRYPTOS_CLIENT_SECRET,
     },
     {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
       },
     }
   );
 
-  const { access_token, refresh_token, workspace_id } = response.data.data;
+  const { access_token, grant_id, workspace_id } = response.data.data;
 
   // Store tokens securely
-  await storeTokens(access_token, refresh_token, workspace_id);
+  await storeTokens(access_token, grant_id, workspace_id);
 
   return response.data.data;
 }
@@ -419,22 +500,22 @@ def exchange_public_token(public_token):
         'https://connect-api.kryptos.io/token/exchange',
         json={
             'public_token': public_token,
-            'client_id': os.getenv('KRYPTOS_CLIENT_ID'),
-            'client_secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
         },
         headers={
             'Content-Type': 'application/json',
+            'X-Client-Id': os.getenv('KRYPTOS_CLIENT_ID'),
+            'X-Client-Secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
         }
     )
-    
+
     data = response.json()['data']
     access_token = data['access_token']
-    refresh_token = data['refresh_token']
+    grant_id = data['grant_id']
     workspace_id = data['workspace_id']
-    
+
     # Store tokens securely
-    store_tokens(access_token, refresh_token, workspace_id)
-    
+    store_tokens(access_token, grant_id, workspace_id)
+
     return data
 ```
 
@@ -445,13 +526,11 @@ def exchange_public_token(public_token):
 <?php
 function exchangePublicToken($publicToken) {
     $ch = curl_init();
-    
+
     $data = [
         'public_token' => $publicToken,
-        'client_id' => getenv('KRYPTOS_CLIENT_ID'),
-        'client_secret' => getenv('KRYPTOS_CLIENT_SECRET'),
     ];
-    
+
     curl_setopt_array($ch, [
         CURLOPT_URL => 'https://connect-api.kryptos.io/token/exchange',
         CURLOPT_POST => true,
@@ -459,18 +538,20 @@ function exchangePublicToken($publicToken) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
+            'X-Client-Id: ' . getenv('KRYPTOS_CLIENT_ID'),
+            'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
         ],
     ]);
-    
+
     $response = curl_exec($ch);
     curl_close($ch);
-    
+
     $result = json_decode($response, true);
     $data = $result['data'];
-    
+
     // Store tokens securely
-    storeTokens($data['access_token'], $data['refresh_token'], $data['workspace_id']);
-    
+    storeTokens($data['access_token'], $data['grant_id'], $data['workspace_id']);
+
     return $data;
 }
 ?>
@@ -486,164 +567,32 @@ function exchangePublicToken($publicToken) {
   "success": true,
   "data": {
     "access_token": "cat_abc123xyz789",
-    "refresh_token": "crt_abc123xyz789",
+    "grant_id": "cgrant_abc123xyz789",
     "token_type": "Bearer",
-    "expires_in": 86400,
-    "scope": "openid profile offline_access portfolios:read transactions:read integrations:read integrations:write",
+    "expires_in": 473040000,
+    "scope": "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
     "workspace_id": "uuid-workspace-123"
   }
 }
 ```
 
-### Step 3: Refresh Access Token
-
-Access tokens expire after 24 hours. Use the refresh token to obtain new access tokens.
-
-**Endpoint:** `POST https://oauth.kryptos.io/oidc/token`
-
-:::tip Token Refresh
-Always use the OIDC token endpoint for refreshing tokens to ensure compatibility with the OAuth 2.0 standard.
+:::info Long-Lived Access Tokens
+Access tokens are valid for **15 years** (473,040,000 seconds). No refresh tokens are needed. Store the `grant_id` to allow users to revoke access later.
 :::
 
-<Tabs>
-<TabItem value="javascript" label="JavaScript" default>
-
-```javascript
-async function refreshAccessToken(refreshToken) {
-  const response = await axios.post(
-    'https://oauth.kryptos.io/oidc/token',
-    new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: process.env.KRYPTOS_CLIENT_ID,
-      client_secret: process.env.KRYPTOS_CLIENT_SECRET,
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    }
-  );
-
-  const { access_token, refresh_token: new_refresh_token } = response.data;
-
-  // Store new tokens (refresh token is rotated)
-  await updateTokens(access_token, new_refresh_token);
-
-  return response.data;
-}
-```
-
-</TabItem>
-<TabItem value="python" label="Python">
-
-```python
-def refresh_access_token(refresh_token):
-    response = requests.post(
-        'https://oauth.kryptos.io/oidc/token',
-        data={
-            'grant_type': 'refresh_token',
-            'refresh_token': refresh_token,
-            'client_id': os.getenv('KRYPTOS_CLIENT_ID'),
-            'client_secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
-        },
-        headers={
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    )
-    
-    data = response.json()
-    access_token = data['access_token']
-    new_refresh_token = data['refresh_token']
-    
-    # Store new tokens (refresh token is rotated)
-    update_tokens(access_token, new_refresh_token)
-    
-    return data
-```
-
-</TabItem>
-<TabItem value="php" label="PHP">
-
-```php
-<?php
-function refreshAccessToken($refreshToken) {
-    $ch = curl_init();
-    
-    $data = [
-        'grant_type' => 'refresh_token',
-        'refresh_token' => $refreshToken,
-        'client_id' => getenv('KRYPTOS_CLIENT_ID'),
-        'client_secret' => getenv('KRYPTOS_CLIENT_SECRET'),
-    ];
-    
-    curl_setopt_array($ch, [
-        CURLOPT_URL => 'https://oauth.kryptos.io/oidc/token',
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => http_build_query($data),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/x-www-form-urlencoded',
-        ],
-    ]);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    $result = json_decode($response, true);
-    
-    // Store new tokens (refresh token is rotated)
-    updateTokens($result['access_token'], $result['refresh_token']);
-    
-    return $result;
-}
-?>
-```
-
-</TabItem>
-<TabItem value="curl" label="cURL">
-
-```bash
-curl -X POST https://oauth.kryptos.io/oidc/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=refresh_token" \
-  -d "refresh_token=YOUR_REFRESH_TOKEN" \
-  -d "client_id=YOUR_CLIENT_ID" \
-  -d "client_secret=YOUR_CLIENT_SECRET"
-```
-
-</TabItem>
-</Tabs>
-
-**Response:**
-
-```json
-{
-  "access_token": "cat_new123xyz789",
-  "refresh_token": "crt_new123xyz789",
-  "token_type": "Bearer",
-  "expires_in": 86400,
-  "scope": "openid profile offline_access portfolios:read transactions:read integrations:read integrations:write"
-}
-```
-
-:::warning Refresh Token Rotation
-The refresh token is rotated with each refresh request. Always store and use the new refresh token returned in the response.
-:::
-
-### Step 4: Make API Calls
+### Step 3: Make API Calls
 
 Use the access token to call Kryptos APIs:
 
 ```javascript
 async function getUserHoldings(accessToken) {
   const response = await axios.get(
-    'https://connect-api.kryptos.io/api/v1/holdings',
+    "https://connect.kryptos.io/api/v1/holdings",
     {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'X-Client-Id': process.env.KRYPTOS_CLIENT_ID,
-        'X-Client-Secret': process.env.KRYPTOS_CLIENT_SECRET,
+        Authorization: `Bearer ${accessToken}`,
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
       },
     }
   );
@@ -663,18 +612,17 @@ Pass an existing access token when creating a link token to skip the authenticat
 ```javascript
 async function createLinkTokenWithSession(userId, existingAccessToken) {
   const response = await axios.post(
-    'https://connect-api.kryptos.io/link-token',
+    "https://connect-api.kryptos.io/link-token",
     {
-      client_id: process.env.KRYPTOS_CLIENT_ID,
-      client_secret: process.env.KRYPTOS_CLIENT_SECRET,
-      scopes: 'openid profile offline_access portfolios:read transactions:read',
+      scopes:
+        "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
       access_token: existingAccessToken, // Pre-authenticate with existing token
     },
     {
       headers: {
-        'Content-Type': 'application/json',
-        'X-Client-Id': process.env.KRYPTOS_CLIENT_ID,
-        'X-Client-Secret': process.env.KRYPTOS_CLIENT_SECRET,
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
       },
     }
   );
@@ -705,20 +653,129 @@ Check if a user has an active session before opening the widget:
 ```javascript
 async function checkSession(accessToken) {
   const response = await axios.post(
-    'https://connect-api.kryptos.io/link-token/check-session',
+    "https://connect-api.kryptos.io/link-token/check-session",
     {
       access_token: accessToken,
     },
     {
       headers: {
-        'Content-Type': 'application/json',
-        'X-Client-Id': process.env.KRYPTOS_CLIENT_ID,
-        'X-Client-Secret': process.env.KRYPTOS_CLIENT_SECRET,
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
       },
     }
   );
 
   return response.data.data;
+}
+```
+
+**Response (Valid Session):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "has_valid_session": true,
+    "user_id": "uuid-user-123",
+    "workspace_id": "uuid-workspace-456",
+    "workspace_name": "My Workspace",
+    "granted_scopes": "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
+    "grant_id": "cgrant_abc123"
+  }
+}
+```
+
+**Response (No Valid Session):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "has_valid_session": false,
+    "reason": "token_expired"
+  }
+}
+```
+
+### Revoke Grant
+
+Allow users to disconnect their account by revoking the grant:
+
+**Endpoint:** `POST https://connect-api.kryptos.io/token/revoke`
+
+```javascript
+async function revokeGrant(grantId) {
+  const response = await axios.post(
+    "https://connect-api.kryptos.io/token/revoke",
+    {
+      grant_id: grantId,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    }
+  );
+
+  return response.data;
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Grant revoked successfully"
+}
+```
+
+:::warning Grant Revocation
+When a grant is revoked, all associated access tokens are immediately invalidated. Any subsequent API calls using those tokens will fail.
+:::
+
+### List Connected Grants
+
+Get all active grants for your client:
+
+**Endpoint:** `GET https://connect-api.kryptos.io/token/grants`
+
+```javascript
+async function listGrants() {
+  const response = await axios.get(
+    "https://connect-api.kryptos.io/token/grants",
+    {
+      headers: {
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    }
+  );
+
+  return response.data.data;
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "grants": [
+      {
+        "grant_id": "cgrant_abc123xyz789",
+        "workspace_id": "uuid-workspace-123",
+        "scopes": "transactions:read balances:read",
+        "created_at": "2024-01-15T10:00:00Z",
+        "expires_at": "2039-01-15T10:00:00Z"
+      }
+    ],
+    "count": 1
+  }
 }
 ```
 
@@ -731,36 +788,33 @@ async function checkSession(accessToken) {
 When you create a new OAuth client, the following scopes are assigned by default:
 
 ```
-openid profile offline_access email portfolios:read transactions:read 
+openid profile offline_access email portfolios:read transactions:read
 integrations:read tax:read accounting:read reports:read workspace:read users:read
 ```
 
-:::info Future Updates
-More granular scope controls will be added in the future, allowing you to request specific permissions for individual features and data types.
-:::
-
 ### Core Scopes
 
-| Scope            | Description                                |
-| ---------------- | ------------------------------------------ |
-| `openid`         | Required for OpenID Connect                |
-| `profile`        | User profile information                   |
-| `email`          | User email address                         |
-| `offline_access` | Enable refresh tokens                      |
+| Scope            | Description                 |
+| ---------------- | --------------------------- |
+| `openid`         | Required for OpenID Connect |
+| `profile`        | User profile information    |
+| `email`          | User email address          |
+| `offline_access` | Enable long-lived tokens    |
 
 ### API Scopes
 
-| Resource      | Read Scope          | Write Scope          | Description                     |
-| ------------- | ------------------- | -------------------- | ------------------------------- |
-| Portfolios    | `portfolios:read`   | `portfolios:write`   | Portfolio holdings              |
-| Transactions  | `transactions:read` | `transactions:write` | Transaction history             |
-| Integrations  | `integrations:read` | `integrations:write` | Connected wallets and exchanges |
-| DeFi          | `defi:read`         | `defi:write`         | DeFi protocol positions         |
-| NFT           | `nft:read`          | `nft:write`          | NFT collections                 |
-| Tax           | `tax:read`          | `tax:write`          | Tax calculations                |
-| Accounting    | `accounting:read`   | `accounting:write`   | Accounting ledger               |
-| Reports       | `reports:read`      | `reports:write`      | Generated reports               |
-| Workspace     | `workspace:read`    | `workspace:write`    | Workspace settings              |
+| Resource     | Read Scope          | Write Scope          | Description                     |
+| ------------ | ------------------- | -------------------- | ------------------------------- |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings              |
+| Transactions | `transactions:read` | `transactions:write` | Transaction history             |
+| Balances     | `balances:read`     | `balances:write`     | Account balances                |
+| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges |
+| DeFi         | `defi:read`         | `defi:write`         | DeFi protocol positions         |
+| NFT          | `nft:read`          | `nft:write`          | NFT collections                 |
+| Tax          | `tax:read`          | `tax:write`          | Tax calculations                |
+| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger               |
+| Reports      | `reports:read`      | `reports:write`      | Generated reports               |
+| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings              |
 
 ---
 
@@ -768,13 +822,16 @@ More granular scope controls will be added in the future, allowing you to reques
 
 ### Common Errors
 
-| Error Code               | Description                          | Solution                             |
-| ------------------------ | ------------------------------------ | ------------------------------------ |
-| `INVALID_CLIENT`         | Invalid client credentials           | Verify client_id and client_secret   |
-| `INVALID_TOKEN`          | Token expired or invalid             | Refresh or recreate token            |
-| `TOKEN_EXPIRED`          | Link or public token expired         | Create new link token                |
-| `INVALID_SCOPE`          | Requested scope not allowed          | Check allowed scopes for your client |
-| `INSUFFICIENT_PERMISSIONS` | User lacks required role           | User must be owner/admin             |
+| Error Code                 | Description                  | Solution                             |
+| -------------------------- | ---------------------------- | ------------------------------------ |
+| `INVALID_CLIENT`           | Invalid client credentials   | Verify client_id and client_secret   |
+| `INVALID_TOKEN`            | Token expired or invalid     | Re-authenticate user                 |
+| `TOKEN_EXPIRED`            | Link or public token expired | Create new link token                |
+| `TOKEN_ALREADY_USED`       | Token was already consumed   | Create new link token                |
+| `INVALID_SCOPE`            | Requested scope not allowed  | Check allowed scopes for your client |
+| `INVALID_GRANT`            | Grant revoked or invalid     | Re-authenticate user                 |
+| `INSUFFICIENT_PERMISSIONS` | User lacks required role     | User must be owner/admin             |
+| `WORKSPACE_NOT_FOUND`      | Workspace doesn't exist      | Verify workspace ID                  |
 
 ### Error Response Format
 
@@ -786,17 +843,18 @@ More granular scope controls will be added in the future, allowing you to reques
 }
 ```
 
-### Handling Token Expiration
+### Handling Revoked Grants
+
+Since access tokens are long-lived, the grant may be revoked before the token expires. Handle this case:
 
 ```javascript
-async function makeApiCallWithRetry(endpoint, accessToken, refreshToken) {
+async function makeApiCallWithCheck(endpoint, accessToken, grantId) {
   try {
     return await makeApiCall(endpoint, accessToken);
   } catch (error) {
     if (error.response?.status === 401) {
-      // Token expired - refresh and retry
-      const newTokens = await refreshAccessToken(refreshToken);
-      return await makeApiCall(endpoint, newTokens.access_token);
+      // Token or grant invalid - user needs to re-authenticate
+      throw new Error("Access revoked. Please reconnect your account.");
     }
     throw error;
   }
@@ -808,37 +866,23 @@ async function makeApiCallWithRetry(endpoint, accessToken, refreshToken) {
 ## Security Best Practices
 
 1. **Never expose secrets in frontend code** - Keep client_secret on your backend only
-2. **Store tokens securely** - Use encrypted storage for access and refresh tokens
+2. **Store tokens securely** - Use encrypted storage for access tokens and grant IDs
 3. **Use HTTPS** - Always use secure connections in production
 4. **Validate state parameters** - Prevent CSRF attacks
-5. **Implement token rotation** - Refresh tokens are automatically rotated
-6. **Monitor for suspicious activity** - Log and monitor authentication events
-7. **Allow users to revoke access** - Provide UI to disconnect integrations
+5. **Monitor for suspicious activity** - Log and monitor authentication events
+6. **Allow users to revoke access** - Provide UI to disconnect integrations using `/token/revoke`
+7. **Store grant IDs** - Keep grant IDs for revocation purposes
 
 ---
 
-## Token Lifetimes
+## Token Types & Lifetimes
 
-| Token Type    | Lifetime   | Rotation |
-| ------------- | ---------- | -------- |
-| Link Token    | 30 minutes | No       |
-| Public Token  | 30 minutes | No       |
-| Access Token  | 24 hours   | No       |
-| Refresh Token | 30 days    | Yes      |
-| Grant Token   | 1 year     | No       |
-
----
-
-## Rate Limits
-
-| Endpoint         | Limit            | Window     |
-| ---------------- | ---------------- | ---------- |
-| Link Token       | 10 requests      | per minute |
-| Token Exchange   | 5 requests       | per minute |
-| Token Refresh    | 100 requests     | per minute |
-| API Calls        | 1000 requests    | per hour   |
-
-Rate limits are per client ID. Exceeding limits returns HTTP 429 with `retry_after` header.
+| Token Type   | Prefix    | Lifetime   | Description                           |
+| ------------ | --------- | ---------- | ------------------------------------- |
+| Link Token   | `link_`   | 30 minutes | Initialize Connect widget             |
+| Public Token | `public_` | 30 minutes | Exchange for access token (one-time)  |
+| Access Token | `cat_`    | 15 years   | API authentication (long-lived)       |
+| Grant Token  | `cgrant_` | 15 years   | Authorization record (for revocation) |
 
 ---
 

@@ -15,7 +15,7 @@ API key support is currently available for **Enterprise customers only**. Contac
 Include your API key in the `X-API-Key` header:
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
   -H "X-API-Key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
@@ -33,14 +33,14 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
 
 ## Permissions
 
-| Permission | Required For |
-|------------|--------------|
-| `read:profile` | `/v1/userinfo` |
-| `read:holdings` | `/v1/holdings` |
-| `read:transactions` | `/v1/transactions` |
-| `read:defi` | `/v1/defi-holdings` |
-| `read:nft` | `/v1/nft-holdings` |
-| `read:analytics` | `/v1/profiling` |
+| Permission           | Required For            |
+| -------------------- | ----------------------- |
+| `read:profile`       | `/v1/userinfo`          |
+| `read:holdings`      | `/v1/holdings`          |
+| `read:transactions`  | `/v1/transactions`      |
+| `read:defi`          | `/v1/defi-holdings`     |
+| `read:nft`           | `/v1/nft-holdings`      |
+| `read:analytics`     | `/v1/profiling`         |
 | `write:transactions` | `POST /v0/transactions` |
 
 ## Best Practices
@@ -54,19 +54,17 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
 ## Example
 
 ```javascript
-const axios = require('axios');
+const axios = require("axios");
 
 const API_KEY = process.env.KRYPTOS_API_KEY;
 
 async function getHoldings() {
   const response = await axios.get(
-    'https://connect-api.kryptos.io/api/v1/holdings',
+    "https://connect.kryptos.io/api/v1/holdings",
     {
-      headers: { 'X-API-Key': API_KEY }
+      headers: { "X-API-Key": API_KEY },
     }
   );
   return response.data;
 }
 ```
-
-

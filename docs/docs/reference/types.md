@@ -12,14 +12,14 @@ Standardized type definitions used across the Kryptos ecosystem. These types ser
 
 ## Available Type Files
 
-| File | Description |
-|------|-------------|
-| [`asset.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/asset.ts) | Asset and NFT related types |
-| [`transaction.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/transaction.ts) | Transaction and ledger related types |
-| [`holdings.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/holdings.ts) | Portfolio holdings related types |
-| [`defi.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/defi.ts) | DeFi portfolio and protocol related types |
-| [`nft-balance.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/nft-balance.ts) | NFT balance and collection related types |
-| [`tax.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/tax.ts) | Tax calculation and PnL related types |
+| File                                                                                                    | Description                               |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| [`asset.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/asset.ts)             | Asset and NFT related types               |
+| [`transaction.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/transaction.ts) | Transaction and ledger related types      |
+| [`holdings.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/holdings.ts)       | Portfolio holdings related types          |
+| [`defi.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/defi.ts)               | DeFi portfolio and protocol related types |
+| [`nft-balance.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/nft-balance.ts) | NFT balance and collection related types  |
+| [`tax.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/tax.ts)                 | Tax calculation and PnL related types     |
 
 ## Installation
 
@@ -192,7 +192,7 @@ const bitcoin: Asset = {
 
 // Use with API responses
 async function getTypedHoldings(): Promise<HoldingsType[]> {
-  const response = await fetch("https://connect-api.kryptos.io/api/v1/holdings", {
+  const response = await fetch("https://connect.kryptos.io/api/v1/holdings", {
     headers: { "X-API-Key": API_KEY },
   });
 

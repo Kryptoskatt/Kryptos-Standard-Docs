@@ -8,7 +8,7 @@ sidebar_position: 8
 
 <span className="badge badge--get">GET</span> `/v1/integrations`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 Retrieve a paginated list of user-connected wallets and exchanges with metadata, sync status, and transaction counts.
 
@@ -17,7 +17,7 @@ Retrieve a paginated list of user-connected wallets and exchanges with metadata,
 ## Request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?page=1&pageSize=25" \
+curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -25,11 +25,11 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?page=1&pageSize=
 
 ## Query Parameters
 
-| Parameter     | Type   | Default | Description                                    |
-| ------------- | ------ | ------- | ---------------------------------------------- |
-| `page`        | number | 1       | Page number for pagination                     |
-| `pageSize`    | number | 25      | Number of items per page (max: 200)            |
-| `searchedKey` | string | -       | Optional search term for fuzzy search          |
+| Parameter     | Type   | Default | Description                           |
+| ------------- | ------ | ------- | ------------------------------------- |
+| `page`        | number | 1       | Page number for pagination            |
+| `pageSize`    | number | 25      | Number of items per page (max: 200)   |
+| `searchedKey` | string | -       | Optional search term for fuzzy search |
 
 ## Response
 
@@ -83,31 +83,31 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?page=1&pageSize=
 
 ### Integration Object
 
-| Field              | Type    | Description                                           |
-| ------------------ | ------- | ----------------------------------------------------- |
-| `provider`         | string  | Provider identifier (e.g., `binance`, `ethereum`)     |
-| `providerPublicName` | string | Human-readable provider name                         |
-| `publicAddress`    | string  | Wallet address (for blockchain wallets)               |
-| `walletId`         | string  | Unique wallet/integration identifier                  |
-| `logoUrl`          | string  | Provider logo URL                                     |
-| `isContract`       | boolean | Whether the address is a smart contract               |
-| `alias`            | string  | User-defined alias for the integration                |
-| `status`           | string  | Integration status (`active`, `inactive`, `error`)    |
-| `addedOn`          | number  | Timestamp when integration was added (ms)             |
-| `lastSyncedAt`     | number  | Timestamp of last successful sync (ms)                |
-| `category`         | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |
-| `type`             | string  | Integration type: `api` or `csv`                      |
-| `totalTransactions`| number  | Total number of transactions from this integration    |
+| Field                | Type    | Description                                             |
+| -------------------- | ------- | ------------------------------------------------------- |
+| `provider`           | string  | Provider identifier (e.g., `binance`, `ethereum`)       |
+| `providerPublicName` | string  | Human-readable provider name                            |
+| `publicAddress`      | string  | Wallet address (for blockchain wallets)                 |
+| `walletId`           | string  | Unique wallet/integration identifier                    |
+| `logoUrl`            | string  | Provider logo URL                                       |
+| `isContract`         | boolean | Whether the address is a smart contract                 |
+| `alias`              | string  | User-defined alias for the integration                  |
+| `status`             | string  | Integration status (`active`, `inactive`, `error`)      |
+| `addedOn`            | number  | Timestamp when integration was added (ms)               |
+| `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                  |
+| `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |
+| `type`               | string  | Integration type: `api` or `csv`                        |
+| `totalTransactions`  | number  | Total number of transactions from this integration      |
 
 ### Pagination Object
 
-| Field             | Type    | Description                         |
-| ----------------- | ------- | ----------------------------------- |
-| `page`            | number  | Current page number                 |
-| `pageSize`        | number  | Items per page                      |
-| `totalCount`      | number  | Total number of integrations        |
-| `hasNextPage`     | boolean | Whether more pages exist            |
-| `hasPreviousPage` | boolean | Whether previous pages exist        |
+| Field             | Type    | Description                  |
+| ----------------- | ------- | ---------------------------- |
+| `page`            | number  | Current page number          |
+| `pageSize`        | number  | Items per page               |
+| `totalCount`      | number  | Total number of integrations |
+| `hasNextPage`     | boolean | Whether more pages exist     |
+| `hasPreviousPage` | boolean | Whether previous pages exist |
 
 ## Search
 
@@ -121,7 +121,7 @@ The `searchedKey` parameter enables fuzzy search across multiple fields:
 - `exchange` - Exchange name
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?searchedKey=binance" \
+curl -X GET "https://connect.kryptos.io/api/v1/integrations?searchedKey=binance" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -129,16 +129,16 @@ curl -X GET "https://connect-api.kryptos.io/api/v1/integrations?searchedKey=bina
 
 ## Integration Categories
 
-| Category     | Description                                |
-| ------------ | ------------------------------------------ |
-| `exchange`   | Centralized exchanges (Binance, Coinbase)  |
-| `wallet`     | Software/hardware wallets (MetaMask, Ledger) |
+| Category     | Description                                       |
+| ------------ | ------------------------------------------------- |
+| `exchange`   | Centralized exchanges (Binance, Coinbase)         |
+| `wallet`     | Software/hardware wallets (MetaMask, Ledger)      |
 | `blockchain` | Direct blockchain connections (Ethereum, Bitcoin) |
-| `unknown`    | Unclassified integrations                  |
+| `unknown`    | Unclassified integrations                         |
 
 ## Integration Types
 
-| Type  | Description                              |
-| ----- | ---------------------------------------- |
-| `api` | Connected via API keys or OAuth          |
-| `csv` | Imported via CSV file upload             |
+| Type  | Description                     |
+| ----- | ------------------------------- |
+| `api` | Connected via API keys or OAuth |
+| `csv` | Imported via CSV file upload    |

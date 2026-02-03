@@ -24,40 +24,61 @@ Kryptos Connect APIs provide access to:
 
 Kryptos Connect is ideal for:
 
-| Use Case | Description |
-|----------|-------------|
+| Use Case               | Description                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------- |
 | **Portfolio Trackers** | Build portfolio dashboards that aggregate holdings across wallets and exchanges |
-| **Tax Software** | Access transaction history and cost basis data for tax calculations |
-| **DeFi Analytics** | Monitor DeFi positions, yields, and performance across protocols |
-| **NFT Platforms** | Display NFT collections with metadata, floor prices, and sales history |
-| **Risk Assessment** | Analyze portfolio composition for lending, insurance, or compliance |
-| **Financial Advisors** | View client holdings with their consent for advisory services |
+| **Tax Software**       | Access transaction history and cost basis data for tax calculations             |
+| **DeFi Analytics**     | Monitor DeFi positions, yields, and performance across protocols                |
+| **NFT Platforms**      | Display NFT collections with metadata, floor prices, and sales history          |
+| **Risk Assessment**    | Analyze portfolio composition for lending, insurance, or compliance             |
+| **Financial Advisors** | View client holdings with their consent for advisory services                   |
 
-## Kryptos Connect
+## Authentication Options
 
-**Kryptos Connect** enables users to securely share their crypto portfolio data with third-party applications—with their explicit consent—through a single, easy-to-integrate widget. All data is delivered in a standardized format, making integration seamless for developers.
+Kryptos provides two ways to access user portfolio data:
+
+### 1. OAuth 2.0 Authentication
+
+Standard OAuth 2.0 flow for applications where users authenticate directly with Kryptos. Best for:
+
+- Web applications with server-side authentication
+- Applications where users already have Kryptos accounts
+- Direct API integrations
+
+**[OAuth 2.0 Guide →](/authentication/oauth)**
+
+### 2. Kryptos Connect Widget
+
+A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow. Best for:
+
+- Embedded integrations in third-party applications
+- Mobile apps (iOS & Android)
+- Quick integration without building custom auth UI
+- Anonymous user support
 
 **Key Features:**
 
-- Secure OAuth 2.0 authorization flow
-- User-consented data sharing
 - Single widget integration via Web SDK and Mobile SDK
 - Native iOS and Android support
+- User-consented data sharing
 - Standardized data format
 - Granular permission scopes
-- Session management and token refresh
+- Long-lived access tokens (no refresh needed)
+
+**[Kryptos Connect Guide →](/kryptos-connect)**
+
+---
 
 **Get Started:**
 
-- **[Kryptos Connect Guide →](/kryptos-connect)** - Complete SDK integration guide
 - **[Developer Portal Setup →](/developer-portal)** - Create your account and get credentials
 
 ## API Versions
 
-| Version | Path | Description |
-|---------|------|-------------|
-| **V1** | `/v1/*` | Modern format with standardized structure |
-| **V0** | `/v0/*` | Legacy format (will be deprecated) |
+| Version | Path    | Description                               |
+| ------- | ------- | ----------------------------------------- |
+| **V1**  | `/v1/*` | Modern format with standardized structure |
+| **V0**  | `/v0/*` | Legacy format (will be deprecated)        |
 
 ## Quick Start
 
@@ -74,7 +95,7 @@ Get up and running in minutes:
 **5. Call the API** → Fetch portfolio data with a single request
 
 ```bash
-curl -X GET "https://connect-api.kryptos.io/api/v1/holdings" \
+curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
@@ -88,12 +109,12 @@ New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/developer-p
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **11 Endpoints** | Complete API coverage |
-| **2 Auth Methods** | OAuth 2.0 & API Key |
-| **16 OAuth Scopes** | Granular read/write permissions |
-| **TypeScript Types** | Full type definitions |
+| Feature              | Description                     |
+| -------------------- | ------------------------------- |
+| **11 Endpoints**     | Complete API coverage           |
+| **2 Auth Methods**   | OAuth 2.0 & API Key             |
+| **16 OAuth Scopes**  | Granular read/write permissions |
+| **TypeScript Types** | Full type definitions           |
 
 ## Next Steps
 

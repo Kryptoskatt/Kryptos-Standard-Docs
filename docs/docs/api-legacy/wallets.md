@@ -8,7 +8,7 @@ sidebar_position: 1
 
 <span className="badge badge--get">GET</span> `/v0/wallets`
 
-**Base URL:** `https://connect-api.kryptos.io/api`
+**Base URL:** `https://connect.kryptos.io/api`
 
 :::warning Legacy Endpoint
 This endpoint will be deprecated. Use V1 endpoints for new integrations. Migrate to V1 when made live.
@@ -18,12 +18,12 @@ Retrieve user's cryptocurrency wallets with pagination.
 
 ## Query Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `portfolioId` | string | Filter by portfolio ID |
-| `limit` | number | Results per page (1-1000, default: 100) |
-| `offset` | number | Pagination offset |
-| `includeCount` | boolean | Include total count |
+| Parameter      | Type    | Description                             |
+| -------------- | ------- | --------------------------------------- |
+| `portfolioId`  | string  | Filter by portfolio ID                  |
+| `limit`        | number  | Results per page (1-1000, default: 100) |
+| `offset`       | number  | Pagination offset                       |
+| `includeCount` | boolean | Include total count                     |
 
 ## Response
 
@@ -52,4 +52,3 @@ Retrieve user's cryptocurrency wallets with pagination.
   }
 }
 ```
-
