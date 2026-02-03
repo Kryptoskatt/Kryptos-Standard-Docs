@@ -886,6 +886,38 @@ async function makeApiCallWithCheck(endpoint, accessToken, grantId) {
 
 ---
 
+## Sandbox Mode
+
+New clients are created in **sandbox mode** by default, which has the following limitations:
+
+### Supported Chains
+
+Only **Ethereum** and **Solana** are available in sandbox mode.
+
+### Test Addresses
+
+Use these pre-approved test addresses for sandbox testing:
+
+| Chain    | Test Address                                   |
+| -------- | ---------------------------------------------- |
+| Ethereum | `0x47c2e31e9ce22437bcf6313d2b9e98245a7bfcfa`   |
+| Solana   | `2r8Hm938GzCQ2gXTP2deDarkn52ezYf1UUaEzMpkwrk1` |
+
+### Sandbox Errors
+
+| Error Code                     | Description                            |
+| ------------------------------ | -------------------------------------- |
+| `SANDBOX_PROVIDER_NOT_ALLOWED` | Provider not available in sandbox mode |
+| `SANDBOX_ADDRESS_NOT_ALLOWED`  | Address not allowed in sandbox mode    |
+
+### Production Access
+
+To upgrade to production mode with full access to all chains and addresses, contact us:
+
+- **Email:** [support@kryptos.io](mailto:support@kryptos.io)
+
+---
+
 ## Support
 
 ### SDK Packages
