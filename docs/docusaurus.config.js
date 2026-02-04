@@ -3,7 +3,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Kryptos Connect API",
+  title: "Kryptos API documentation",
   tagline: "Developer Documentation",
   favicon: "img/favicon.png",
 
@@ -44,7 +44,7 @@ const config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: "Kryptos Connect API",
+      title: "Kryptos API documentation",
       logo: {
         alt: "Kryptos",
         src: "img/logo.png",

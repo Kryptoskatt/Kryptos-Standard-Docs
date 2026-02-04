@@ -5,7 +5,7 @@ sidebar_position: 1
 slug: /
 ---
 
-# Kryptos Connect API
+# Kryptos API documentation
 
 A comprehensive API for accessing cryptocurrency portfolio data, transactions, DeFi holdings, NFT collections, and portfolio analytics.
 

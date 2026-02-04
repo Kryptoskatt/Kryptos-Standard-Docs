@@ -81,7 +81,7 @@ https://connect-api.kryptos.io
 
 ## Web SDK
 
-The Kryptos Connect Web SDK provides a pre-built widget that handles the complete authentication flow.
+The Kryptos Connect Web SDK provides React components that handle the complete authentication and wallet connection flow. It supports 5000+ DeFi protocols, 100+ exchanges/wallets, and 200+ blockchains.
 
 ### Installation
 
@@ -100,170 +100,445 @@ yarn add @kryptos_connect/web-sdk
 ```
 
 </TabItem>
-<TabItem value="cdn" label="CDN">
-
-```html
-<script src="https://unpkg.com/@kryptos_connect/web-sdk@latest/dist/index.js"></script>
-```
-
-</TabItem>
 </Tabs>
+
+### Prerequisites
+
+1. **Client ID** from the [Kryptos Developer Portal](https://dashboard.kryptos.io)
+2. **WalletConnect Project ID** from [WalletConnect Cloud](https://cloud.walletconnect.com)
 
 ### Quick Start
 
-```javascript
-import KryptosConnect from "@kryptos_connect/web-sdk";
+```tsx
+// 1. Import styles (required)
+import "@kryptos_connect/web-sdk/dist/styles/index.css";
 
-// 1. Initialize the Connect widget
-const kryptosConnect = KryptosConnect.create({
-  linkToken: "link_token_from_backend", // Get this from your backend
-  onSuccess: (public_token) => {
-    // Send public_token to your backend to exchange for access tokens
-    fetch("/api/exchange-token", {
-      method: "POST",
-      body: JSON.stringify({ public_token }),
-    });
-  },
-  onExit: (error) => {
-    // Handle user exit or errors
-    console.error("Widget exited:", error);
-  },
-  onEvent: (eventName, metadata) => {
-    // Track user actions in widget
-    console.log("Event:", eventName, metadata);
-  },
-});
+import {
+  KryptosConnectProvider,
+  KryptosConnectButton,
+} from "@kryptos_connect/web-sdk";
 
-// 2. Open the widget
-kryptosConnect.open();
+// 2. Wrap your app with the provider
+function App() {
+  return (
+    <KryptosConnectProvider
+      config={{
+        appName: "My DeFi App",
+        appLogo: "https://yourapp.com/logo.png",
+        clientId: "your-kryptos-client-id",
+        theme: "light",
+        walletConnectProjectId: "your-walletconnect-project-id",
+      }}
+    >
+      <ConnectButton />
+    </KryptosConnectProvider>
+  );
+}
+
+// 3. Use the connect button
+function ConnectButton() {
+  return (
+    <KryptosConnectButton
+      generateLinkToken={async () => {
+        // Call your backend to create a link token
+        const response = await fetch("/api/kryptos/create-link-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+        return {
+          link_token: data.link_token,
+          isAuthorized: data.isAuthorized,
+        };
+      }}
+      onSuccess={(userConsent) => {
+        if (userConsent?.public_token) {
+          // New user - exchange public token for access token
+          fetch("/api/kryptos/exchange-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ public_token: userConsent.public_token }),
+          });
+        }
+        // If userConsent is null, user was already authenticated
+      }}
+      onError={(error) => {
+        console.error("Connection failed:", error);
+      }}
+    >
+      Connect to Kryptos
+    </KryptosConnectButton>
+  );
+}
 ```
 
-### SDK Configuration
+### Provider Configuration
 
-| Option      | Type     | Required | Description                                 |
-| ----------- | -------- | -------- | ------------------------------------------- |
-| `linkToken` | string   | Yes      | Link token obtained from your backend       |
-| `onSuccess` | function | Yes      | Callback when user completes authentication |
-| `onExit`    | function | No       | Callback when widget is closed              |
-| `onEvent`   | function | No       | Callback for tracking user events           |
-| `language`  | string   | No       | Widget language (default: 'en')             |
-| `theme`     | object   | No       | Custom theme configuration                  |
+Wrap your application with `KryptosConnectProvider`:
 
-### Events
+| Option                   | Type                         | Required | Description                              |
+| ------------------------ | ---------------------------- | -------- | ---------------------------------------- |
+| `appName`                | string                       | Yes      | Your application name                    |
+| `appLogo`                | string \| React.ReactNode    | No       | Logo URL or React component              |
+| `clientId`               | string                       | Yes      | Kryptos client ID from Developer Portal  |
+| `theme`                  | `"light"` \| `"dark"`        | No       | Visual theme (default: `"light"`)        |
+| `walletConnectProjectId` | string                       | Yes      | WalletConnect project ID                 |
 
-The SDK emits events during the authentication flow:
+### Button Configuration
 
-| Event                | Description                    |
-| -------------------- | ------------------------------ |
-| `OPEN`               | Widget opened                  |
-| `EXIT`               | Widget closed                  |
-| `HANDOFF`            | User switched to browser flow  |
-| `SELECT_INSTITUTION` | User selected exchange/wallet  |
-| `SUBMIT_CREDENTIALS` | User submitted API credentials |
-| `SUCCESS`            | Authentication flow completed  |
-| `ERROR`              | An error occurred              |
+The `KryptosConnectButton` component triggers the connection flow:
+
+| Option              | Type                                                              | Required | Description                                           |
+| ------------------- | ----------------------------------------------------------------- | -------- | ----------------------------------------------------- |
+| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>`   | Yes      | Function that returns link token from your backend    |
+| `onSuccess`         | `(userConsent: UserConsent \| null) => void`                      | No       | Callback on successful connection                     |
+| `onError`           | `(error: Error) => void`                                          | No       | Callback on connection failure                        |
+| `children`          | React.ReactNode                                                   | No       | Button text (default: "Connect to Kryptos")           |
+| `className`         | string                                                            | No       | Custom CSS class                                      |
+| `style`             | React.CSSProperties                                               | No       | Inline styles                                         |
+
+### TypeScript Support
+
+```typescript
+import type {
+  KryptosConnectButtonProps,
+  KryptosConnectProviderProps,
+  UserConsent,
+} from "@kryptos_connect/web-sdk";
+
+interface UserConsent {
+  public_token: string;
+}
+```
+
+### Customization
+
+#### CSS Variables
+
+```css
+:root {
+  --kc-primary: #8b5cf6;
+  --kc-primary-hover: #7c3aed;
+  --kc-bg-primary: #ffffff;
+  --kc-text-primary: #000000;
+  --kc-border: #e5e7eb;
+  --kc-border-radius: 8px;
+}
+
+[data-kc-theme="dark"] {
+  --kc-bg-primary: #1a1a1a;
+  --kc-text-primary: #ffffff;
+  --kc-border: #404040;
+}
+```
+
+#### Custom Button Styling
+
+```tsx
+<KryptosConnectButton
+  className="my-custom-button"
+  style={{
+    background: "linear-gradient(to right, #667eea, #764ba2)",
+    borderRadius: "12px",
+  }}
+>
+  Connect Wallet
+</KryptosConnectButton>
+```
+
+### Framework Integration
+
+#### Next.js (App Router)
+
+```tsx
+// app/layout.tsx
+import { KryptosConnectProvider } from "@kryptos_connect/web-sdk";
+import "@kryptos_connect/web-sdk/dist/styles/index.css";
+
+const config = {
+  appName: "My Next.js App",
+  clientId: process.env.NEXT_PUBLIC_KRYPTOS_CLIENT_ID!,
+  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  theme: "light" as const,
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <KryptosConnectProvider config={config}>
+          {children}
+        </KryptosConnectProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+#### React (Vite/CRA)
+
+```tsx
+// main.tsx
+import ReactDOM from "react-dom/client";
+import { KryptosConnectProvider } from "@kryptos_connect/web-sdk";
+import "@kryptos_connect/web-sdk/dist/styles/index.css";
+import App from "./App";
+
+const config = {
+  appName: "My React App",
+  clientId: import.meta.env.VITE_KRYPTOS_CLIENT_ID,
+  walletConnectProjectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
+  theme: "light" as const,
+};
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <KryptosConnectProvider config={config}>
+    <App />
+  </KryptosConnectProvider>
+);
+```
+
+### Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+### Peer Dependencies
+
+- React >= 16.8.0
+- React DOM >= 16.8.0
 
 ---
 
 ## Mobile SDK
 
-The Kryptos Connect Mobile SDK provides native integration for React Native applications on iOS and Android.
+The Kryptos Connect Mobile SDK provides React Native components for iOS and Android applications. It works with both Expo and React Native CLI.
 
 ### Installation
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
 ```bash
-npm install @kryptos_connect/mobile-sdk
+npm install @kryptos_connect/mobile-sdk react-native-svg
 ```
 
-**iOS Setup:**
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add @kryptos_connect/mobile-sdk react-native-svg
+```
+
+</TabItem>
+<TabItem value="expo" label="Expo">
+
+```bash
+npx expo install @kryptos_connect/mobile-sdk react-native-svg
+```
+
+</TabItem>
+</Tabs>
+
+### Core Dependencies
+
+Install all required dependencies:
+
+```bash
+npx expo install @reown/appkit-react-native @react-native-async-storage/async-storage \
+  react-native-get-random-values react-native-svg @react-native-community/netinfo \
+  @walletconnect/react-native-compat react-native-safe-area-context expo-application
+```
+
+### Platform Setup
+
+**iOS (React Native CLI only):**
 
 ```bash
 cd ios && pod install
 ```
 
-**Android Setup:**
+**Expo SDK 53+** - Add to `babel.config.js`:
 
-Add the following to your `android/app/build.gradle`:
-
-```gradle
-dependencies {
-    implementation project(':@kryptos_connect_mobile-sdk')
-}
+```js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [["babel-preset-expo", { unstable_transformImportMeta: true }]],
+  };
+};
 ```
 
 ### Quick Start
 
-```javascript
-import KryptosConnect from "@kryptos_connect/mobile-sdk";
+```tsx
+import { KryptosConnectProvider, KryptosConnectButton } from "@kryptos_connect/mobile-sdk";
 
-// 1. Initialize the Connect SDK
-const initializeKryptos = async () => {
-  const linkToken = await fetchLinkTokenFromBackend();
+// 1. Wrap your app with the provider
+export default function App() {
+  return (
+    <KryptosConnectProvider
+      config={{
+        appName: "My Mobile App",
+        appLogo: "https://yourapp.com/logo.png",
+        clientId: "your-kryptos-client-id",
+        theme: "light",
+        walletConnectProjectId: "your-walletconnect-project-id",
+      }}
+    >
+      <ConnectScreen />
+    </KryptosConnectProvider>
+  );
+}
 
-  const config = {
-    linkToken: linkToken,
-    onSuccess: (publicToken) => {
-      // Send public_token to your backend
-      exchangePublicToken(publicToken);
-    },
-    onExit: (error) => {
-      if (error) {
-        console.error("Connection error:", error);
-      }
-    },
-    onEvent: (eventName, metadata) => {
-      console.log("Event:", eventName, metadata);
-    },
+// 2. Use the connect button
+function ConnectScreen() {
+  const generateLinkToken = async () => {
+    const response = await fetch("https://your-api.com/api/kryptos/create-link-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    return data.link_token;
   };
 
-  KryptosConnect.create(config);
-};
+  const handleSuccess = (userConsent) => {
+    if (userConsent?.public_token) {
+      // Exchange public token for access token
+      fetch("https://your-api.com/api/kryptos/exchange-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ public_token: userConsent.public_token }),
+      });
+    }
+  };
 
-// 2. Open the connection flow
-const connectWallet = () => {
-  KryptosConnect.open();
-};
+  return (
+    <KryptosConnectButton
+      generateLinkToken={generateLinkToken}
+      onSuccess={handleSuccess}
+      onError={() => console.log("Connection failed")}
+    >
+      Connect to Kryptos
+    </KryptosConnectButton>
+  );
+}
 ```
 
-### Configuration
+### Provider Configuration
 
-| Option      | Type     | Required | Description                                 |
-| ----------- | -------- | -------- | ------------------------------------------- |
-| `linkToken` | string   | Yes      | Link token obtained from your backend       |
-| `onSuccess` | function | Yes      | Callback when user completes authentication |
-| `onExit`    | function | No       | Callback when connection flow is closed     |
-| `onEvent`   | function | No       | Callback for tracking user events           |
-| `language`  | string   | No       | SDK language (default: device language)     |
-| `theme`     | object   | No       | Custom theme configuration (light/dark)     |
+| Option                   | Type                         | Required | Description                              |
+| ------------------------ | ---------------------------- | -------- | ---------------------------------------- |
+| `appName`                | string                       | Yes      | Your application name                    |
+| `appLogo`                | string \| ReactNode          | No       | Logo URL or image source                 |
+| `clientId`               | string                       | Yes      | Kryptos client ID from Developer Portal  |
+| `theme`                  | `"light"` \| `"dark"`        | No       | UI theme (default: `"light"`)            |
+| `walletConnectProjectId` | string                       | No       | WalletConnect v2 project ID              |
 
-### Events
+### Button Configuration
 
-The Mobile SDK emits events during the authentication flow:
+| Option              | Type                                    | Required | Description                                |
+| ------------------- | --------------------------------------- | -------- | ------------------------------------------ |
+| `generateLinkToken` | `() => Promise<string>`                 | Yes      | Function that returns link token           |
+| `onSuccess`         | `(userConsent: UserConsent) => void`    | No       | Callback on successful connection          |
+| `onError`           | `() => void`                            | No       | Callback on connection failure             |
+| `children`          | ReactNode                               | No       | Custom button content                      |
+| `style`             | ViewStyle                               | No       | Container styling                          |
+| `textStyle`         | TextStyle                               | No       | Text styling                               |
 
-| Event                | Description                    |
-| -------------------- | ------------------------------ |
-| `OPEN`               | Connection flow opened         |
-| `EXIT`               | Connection flow closed         |
-| `SELECT_INSTITUTION` | User selected exchange/wallet  |
-| `SUBMIT_CREDENTIALS` | User submitted API credentials |
-| `SUCCESS`            | Authentication flow completed  |
-| `ERROR`              | An error occurred              |
+### Custom Button Styling
+
+```tsx
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onSuccess={handleSuccess}
+  onError={handleError}
+  style={{ backgroundColor: '#8b5cf6', borderRadius: 12, padding: 16 }}
+  textStyle={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }}
+>
+  Connect Wallet
+</KryptosConnectButton>
+```
+
+### Using KryptosConnectModal
+
+For advanced use cases, use the modal component directly:
+
+```tsx
+import { KryptosConnectModal } from "@kryptos_connect/mobile-sdk";
+import { useState } from "react";
+import { TouchableOpacity, Text } from "react-native";
+
+function ConnectScreen() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <TouchableOpacity onPress={() => setOpen(true)}>
+        <Text>Open Connection Modal</Text>
+      </TouchableOpacity>
+      <KryptosConnectModal
+        open={open}
+        setOpen={setOpen}
+        generateLinkToken={generateLinkToken}
+        onSuccess={handleSuccess}
+        onError={handleError}
+      />
+    </>
+  );
+}
+```
+
+### WalletConnect Integration
+
+To enable WalletConnect v2 functionality, add the required imports at your app entry point:
+
+```tsx
+// App.tsx or index.js - add these imports at the top
+import "@walletconnect/react-native-compat";
+import "react-native-get-random-values";
+
+import { KryptosConnectProvider } from "@kryptos_connect/mobile-sdk";
+
+const config = {
+  appName: "Your App",
+  appLogo: "https://your-logo.png",
+  clientId: "your-kryptos-client-id",
+  walletConnectProjectId: "your-walletconnect-project-id", // Required for WalletConnect
+};
+
+export default function App() {
+  return (
+    <KryptosConnectProvider config={config}>
+      <YourApp />
+    </KryptosConnectProvider>
+  );
+}
+```
+
+### Platform Requirements
+
+| Platform      | Minimum Version        |
+| ------------- | ---------------------- |
+| iOS           | 12.0+                  |
+| Android       | API 21+ (Android 5.0+) |
+| React Native  | 0.60+                  |
+| Expo SDK      | 48+                    |
 
 ### Features
 
 - **Cross-Platform:** Single codebase for iOS and Android
-- **Native Performance:** Optimized native modules
-- **Biometric Auth:** Face ID, Touch ID, and fingerprint support
-- **Secure Storage:** Encrypted token storage (Keychain on iOS, KeyStore on Android)
-- **Dark Mode:** Automatic theme detection
-- **Deep Linking:** Handle OAuth redirects seamlessly
+- **Expo Support:** Works with Expo and React Native CLI
+- **WalletConnect v2:** Built-in WalletConnect integration
+- **Dark Mode:** Light and dark theme support
+- **TypeScript:** Full TypeScript support
 
 ### Package Information
 
 - **NPM Package:** [@kryptos_connect/mobile-sdk](https://www.npmjs.com/package/@kryptos_connect/mobile-sdk)
-- **React Native:** 0.64+
-- **iOS:** 12.0+
-- **Android:** API 23+ (Android 6.0+)
+- **GitHub:** [Kryptoskatt/kryptos-connect-mobile-package](https://github.com/Kryptoskatt/kryptos-connect-mobile-package)
 
 ---
 
@@ -307,7 +582,7 @@ The Mobile SDK emits events during the authentication flow:
 
 ### Step 1: Create Link Token
 
-Create a link token on your backend to initialize the widget.
+Create a link token endpoint on your backend that the Web SDK's `generateLinkToken` function will call.
 
 **Endpoint:** `POST https://connect-api.kryptos.io/link-token`
 
@@ -317,70 +592,98 @@ Create a link token on your backend to initialize the widget.
 <TabItem value="javascript" label="JavaScript" default>
 
 ```javascript
+const express = require("express");
 const axios = require("axios");
 
-async function createLinkToken(userId, existingAccessToken = null) {
-  const payload = {
-    scopes:
-      "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
-    state: generateRandomState(),
-    metadata: {
-      user_id: userId,
-    },
-  };
+const app = express();
+app.use(express.json());
 
-  // Optional: pass existing access token to resume session
-  if (existingAccessToken) {
-    payload.access_token = existingAccessToken;
-  }
+const KRYPTOS_BASE_URL = "https://connect-api.kryptos.io";
 
-  const response = await axios.post(
-    "https://connect-api.kryptos.io/link-token",
-    payload,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
-        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
-      },
+// Endpoint for the Web SDK's generateLinkToken function
+app.post("/api/kryptos/create-link-token", async (req, res) => {
+  try {
+    // Check if user has an existing access token stored
+    const existingAccessToken = await getUserAccessToken(req.user?.id);
+
+    const payload = {
+      scopes:
+        "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
+    };
+
+    // If user has existing token, include it to skip authentication
+    if (existingAccessToken) {
+      payload.access_token = existingAccessToken;
     }
-  );
 
-  return response.data.data;
-}
+    const response = await axios.post(
+      `${KRYPTOS_BASE_URL}/link-token`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+          "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+        },
+      }
+    );
+
+    // Return format expected by Web SDK's generateLinkToken
+    res.json({
+      link_token: response.data.data.link_token,
+      isAuthorized: !!existingAccessToken, // true = skip auth, false = full flow
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create link token" });
+  }
+});
 ```
 
 </TabItem>
 <TabItem value="python" label="Python">
 
 ```python
+from flask import Flask, request, jsonify
 import requests
 import os
 
-def create_link_token(user_id, existing_access_token=None):
-    payload = {
-        'scopes': 'openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read',
-        'state': generate_random_state(),
-        'metadata': {
-            'user_id': user_id,
-        },
-    }
+app = Flask(__name__)
 
-    # Optional: pass existing access token to resume session
-    if existing_access_token:
-        payload['access_token'] = existing_access_token
+KRYPTOS_BASE_URL = "https://connect-api.kryptos.io"
 
-    response = requests.post(
-        'https://connect-api.kryptos.io/link-token',
-        json=payload,
-        headers={
-            'Content-Type': 'application/json',
-            'X-Client-Id': os.getenv('KRYPTOS_CLIENT_ID'),
-            'X-Client-Secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
+@app.route("/api/kryptos/create-link-token", methods=["POST"])
+def create_link_token():
+    try:
+        # Check if user has an existing access token stored
+        existing_access_token = get_user_access_token(request.user_id)
+
+        payload = {
+            "scopes": "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
         }
-    )
 
-    return response.json()['data']
+        # If user has existing token, include it to skip authentication
+        if existing_access_token:
+            payload["access_token"] = existing_access_token
+
+        response = requests.post(
+            f"{KRYPTOS_BASE_URL}/link-token",
+            json=payload,
+            headers={
+                "Content-Type": "application/json",
+                "X-Client-Id": os.getenv("KRYPTOS_CLIENT_ID"),
+                "X-Client-Secret": os.getenv("KRYPTOS_CLIENT_SECRET"),
+            },
+        )
+
+        data = response.json()["data"]
+
+        # Return format expected by Web SDK's generateLinkToken
+        return jsonify({
+            "link_token": data["link_token"],
+            "isAuthorized": bool(existing_access_token),
+        })
+    except Exception as e:
+        return jsonify({"error": "Failed to create link token"}), 500
 ```
 
 </TabItem>
@@ -388,47 +691,61 @@ def create_link_token(user_id, existing_access_token=None):
 
 ```php
 <?php
-function createLinkToken($userId, $existingAccessToken = null) {
-    $ch = curl_init();
+header('Content-Type: application/json');
 
-    $data = [
-        'scopes' => 'openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read',
-        'state' => bin2hex(random_bytes(16)),
-        'metadata' => [
-            'user_id' => $userId,
-        ],
-    ];
+$KRYPTOS_BASE_URL = 'https://connect-api.kryptos.io';
 
-    // Optional: pass existing access token to resume session
-    if ($existingAccessToken) {
-        $data['access_token'] = $existingAccessToken;
-    }
+// Check if user has an existing access token stored
+$existingAccessToken = getUserAccessToken($userId);
 
-    curl_setopt_array($ch, [
-        CURLOPT_URL => 'https://connect-api.kryptos.io/link-token',
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($data),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'X-Client-Id: ' . getenv('KRYPTOS_CLIENT_ID'),
-            'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
-        ],
-    ]);
+$payload = [
+    'scopes' => 'openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read',
+];
 
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    $result = json_decode($response, true);
-    return $result['data'];
+// If user has existing token, include it to skip authentication
+if ($existingAccessToken) {
+    $payload['access_token'] = $existingAccessToken;
 }
+
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => $KRYPTOS_BASE_URL . '/link-token',
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode($payload),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'X-Client-Id: ' . getenv('KRYPTOS_CLIENT_ID'),
+        'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
+    ],
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$result = json_decode($response, true);
+
+// Return format expected by Web SDK's generateLinkToken
+echo json_encode([
+    'link_token' => $result['data']['link_token'],
+    'isAuthorized' => !empty($existingAccessToken),
+]);
 ?>
 ```
 
 </TabItem>
 </Tabs>
 
-**Response (Fresh Session):**
+**Your Backend Response (for Web SDK):**
+
+```json
+{
+  "link_token": "link_abc123xyz789",
+  "isAuthorized": false
+}
+```
+
+**Kryptos API Response (Fresh Session):**
 
 ```json
 {
@@ -440,7 +757,7 @@ function createLinkToken($userId, $existingAccessToken = null) {
 }
 ```
 
-**Response (Session Resumed with `access_token`):**
+**Kryptos API Response (Session Resumed with `access_token`):**
 
 ```json
 {
@@ -457,66 +774,81 @@ function createLinkToken($userId, $existingAccessToken = null) {
 
 ### Step 2: Exchange Public Token
 
-After the user completes authentication, exchange the public token for a long-lived access token.
+Create an endpoint to exchange the public token for a long-lived access token. The Web SDK's `onSuccess` callback will send the `public_token` to this endpoint.
 
 **Endpoint:** `POST https://connect-api.kryptos.io/token/exchange`
 
-**Authentication:** Client credentials via headers or body
+**Authentication:** Client credentials via headers
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript" default>
 
 ```javascript
-async function exchangePublicToken(publicToken) {
-  const response = await axios.post(
-    "https://connect-api.kryptos.io/token/exchange",
-    {
-      public_token: publicToken,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
-        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
-      },
-    }
-  );
+// Endpoint for the Web SDK's onSuccess callback
+app.post("/api/kryptos/exchange-token", async (req, res) => {
+  try {
+    const { public_token } = req.body;
 
-  const { access_token, grant_id, workspace_id } = response.data.data;
+    const response = await axios.post(
+      `${KRYPTOS_BASE_URL}/token/exchange`,
+      { public_token },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+          "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+        },
+      }
+    );
 
-  // Store tokens securely
-  await storeTokens(access_token, grant_id, workspace_id);
+    const { access_token, grant_id, workspace_id } = response.data.data;
 
-  return response.data.data;
-}
+    // Store tokens securely for the user
+    await saveUserTokens(req.user.id, {
+      access_token,
+      grant_id,
+      workspace_id,
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to exchange token" });
+  }
+});
 ```
 
 </TabItem>
 <TabItem value="python" label="Python">
 
 ```python
-def exchange_public_token(public_token):
-    response = requests.post(
-        'https://connect-api.kryptos.io/token/exchange',
-        json={
-            'public_token': public_token,
-        },
-        headers={
-            'Content-Type': 'application/json',
-            'X-Client-Id': os.getenv('KRYPTOS_CLIENT_ID'),
-            'X-Client-Secret': os.getenv('KRYPTOS_CLIENT_SECRET'),
-        }
-    )
+@app.route("/api/kryptos/exchange-token", methods=["POST"])
+def exchange_token():
+    try:
+        public_token = request.json.get("public_token")
 
-    data = response.json()['data']
-    access_token = data['access_token']
-    grant_id = data['grant_id']
-    workspace_id = data['workspace_id']
+        response = requests.post(
+            f"{KRYPTOS_BASE_URL}/token/exchange",
+            json={"public_token": public_token},
+            headers={
+                "Content-Type": "application/json",
+                "X-Client-Id": os.getenv("KRYPTOS_CLIENT_ID"),
+                "X-Client-Secret": os.getenv("KRYPTOS_CLIENT_SECRET"),
+            },
+        )
 
-    # Store tokens securely
-    store_tokens(access_token, grant_id, workspace_id)
+        data = response.json()["data"]
 
-    return data
+        # Store tokens securely for the user
+        save_user_tokens(
+            request.user_id,
+            access_token=data["access_token"],
+            grant_id=data["grant_id"],
+            workspace_id=data["workspace_id"],
+        )
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": "Failed to exchange token"}), 500
 ```
 
 </TabItem>
@@ -524,36 +856,38 @@ def exchange_public_token(public_token):
 
 ```php
 <?php
-function exchangePublicToken($publicToken) {
-    $ch = curl_init();
+header('Content-Type: application/json');
 
-    $data = [
-        'public_token' => $publicToken,
-    ];
+$input = json_decode(file_get_contents('php://input'), true);
+$publicToken = $input['public_token'];
 
-    curl_setopt_array($ch, [
-        CURLOPT_URL => 'https://connect-api.kryptos.io/token/exchange',
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($data),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            'Content-Type: application/json',
-            'X-Client-Id: ' . getenv('KRYPTOS_CLIENT_ID'),
-            'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
-        ],
-    ]);
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => 'https://connect-api.kryptos.io/token/exchange',
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode(['public_token' => $publicToken]),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'X-Client-Id: ' . getenv('KRYPTOS_CLIENT_ID'),
+        'X-Client-Secret: ' . getenv('KRYPTOS_CLIENT_SECRET'),
+    ],
+]);
 
-    $response = curl_exec($ch);
-    curl_close($ch);
+$response = curl_exec($ch);
+curl_close($ch);
 
-    $result = json_decode($response, true);
-    $data = $result['data'];
+$result = json_decode($response, true);
+$data = $result['data'];
 
-    // Store tokens securely
-    storeTokens($data['access_token'], $data['grant_id'], $data['workspace_id']);
+// Store tokens securely for the user
+saveUserTokens($userId, [
+    'access_token' => $data['access_token'],
+    'grant_id' => $data['grant_id'],
+    'workspace_id' => $data['workspace_id'],
+]);
 
-    return $data;
-}
+echo json_encode(['success' => true]);
 ?>
 ```
 
@@ -930,6 +1264,11 @@ To upgrade to production mode with full access to all chains and addresses, cont
 - **Email:** [support@kryptos.io](mailto:support@kryptos.io)
 - **Website:** [kryptos.io](https://kryptos.io)
 - **Documentation:** [docs.kryptos.io](https://docs.kryptos.io)
+
+### GitHub Repositories
+
+- **Web SDK:** [Kryptoskatt/kryptos-connect-package](https://github.com/Kryptoskatt/kryptos-connect-package)
+- **Mobile SDK:** [Kryptoskatt/kryptos-connect-mobile-package](https://github.com/Kryptoskatt/kryptos-connect-mobile-package)
 
 ---
 
