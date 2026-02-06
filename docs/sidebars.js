@@ -30,6 +30,12 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Public Endpoints",
+      collapsed: false,
+      items: ["public-endpoints/integrations"],
+    },
+    {
+      type: "category",
       label: "V0 Endpoints (Legacy)",
       collapsed: true,
       items: [
