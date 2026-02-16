@@ -86,6 +86,8 @@ interface Transaction {
     isNFTTrx: boolean;
   };
   tags: string[];
+  totalCostbasis?: number;
+  totalGains?: number;
 }
 ```
 

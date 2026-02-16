@@ -115,6 +115,8 @@ curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc"
         "isDefiTrx": false,
         "isNFTTrx": false
       },
+      "totalCostbasis": 3000.00,
+      "totalGains": 0.00,
       "tags": [],
       "ledger": [],
       "rawTrx": {}
