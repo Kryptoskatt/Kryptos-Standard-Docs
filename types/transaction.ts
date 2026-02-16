@@ -238,4 +238,10 @@ export type Transaction = {
 
   /** Raw transaction data */
   rawTrx: any;
+
+  /** Total cost basis across all outgoing assets */
+  totalCostbasis?: number;
+
+  /** Total realized gains for the transaction */
+  totalGains?: number;
 };
