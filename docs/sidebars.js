@@ -15,6 +15,12 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Recipes",
+      collapsed: false,
+      items: ["recipes/post-transactions-apikey"],
+    },
+    {
+      type: "category",
       label: "V1 Endpoints",
       collapsed: false,
       items: [
