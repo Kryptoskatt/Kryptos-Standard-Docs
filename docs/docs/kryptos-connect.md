@@ -59,7 +59,7 @@ https://connect-api.kryptos.io
    User approves requested permissions
    ↓
 5. RECEIVE PUBLIC TOKEN
-   Widget returns public_token via onSuccess callback
+   Widget returns public_token via onConnectSuccess callback
    ↓
 6. EXCHANGE TOKEN (Backend)
    Your server exchanges public_token for access_token
@@ -150,7 +150,7 @@ function ConnectButton() {
           isAuthorized: data.isAuthorized,
         };
       }}
-      onSuccess={(userConsent) => {
+      onConnectSuccess={(userConsent) => {
         if (userConsent?.public_token) {
           // New user - exchange public token for access token
           fetch("/api/kryptos/exchange-token", {
@@ -161,7 +161,7 @@ function ConnectButton() {
         }
         // If userConsent is null, user was already authenticated
       }}
-      onError={(error) => {
+      onConnectError={(error) => {
         console.error("Connection failed:", error);
       }}
     >
@@ -184,7 +184,7 @@ INIT → CONNECT → INTEGRATION → STATUS
 - User goes through authentication
 - Account is created on the backend
 - User selects integrations to connect
-- Returns `public_token` in `onSuccess` callback
+- Returns `public_token` in `onConnectSuccess` callback
 
 **When to use:** First-time users or users without an existing access token.
 
@@ -196,7 +196,7 @@ INIT → INTEGRATION → STATUS
 
 - Skips authentication (account already exists on the backend)
 - User directly selects integrations
-- Returns `null` in `onSuccess` callback (no new token needed)
+- Returns `null` in `onConnectSuccess` callback (no new token needed)
 
 **When to use:** Returning users with a stored access token who want to add more integrations.
 
@@ -243,8 +243,8 @@ The `KryptosConnectButton` component triggers the connection flow:
 | Option              | Type                                                            | Required | Description                                        |
 | ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------- |
 | `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend |
-| `onSuccess`         | `(userConsent: UserConsent \| null) => void`                    | No       | Callback on successful connection                  |
-| `onError`           | `(error: Error) => void`                                        | No       | Callback on connection failure                     |
+| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | No       | Callback on successful connection                  |
+| `onConnectError`    | `(error: Error) => void`                                        | No       | Callback on connection failure                     |
 | `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page     |
 | `children`          | React.ReactNode                                                 | No       | Button text (default: "Connect to Kryptos")        |
 | `className`         | string                                                          | No       | Custom CSS class                                   |
@@ -265,7 +265,7 @@ Fetch available integration IDs from the public Kryptos API endpoint (see [Publi
 <KryptosConnectButton
   generateLinkToken={generateLinkToken}
   integrationName="binance"
-  onSuccess={(userConsent) => {
+  onConnectSuccess={(userConsent) => {
     console.log("Binance connected:", userConsent);
   }}
 >
@@ -276,7 +276,7 @@ Fetch available integration IDs from the public Kryptos API endpoint (see [Publi
 <KryptosConnectButton
   generateLinkToken={generateLinkToken}
   integrationName="metamask"
-  onSuccess={(userConsent) => {
+  onConnectSuccess={(userConsent) => {
     console.log("MetaMask connected:", userConsent);
   }}
   // Button will display: "Connect using Metamask"
@@ -729,12 +729,12 @@ Create a link token endpoint on your backend that the Web SDK's `generateLinkTok
 
 #### Choosing the Right Approach
 
-| Scenario                                 | Include `access_token`? | `isAuthorized` | User Flow (UI)                              | Returns `public_token` |
-| ---------------------------------------- | ----------------------- | -------------- | ------------------------------------------- | ---------------------- |
-| First-time user connecting to Kryptos   | ❌ No                   | `false`        | CONNECT → INTEGRATION (account created)     | ✅ Yes                 |
-| User doesn't have an access token yet   | ❌ No                   | `false`        | CONNECT → INTEGRATION (account created)     | ✅ Yes                 |
-| Returning user with stored access token | ✅ Yes                  | `true`         | INTEGRATION only (account already exists)   | ❌ No                  |
-| Adding more integrations for user       | ✅ Yes                  | `true`         | INTEGRATION only (account already exists)   | ❌ No                  |
+| Scenario                                | Include `access_token`? | `isAuthorized` | User Flow (UI)                            | Returns `public_token` |
+| --------------------------------------- | ----------------------- | -------------- | ----------------------------------------- | ---------------------- |
+| First-time user connecting to Kryptos   | ❌ No                   | `false`        | CONNECT → INTEGRATION (account created)   | ✅ Yes                 |
+| User doesn't have an access token yet   | ❌ No                   | `false`        | CONNECT → INTEGRATION (account created)   | ✅ Yes                 |
+| Returning user with stored access token | ✅ Yes                  | `true`         | INTEGRATION only (account already exists) | ❌ No                  |
+| Adding more integrations for user       | ✅ Yes                  | `true`         | INTEGRATION only (account already exists) | ❌ No                  |
 
 #### Implementation Examples
 
@@ -1066,6 +1066,7 @@ Access tokens are valid for **15 years** (473,040,000 seconds). No refresh token
 
 :::tip Complete Integration Flow
 **First Connection (New User):**
+
 1. Frontend → `generateLinkToken()` returns `{ link_token, isAuthorized: false }`
 2. SDK Flow: INIT → CONNECT → INTEGRATION → STATUS
 3. User authenticates and connects integrations
@@ -1074,12 +1075,13 @@ Access tokens are valid for **15 years** (473,040,000 seconds). No refresh token
 6. **IMPORTANT:** Store `access_token` in database for future use
 
 **Subsequent Connections (Returning User):**
+
 1. Frontend → `generateLinkToken()` returns `{ link_token, isAuthorized: true }`
 2. SDK Flow: INIT → INTEGRATION → STATUS (authentication skipped)
 3. User connects more integrations
 4. `onSuccess` receives `null` (no new token needed)
 5. Integrations are added to user's existing account
-:::
+   :::
 
 ### Step 3: Make API Calls
 
