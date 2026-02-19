@@ -92,7 +92,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" 
 | `logoUrl`            | string  | Provider logo URL                                       |
 | `isContract`         | boolean | Whether the address is a smart contract                 |
 | `alias`              | string  | User-defined alias for the integration                  |
-| `status`             | string  | Integration status (`active`, `inactive`, `error`)      |
+| `status`             | string  | Integration status: `QUEUED`, `ONGOING`, `COMPLETED`, `FAILED` |
 | `addedOn`            | number  | Timestamp when integration was added (ms)               |
 | `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                  |
 | `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |

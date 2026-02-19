@@ -15,6 +15,12 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Webhooks",
+      collapsed: false,
+      items: ["webhooks/setup", "webhooks/events"],
+    },
+    {
+      type: "category",
       label: "Recipes",
       collapsed: false,
       items: ["recipes/post-transactions-apikey"],
