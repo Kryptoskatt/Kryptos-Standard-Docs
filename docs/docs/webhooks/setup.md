@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 # Webhook Setup
 
-Webhooks allow you to receive real-time HTTP POST notifications when integration events occur in your workspace. Instead of polling the API, webhooks push data to your server as events happen.
+Webhooks allow you to receive real-time HTTP POST notifications when events occur in your workspace — including integration changes, transfer detection, and cost basis calculations. Instead of polling the API, webhooks push data to your server as events happen.
 
 ## Prerequisites
 
@@ -41,18 +41,9 @@ Fill in the webhook configuration form:
 
 ### Available Events
 
-#### Integration Events
+Select at least one event to subscribe to. Kryptos supports events across three categories: **Integration**, **Transfer Detection**, and **Cost Basis**.
 
-| Event                  | Description                                        |
-| ---------------------- | -------------------------------------------------- |
-| `integration.created`  | A user connected a new wallet or exchange          |
-| `integration.updated`  | An existing integration's settings were updated    |
-| `integration.deleted`  | A user removed a wallet or exchange connection     |
-| `integration.failed`   | An integration sync encountered an error           |
-
-:::info More Events Coming Soon
-Additional event categories will be added in the future. See the [Webhook Events](/webhooks/events) page for the latest list.
-:::
+See the [Webhook Events](/webhooks/events) page for the full list of events, payload structures, and field descriptions.
 
 Select the events you want to receive and click **Add Webhook**.
 
@@ -126,6 +117,16 @@ app.post('/webhooks/kryptos', express.raw({ type: 'application/json' }), (req, r
     case 'integration.failed':
       console.log('Integration failed:', payload.data);
       break;
+    case 'transfer_detection.started':
+    case 'transfer_detection.completed':
+    case 'transfer_detection.failed':
+      console.log(`Transfer detection ${payload.data.status}:`, payload.data);
+      break;
+    case 'costbasis.started':
+    case 'costbasis.completed':
+    case 'costbasis.failed':
+      console.log(`Cost basis ${payload.data.status}:`, payload.data);
+      break;
   }
 
   res.status(200).send('OK');
@@ -168,6 +169,10 @@ def handle_webhook():
         print('Integration removed:', payload['data'])
     elif event == 'integration.failed':
         print('Integration failed:', payload['data'])
+    elif event.startswith('transfer_detection.'):
+        print(f"Transfer detection {payload['data']['status']}:", payload['data'])
+    elif event.startswith('costbasis.'):
+        print(f"Cost basis {payload['data']['status']}:", payload['data'])
 
     return 'OK', 200
 ```

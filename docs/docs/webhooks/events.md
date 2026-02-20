@@ -8,8 +8,8 @@ sidebar_position: 2
 
 Every webhook delivery follows a generic structure. The `data` field changes depending on the event category.
 
-:::info More Events Coming Soon
-We are actively adding new event categories. This page will be updated as they become available.
+:::tip 10 Event Types Available
+Kryptos supports **Integration**, **Transfer Detection**, and **Cost Basis** webhook events.
 :::
 
 ## Generic Structure
@@ -110,3 +110,110 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 | ----- | --------------------------------- |
 | `api` | Connected via API keys or OAuth   |
 | `csv` | Imported via CSV file upload      |
+
+---
+
+## Transfer Detection Events
+
+Triggered during the transfer detection process. Transfer detection identifies movements of assets between a user's own wallets/exchanges (internal transfers) so they are not incorrectly treated as taxable disposals.
+
+### Events
+
+| Event                            | Description                                          |
+| -------------------------------- | ---------------------------------------------------- |
+| `transfer_detection.started`     | Transfer detection analysis has begun for a user     |
+| `transfer_detection.completed`   | Transfer detection analysis finished successfully    |
+| `transfer_detection.failed`      | Transfer detection encountered an error              |
+
+### Example Payload
+
+```json
+{
+  "id": "whd_8cbe199e6ae5fe275320c2b0",
+  "event": "transfer_detection.started",
+  "timestamp": "2026-02-20T18:09:07.962Z",
+  "data": {
+    "uid": "8efe14a679fa4fe390b03dfa",
+    "action": "DETECT_TRANSFER",
+    "status": "started",
+    "reason": null,
+    "timestamp": 1771610947808
+  }
+}
+```
+
+### Data Fields
+
+| Field       | Type           | Description                                                                 |
+| ----------- | -------------- | --------------------------------------------------------------------------- |
+| `uid`       | string         | The user ID associated with the operation                                   |
+| `action`    | string         | Always `DETECT_TRANSFER` for this event category                            |
+| `status`    | string         | Current status: `started`, `completed`, or `failed`                         |
+| `reason`    | string \| null | Error reason if the status is `failed`, otherwise `null`                    |
+| `timestamp` | number         | Unix timestamp (ms) of when the status changed                              |
+
+---
+
+## Cost Basis Events
+
+Triggered during the cost basis calculation process. Cost basis (also known as Account Manager) computes acquisition costs, gains, and losses across a user's portfolio for tax reporting.
+
+### Events
+
+| Event                 | Description                                        |
+| --------------------- | -------------------------------------------------- |
+| `costbasis.started`   | Cost basis calculation has begun for a user        |
+| `costbasis.completed` | Cost basis calculation finished successfully       |
+| `costbasis.failed`    | Cost basis calculation encountered an error        |
+
+### Example Payload
+
+```json
+{
+  "id": "whd_4e1f0937c274e70d738f65f7",
+  "event": "costbasis.started",
+  "timestamp": "2026-02-20T18:09:39.628Z",
+  "data": {
+    "uid": "8efe14a679fa4fe390b03dfa",
+    "action": "ACCOUNT_MANAGER",
+    "status": "started",
+    "reason": null,
+    "timestamp": 1771610979502
+  }
+}
+```
+
+### Data Fields
+
+| Field       | Type           | Description                                                                 |
+| ----------- | -------------- | --------------------------------------------------------------------------- |
+| `uid`       | string         | The user ID associated with the operation                                   |
+| `action`    | string         | Always `ACCOUNT_MANAGER` for this event category                            |
+| `status`    | string         | Current status: `started`, `completed`, or `failed`                         |
+| `reason`    | string \| null | Error reason if the status is `failed`, otherwise `null`                    |
+| `timestamp` | number         | Unix timestamp (ms) of when the status changed                              |
+
+---
+
+## Event Lifecycle
+
+Transfer Detection and Cost Basis events follow a predictable lifecycle. You can use these events to track progress and notify users in your application.
+
+```
+┌─────────────┐     ┌─────────────┐
+│   started    │────▶│  completed   │   (success path)
+└─────────────┘     └─────────────┘
+       │
+       │            ┌─────────────┐
+       └───────────▶│   failed     │   (error path)
+                    └─────────────┘
+```
+
+:::tip Processing Order
+When a full portfolio recalculation is triggered, events typically fire in this order:
+1. `transfer_detection.started` — Identify internal transfers
+2. `transfer_detection.completed` — Transfers matched
+3. `costbasis.started` — Calculate gains/losses
+4. `costbasis.completed` — Calculation finished
+:::
+
