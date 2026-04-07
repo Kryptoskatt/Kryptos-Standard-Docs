@@ -53,7 +53,8 @@ https://connect-api.kryptos.io
    Pass link_token to the SDK widget
    ↓
 3. USER AUTHENTICATES
-   User logs in or creates anonymous account
+   ├── Email Login: enter email → receive OTP → verify OTP
+   └── Anonymous:   proceed without credentials
    ↓
 4. USER GRANTS CONSENT
    User approves requested permissions
@@ -171,6 +172,8 @@ function ConnectButton() {
 }
 ```
 
+---
+
 ### User Flow Variations
 
 The SDK automatically handles two different user flows based on the `isAuthorized` flag returned from `generateLinkToken`:
@@ -178,7 +181,7 @@ The SDK automatically handles two different user flows based on the `isAuthorize
 #### Flow 1: New User (`isAuthorized: false` or undefined)
 
 ```
-INIT → CONNECT → INTEGRATION → STATUS
+INIT → CONNECT (Email OTP or anonymous) → INTEGRATION → STATUS
 ```
 
 - User goes through authentication
@@ -240,15 +243,17 @@ Wrap your application with `KryptosConnectProvider`:
 
 The `KryptosConnectButton` component triggers the connection flow:
 
-| Option              | Type                                                            | Required | Description                                        |
-| ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------- |
-| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend |
-| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | No       | Callback on successful connection                  |
-| `onConnectError`    | `(error: Error) => void`                                        | No       | Callback on connection failure                     |
-| `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page     |
-| `children`          | React.ReactNode                                                 | No       | Button text (default: "Connect to Kryptos")        |
-| `className`         | string                                                          | No       | Custom CSS class                                   |
-| `style`             | React.CSSProperties                                             | No       | Inline styles                                      |
+| Option              | Type                                                            | Required | Description                                                                                                                |
+| ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend                                                                         |
+| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | Yes      | Callback on successful connection                                                                                          |
+| `onConnectError`    | `(error: Error) => void`                                        | Yes      | Callback on connection failure                                                                                             |
+| `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page                                                                             |
+| `children`          | React.ReactNode                                                 | No       | Button text. Defaults to "Connect [integrationName] Account" if `integrationName` is set, otherwise "Connect with Kryptos" |
+| `size`              | `"sm"` \| `"md"` \| `"lg"`                                      | No       | Button size (default: `"md"`)                                                                                              |
+| `disabled`          | boolean                                                         | No       | Disables the button (also auto-disabled during loading)                                                                    |
+| `className`         | string                                                          | No       | Custom CSS class                                                                                                           |
+| `style`             | React.CSSProperties                                             | No       | Inline styles                                                                                                              |
 
 ### Direct Integration Flow
 
