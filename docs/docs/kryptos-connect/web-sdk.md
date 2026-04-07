@@ -113,6 +113,8 @@ INIT → CONNECT → INTEGRATION → STATUS
 ```
 
 - User goes through authentication
+  - **Email Login:** Enter email → receive OTP → verify OTP
+  - **Anonymous:** proceed without credentials
 - Account is created on the backend
 - User selects integrations to connect
 - Returns `public_token` in `onConnectSuccess` callback
@@ -171,15 +173,17 @@ Wrap your application with `KryptosConnectProvider`:
 
 The `KryptosConnectButton` component triggers the connection flow:
 
-| Option              | Type                                                            | Required | Description                                        |
-| ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------- |
-| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend |
-| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | No       | Callback on successful connection                  |
-| `onConnectError`    | `(error: Error) => void`                                        | No       | Callback on connection failure                     |
-| `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page     |
-| `children`          | React.ReactNode                                                 | No       | Button text (default: "Connect to Kryptos")        |
-| `className`         | string                                                          | No       | Custom CSS class                                   |
-| `style`             | React.CSSProperties                                             | No       | Inline styles                                      |
+| Option              | Type                                                            | Required | Description                                                                                                                |
+| ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend                                                                         |
+| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | Yes      | Callback on successful connection                                                                                          |
+| `onConnectError`    | `(error: Error) => void`                                        | Yes      | Callback on connection failure                                                                                             |
+| `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page                                                                             |
+| `children`          | React.ReactNode                                                 | No       | Button text. Defaults to "Connect [integrationName] Account" if `integrationName` is set, otherwise "Connect with Kryptos" |
+| `size`              | `"sm"` \| `"md"` \| `"lg"`                                      | No       | Button size (default: `"md"`)                                                                                              |
+| `disabled`          | boolean                                                         | No       | Disables the button (also auto-disabled during loading)                                                                    |
+| `className`         | string                                                          | No       | Custom CSS class                                                                                                           |
+| `style`             | React.CSSProperties                                             | No       | Inline styles                                                                                                              |
 
 ## Direct Integration Flow
 
