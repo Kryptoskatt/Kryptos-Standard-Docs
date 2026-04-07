@@ -39,7 +39,7 @@ The `data` object always contains a `uid` field identifying the user. The remain
 
 ## Integration Events
 
-Triggered when a user's wallet or exchange connection changes. The `data` fields match the response format of the [Integrations API](/api/integrations).
+Triggered when a user's wallet or exchange connection changes. The `data` fields match the response format of the [Integrations API](/docs/api/integrations).
 
 ### Events
 

@@ -412,7 +412,7 @@ Include fiat values for accurate cost basis tracking:
 
 ### 3. Labels
 
-- Choose appropriate labels from the [supported labels list](/api-legacy/transactions#transaction-labels)
+- Choose appropriate labels from the [supported labels list](/docs/api-legacy/transactions#transaction-labels)
 - Consistent labeling helps with accurate tax calculations
 - Use specific labels (e.g., `DeFi Swap` instead of `Trade`) when possible
 
@@ -466,15 +466,15 @@ Include fiat values for accurate cost basis tracking:
 
 **Solution:**
 
-1. Check the [Transaction Labels](/api-legacy/transactions#transaction-labels) section
+1. Check the [Transaction Labels](/docs/api-legacy/transactions#transaction-labels) section
 2. Ensure the label is spelled exactly as shown (case-sensitive)
 3. Verify the label is compatible with your transaction type
 
 ## Next Steps
 
-- [View full API reference](/api-legacy/transactions)
-- [Learn about OAuth authentication](/authentication/oauth)
-- [Explore other API endpoints](/api/transactions)
+- [View full API reference](/docs/api-legacy/transactions)
+- [Learn about OAuth authentication](/docs/authentication/oauth)
+- [Explore other API endpoints](/docs/api/transactions)
 - [Contact support](mailto:support@kryptos.io) for help
 
 ## Code Examples
@@ -614,8 +614,8 @@ curl -X POST "https://connect.kryptos.io/api/v0/transactions" \
 
 ## Related Resources
 
-- [API Key Authentication Guide](/authentication/api-key) - Complete API key setup and management
-- [Legacy Transactions API](/api-legacy/transactions) - V0 transactions endpoint documentation
-- [Transaction Types Reference](/api/transactions) - V1 transactions endpoint
-- [Public Integrations List](/public-endpoints/integrations) - All supported integrations for sender/receiver
-- [Error Codes Reference](/reference/errors) - API error codes
+- [API Key Authentication Guide](/docs/authentication/api-key) - Complete API key setup and management
+- [Legacy Transactions API](/docs/api-legacy/transactions) - V0 transactions endpoint documentation
+- [Transaction Types Reference](/docs/api/transactions) - V1 transactions endpoint
+- [Public Integrations List](/docs/public-endpoints/integrations) - All supported integrations for sender/receiver
+- [Error Codes Reference](/docs/reference/errors) - API error codes

@@ -2,10 +2,9 @@
 id: intro
 title: Introduction
 sidebar_position: 1
-slug: /
 ---
 
-# Kryptos API documentation
+# Kryptos API Documentation
 
 A comprehensive API for accessing cryptocurrency portfolio data, transactions, DeFi holdings, NFT collections, and portfolio analytics.
 
@@ -13,86 +12,26 @@ A comprehensive API for accessing cryptocurrency portfolio data, transactions, D
 
 Kryptos Connect APIs provide access to:
 
-- **Portfolio Holdings** – Track crypto assets across multiple wallets and chains
-- **Transaction History** – Complete transaction records with advanced filtering
-- **DeFi Integration** – Lending, staking, farming, and derivatives positions
-- **NFT Management** – Collection tracking with metadata and sales history
-- **Portfolio Insights** – Analytics and user classification
-- **Tax Calculations** – Cost basis, P&L, and tax reporting data
-
-## Use Cases
-
-Kryptos Connect is ideal for:
-
-| Use Case               | Description                                                                     |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| **Portfolio Trackers** | Build portfolio dashboards that aggregate holdings across wallets and exchanges |
-| **Tax Software**       | Access transaction history and cost basis data for tax calculations             |
-| **DeFi Analytics**     | Monitor DeFi positions, yields, and performance across protocols                |
-| **NFT Platforms**      | Display NFT collections with metadata, floor prices, and sales history          |
-| **Risk Assessment**    | Analyze portfolio composition for lending, insurance, or compliance             |
-| **Financial Advisors** | View client holdings with their consent for advisory services                   |
+- **Portfolio Holdings** -- Track crypto assets across multiple wallets and chains
+- **Transaction History** -- Complete transaction records with advanced filtering
+- **DeFi Integration** -- Lending, staking, farming, and derivatives positions
+- **NFT Management** -- Collection tracking with metadata and sales history
+- **Portfolio Insights** -- Analytics and user classification
+- **Tax Calculations** -- Cost basis, P&L, and tax reporting data
 
 ## Authentication Options
 
 Kryptos provides two ways to access user portfolio data:
 
-### 1. OAuth 2.0 Authentication
+### OAuth 2.0 Authentication
 
-Standard OAuth 2.0 flow for applications where users authenticate directly with Kryptos. Best for:
+Standard OAuth 2.0 flow for web applications where users authenticate directly with Kryptos. **[OAuth 2.0 Guide](/docs/authentication/oauth)**
 
-- Web applications with server-side authentication
-- Applications where users already have Kryptos accounts
-- Direct API integrations
+### Kryptos Connect Widget
 
-**[OAuth 2.0 Guide →](/authentication/oauth)**
-
-### 2. Kryptos Connect Widget
-
-A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow. Best for:
-
-- Embedded integrations in third-party applications
-- Mobile apps (iOS & Android)
-- Quick integration without building custom auth UI
-- Anonymous user support
-
-**Key Features:**
-
-- Single widget integration via Web SDK and Mobile SDK
-- Native iOS and Android support
-- User-consented data sharing
-- Standardized data format
-- Granular permission scopes
-- Long-lived access tokens (no refresh needed)
-
-**[Kryptos Connect Guide →](/kryptos-connect)**
-
----
-
-**Get Started:**
-
-- **[Developer Portal Setup →](/developer-portal)** - Create your account and get credentials
-
-## API Versions
-
-| Version | Path    | Description                               |
-| ------- | ------- | ----------------------------------------- |
-| **V1**  | `/v1/*` | Modern format with standardized structure |
-| **V0**  | `/v0/*` | Legacy format (will be deprecated)        |
+A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow for embedded integrations. **[Kryptos Connect Guide](/docs/kryptos-connect)**
 
 ## Quick Start
-
-Get up and running in minutes:
-
-**1. Sign up on the [Developer Portal](https://dashboard.kryptos.io/)** → Create your account
-
-**2. Create a workspace** → Set up your development environment
-
-**3. Register your application** → Obtain `client_id` and `client_secret`
-
-**4. Implement OAuth flow** → Redirect users to authorize access
-
-**5. Call the API** → Fetch portfolio data with a single request
 
 ```bash
 curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
@@ -101,27 +40,16 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
 ```
 
-That's it! You're now ready to access user portfolio data.
-
 :::info Step-by-Step Guide
-New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/developer-portal)** for detailed instructions with screenshots.
+New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/docs/developer-portal)** for detailed instructions with screenshots.
 :::
-
-## Features
-
-| Feature              | Description                     |
-| -------------------- | ------------------------------- |
-| **11 Endpoints**     | Complete API coverage           |
-| **2 Auth Methods**   | OAuth 2.0 & API Key             |
-| **16 OAuth Scopes**  | Granular read/write permissions |
-| **TypeScript Types** | Full type definitions           |
 
 ## Next Steps
 
-1. **[Developer Portal Setup](/developer-portal)** – Create your account and get credentials
-2. **[Set up Authentication](/authentication/oauth)** – Configure OAuth 2.0 flow
-3. **[Explore Endpoints](/api/health)** – Browse the API reference
-4. **[View Types](/reference/types)** – TypeScript definitions
+1. **[Developer Portal Setup](/docs/developer-portal)** -- Create your account and get credentials
+2. **[Set up Authentication](/docs/authentication/oauth)** -- Configure OAuth 2.0 flow
+3. **[Explore Endpoints](/docs/api/health)** -- Browse the API reference
+4. **[View Types](/docs/reference/types)** -- TypeScript definitions
 
 ## Support
 

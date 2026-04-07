@@ -6,6 +6,7 @@ sidebar_position: 2
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import ConnectShowcase from '@site/src/components/ConnectShowcase';
 
 # Kryptos Connect
 
@@ -27,6 +28,12 @@ Kryptos Connect provides a seamless way for users to:
 ```
 https://connect-api.kryptos.io
 ```
+
+## User flow
+
+See how users connect their accounts through the Kryptos Connect widget:
+
+<ConnectShowcase />
 
 ---
 
@@ -256,7 +263,7 @@ The `integrationName` prop allows you to direct users to a specific integration,
 
 **Getting Supported Integration IDs:**
 
-Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/public-endpoints/integrations) documentation).
+Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/docs/public-endpoints/integrations) documentation).
 
 **Usage Example:**
 
@@ -1443,6 +1450,6 @@ To upgrade to production mode with full access to all chains and addresses, cont
 
 ## Next Steps
 
-1. **[Set up OAuth 2.0](/authentication/oauth)** - Configure full OAuth flow
-2. **[Explore API Endpoints](/api/holdings)** - Browse available APIs
-3. **[View Type Definitions](/reference/types)** - TypeScript types for API responses
+1. **[Set up OAuth 2.0](/docs/authentication/oauth)** - Configure full OAuth flow
+2. **[Explore API Endpoints](/docs/api/holdings)** - Browse available APIs
+3. **[View Type Definitions](/docs/reference/types)** - TypeScript types for API responses

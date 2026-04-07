@@ -35,7 +35,7 @@ Create new transactions manually.
 ### Request Body Schema
 
 :::tip Getting Wallet IDs
-To get valid `walletId` values for your connected wallets, call `GET /api/integrations`. See [Integrations](/api/integrations) documentation for details.
+To get valid `walletId` values for your connected wallets, call `GET /api/integrations`. See [Integrations](/docs/api/integrations) documentation for details.
 :::
 
 ```typescript
@@ -179,7 +179,7 @@ To get valid `walletId` values for your connected wallets, call `GET /api/integr
 :::important Sender/Receiver Integration Details
 The `walletId` field in `sender` or `receiver` objects is **only needed if the wallet exists in the Kryptos system**. If the sending/receiving wallet is external (not tracked in Kryptos), you can omit the `walletId` and just provide `address`, `name`, etc.
 
-When referencing an integration, the `name` and `publicName` fields must match the corresponding values from the [Public Integrations List](/public-endpoints/integrations).
+When referencing an integration, the `name` and `publicName` fields must match the corresponding values from the [Public Integrations List](/docs/public-endpoints/integrations).
 :::
 
 | Transaction Type | When to Attach Sender | When to Attach Receiver | Notes |
@@ -225,7 +225,7 @@ When referencing an integration, the `name` and `publicName` fields must match t
 
 :::tip Deriving name and publicName
 - `name`: Use **UPPERCASE** (e.g., "BINANCE", "ETHEREUM")
-- `publicName`: Use the value from the [Public Integrations List](/public-endpoints/integrations) (e.g., "Binance", "Ethereum")
+- `publicName`: Use the value from the [Public Integrations List](/docs/public-endpoints/integrations) (e.g., "Binance", "Ethereum")
 :::
 
 ### Transaction Labels

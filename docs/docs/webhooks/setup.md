@@ -16,7 +16,7 @@ Webhooks allow you to receive real-time HTTP POST notifications when events occu
 Before you begin, ensure you have:
 
 - A [Kryptos Developer Portal](https://dashboard.kryptos.io/) account
-- An existing workspace (see [Developer Portal Setup](/developer-portal))
+- An existing workspace (see [Developer Portal Setup](/docs/developer-portal))
 - A publicly accessible HTTPS endpoint to receive webhook events
 
 ## Step 1: Navigate to the Webhooks Section
@@ -43,7 +43,7 @@ Fill in the webhook configuration form:
 
 Select at least one event to subscribe to. Kryptos supports events across three categories: **Integration**, **Transfer Detection**, and **Cost Basis**.
 
-See the [Webhook Events](/webhooks/events) page for the full list of events, payload structures, and field descriptions.
+See the [Webhook Events](/docs/webhooks/events) page for the full list of events, payload structures, and field descriptions.
 
 Select the events you want to receive and click **Add Webhook**.
 
@@ -209,6 +209,6 @@ From the Developer Portal, you can:
 
 ## Next Steps
 
-- [Webhook Events Reference](/webhooks/events) — Detailed payload structures for each event type
-- [Integrations API](/api/integrations) — Query integration data via the API
-- [Developer Portal Setup](/developer-portal) — Workspace and client configuration
+- [Webhook Events Reference](/docs/webhooks/events) — Detailed payload structures for each event type
+- [Integrations API](/docs/api/integrations) — Query integration data via the API
+- [Developer Portal Setup](/docs/developer-portal) — Workspace and client configuration

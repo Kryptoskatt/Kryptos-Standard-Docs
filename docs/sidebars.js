@@ -27,7 +27,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "V1 Endpoints",
+      label: "API Endpoints",
       collapsed: false,
       items: [
         "api/health",
@@ -48,7 +48,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "V0 Endpoints (Legacy)",
+      label: "Legacy (V0)",
       collapsed: true,
       items: [
         "api-legacy/wallets",
@@ -68,4 +68,3 @@ const sidebars = {
 };
 
 export default sidebars;
-
