@@ -29,7 +29,7 @@ Standard OAuth 2.0 flow for web applications where users authenticate directly w
 
 ### Kryptos Connect Widget
 
-A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow for embedded integrations. **[Kryptos Connect Guide](/docs/kryptos-connect)**
+A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow for embedded integrations. **[Kryptos Connect Guide](/docs/kryptos-connect/overview)**
 
 ## Quick Start
 

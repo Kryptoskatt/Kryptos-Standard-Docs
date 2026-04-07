@@ -5,7 +5,19 @@ const sidebars = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["intro", "kryptos-connect", "developer-portal"],
+      items: ["intro", "developer-portal"],
+    },
+    {
+      type: "category",
+      label: "Kryptos Connect",
+      collapsed: false,
+      items: [
+        "kryptos-connect/overview",
+        "kryptos-connect/web-sdk",
+        "kryptos-connect/mobile-sdk",
+        "kryptos-connect/backend",
+        "kryptos-connect/examples",
+      ],
     },
     {
       type: "category",

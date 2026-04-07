@@ -57,7 +57,7 @@ const startCards = [
     ),
     title: "Kryptos Connect",
     desc: "Drop-in widget for Web & Mobile that handles the complete auth flow.",
-    to: "/docs/kryptos-connect",
+    to: "/docs/kryptos-connect/overview",
   },
 ];
 
@@ -158,20 +158,6 @@ function ResourceCard({ title, desc, to }) {
 export default function HomepageCards() {
   return (
     <div className="kp-home">
-      {/* Stats */}
-      <div className="kp-stats">
-        {[
-          ["5,000+", "Integrations"],
-          ["200+", "Exchanges"],
-          ["100+", "Blockchains"],
-        ].map(([value, label]) => (
-          <div key={label} className="kp-stats__item">
-            <span className="kp-stats__value">{value}</span>
-            <span className="kp-stats__label">{label}</span>
-          </div>
-        ))}
-      </div>
-
       {/* Connect Demo */}
       <AnimatedSection>
         <h2 className="kp-section__title">How Kryptos Connect works</h2>
