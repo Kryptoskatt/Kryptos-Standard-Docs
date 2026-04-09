@@ -169,7 +169,6 @@ Wrap your application with `KryptosConnectProvider`:
 | `theme`                  | `"light"` \| `"dark"`        | No       | Visual theme (default: `"light"`)                             |
 | `walletConnectProjectId` | string                       | Yes      | WalletConnect project ID                                      |
 | `authMethods`            | `("email" \| "anonymous")[]` | No       | Authentication methods to show. Defaults to both when not set |
-| `baseUrl`                | string                       | No       | Override the Kryptos API base URL                             |
 
 ### Restricting Auth Methods
 
