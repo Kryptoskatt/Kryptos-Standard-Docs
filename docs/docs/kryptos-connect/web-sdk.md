@@ -112,7 +112,7 @@ The SDK automatically handles two different user flows based on the `isAuthorize
 INIT → CONNECT → INTEGRATION → STATUS
 ```
 
-- User goes through authentication
+- User goes through authentication (controlled by `authMethods` prop)
   - **Email Login:** Enter email → receive OTP → verify OTP
   - **Anonymous:** proceed without credentials
 - Account is created on the backend
@@ -161,13 +161,44 @@ generateLinkToken={async () => {
 
 Wrap your application with `KryptosConnectProvider`:
 
-| Option                   | Type                      | Required | Description                             |
-| ------------------------ | ------------------------- | -------- | --------------------------------------- |
-| `appName`                | string                    | Yes      | Your application name                   |
-| `appLogo`                | string \| React.ReactNode | No       | Logo URL or React component             |
-| `clientId`               | string                    | Yes      | Kryptos client ID from Developer Portal |
-| `theme`                  | `"light"` \| `"dark"`     | No       | Visual theme (default: `"light"`)       |
-| `walletConnectProjectId` | string                    | Yes      | WalletConnect project ID                |
+| Option                   | Type                         | Required | Description                                                   |
+| ------------------------ | ---------------------------- | -------- | ------------------------------------------------------------- |
+| `appName`                | string                       | Yes      | Your application name                                         |
+| `appLogo`                | string \| React.ReactNode    | No       | Logo URL or React component                                   |
+| `clientId`               | string                       | Yes      | Kryptos client ID from Developer Portal                       |
+| `theme`                  | `"light"` \| `"dark"`        | No       | Visual theme (default: `"light"`)                             |
+| `walletConnectProjectId` | string                       | Yes      | WalletConnect project ID                                      |
+| `authMethods`            | `("email" \| "anonymous")[]` | No       | Authentication methods to show. Defaults to both when not set |
+
+### Restricting Auth Methods
+
+By default, both `email` and `anonymous` login options are shown. Use `authMethods` in the provider config to restrict which options appear:
+
+```tsx
+// Email only
+<KryptosConnectProvider
+  config={{
+    appName: "My App",
+    clientId: "your-client-id",
+    walletConnectProjectId: "your-walletconnect-project-id",
+    authMethods: ["email"],
+  }}
+>
+  {children}
+</KryptosConnectProvider>
+
+// Anonymous only
+<KryptosConnectProvider
+  config={{
+    appName: "My App",
+    clientId: "your-client-id",
+    walletConnectProjectId: "your-walletconnect-project-id",
+    authMethods: ["anonymous"],
+  }}
+>
+  {children}
+</KryptosConnectProvider>
+```
 
 ## Button Configuration
 
