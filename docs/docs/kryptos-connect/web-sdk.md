@@ -161,14 +161,15 @@ generateLinkToken={async () => {
 
 Wrap your application with `KryptosConnectProvider`:
 
-| Option                   | Type                         | Required | Description                                                   |
-| ------------------------ | ---------------------------- | -------- | ------------------------------------------------------------- |
-| `appName`                | string                       | Yes      | Your application name                                         |
-| `appLogo`                | string \| React.ReactNode    | No       | Logo URL or React component                                   |
-| `clientId`               | string                       | Yes      | Kryptos client ID from Developer Portal                       |
-| `theme`                  | `"light"` \| `"dark"`        | No       | Visual theme (default: `"light"`)                             |
-| `walletConnectProjectId` | string                       | Yes      | WalletConnect project ID                                      |
-| `authMethods`            | `("email" \| "anonymous")[]` | No       | Authentication methods to show. Defaults to both when not set |
+| Option                   | Type                                                           | Required | Description                                                   |
+| ------------------------ | -------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| `appName`                | string                                                         | Yes      | Your application name                                         |
+| `appLogo`                | string \| React.ReactNode                                      | No       | Logo URL or React component                                   |
+| `clientId`               | string                                                         | Yes      | Kryptos client ID from Developer Portal                       |
+| `theme`                  | `"light"` \| `"dark"`                                          | No       | Visual theme (default: `"light"`)                             |
+| `walletConnectProjectId` | string                                                         | Yes      | WalletConnect project ID                                      |
+| `authMethods`            | `("email" \| "anonymous")[]`                                   | No       | Authentication methods to show. Defaults to both when not set |
+| `language`               | `"en" \| "fr" \| "de" \| "pt" \| "sv" \| "es" \| "pl" \| "it"` | No       | UI language for the connect flow (default: `"en"`)            |
 
 ### Restricting Auth Methods
 
@@ -194,6 +195,34 @@ By default, both `email` and `anonymous` login options are shown. Use `authMetho
     clientId: "your-client-id",
     walletConnectProjectId: "your-walletconnect-project-id",
     authMethods: ["anonymous"],
+  }}
+>
+  {children}
+</KryptosConnectProvider>
+```
+
+### Setting the Language
+
+By default, the connect flow UI is shown in English. Use the `language` prop to render the interface in a different supported language:
+
+| Code   | Language   |
+| ------ | ---------- |
+| `"en"` | English    |
+| `"fr"` | French     |
+| `"de"` | German     |
+| `"pt"` | Portuguese |
+| `"sv"` | Swedish    |
+| `"es"` | Spanish    |
+| `"pl"` | Polish     |
+| `"it"` | Italian    |
+
+```tsx
+<KryptosConnectProvider
+  config={{
+    appName: "My App",
+    clientId: "your-client-id",
+    walletConnectProjectId: "your-walletconnect-project-id",
+    language: "fr", // French
   }}
 >
   {children}
