@@ -125,7 +125,10 @@ curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc"
   "pagination": {
     "limit": 100,
     "offset": 0,
-    "returned_count": 1
+    "returned_count": 1,
+    "totalCount": 1542,
+    "hasNextPage": true,
+    "hasPreviousPage": false
   },
   "user_id": "user_123",
   "timestamp": 1640995200000
@@ -136,11 +139,14 @@ curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc"
 
 The response includes a `pagination` object with the following fields:
 
-| Field            | Type   | Description                            |
-| ---------------- | ------ | -------------------------------------- |
-| `limit`          | number | Maximum number of results requested    |
-| `offset`         | number | Number of records skipped              |
-| `returned_count` | number | Actual number of transactions returned |
+| Field             | Type    | Description                                                    |
+| ----------------- | ------- | -------------------------------------------------------------- |
+| `limit`           | number  | Maximum number of results requested                            |
+| `offset`          | number  | Number of records skipped                                      |
+| `returned_count`  | number  | Actual number of transactions returned in this page            |
+| `totalCount`      | number  | Total number of transactions matching the filters              |
+| `hasNextPage`     | boolean | Whether another page exists after this one                     |
+| `hasPreviousPage` | boolean | Whether a previous page exists (i.e. `offset > 0`)             |
 
 ### Pagination Example
 

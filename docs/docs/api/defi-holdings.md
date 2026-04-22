@@ -84,11 +84,28 @@ curl -X GET "https://connect.kryptos.io/api/v1/defi-holdings?chain=ethereum&limi
   ],
   "pagination": {
     "limit": 10,
-    "offset": 0
+    "offset": 0,
+    "returned_count": 1,
+    "totalCount": 7,
+    "hasNextPage": false,
+    "hasPreviousPage": false
   },
   "user_id": "user_123"
 }
 ```
+
+## Pagination
+
+The response includes a `pagination` object with the following fields:
+
+| Field             | Type    | Description                                            |
+| ----------------- | ------- | ------------------------------------------------------ |
+| `limit`           | number  | Maximum number of results requested                    |
+| `offset`          | number  | Number of records skipped                              |
+| `returned_count`  | number  | Actual number of holdings returned in this page        |
+| `totalCount`      | number  | Total number of DeFi holdings matching the filters     |
+| `hasNextPage`     | boolean | Whether another page exists after this one             |
+| `hasPreviousPage` | boolean | Whether a previous page exists (i.e. `offset > 0`)     |
 
 ## DeFi Categories
 

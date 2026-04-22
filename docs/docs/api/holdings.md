@@ -43,6 +43,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
       "marketPrice": 50000,
       "marketValue": 125000,
       "unrealizedPnL": 25000,
+      "roi": 25,
       "baseCurrency": "USD",
       "24hrChange": 3.5,
       "marketLinks": {
@@ -92,6 +93,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
 | `marketPrice`       | number | Current market price        |
 | `marketValue`       | number | Total market value          |
 | `unrealizedPnL`     | number | Unrealized profit/loss      |
+| `roi`               | number | Return on investment % for this asset (`unrealizedPnL / costbasis * 100`; `0` when cost basis is unknown) |
 | `baseCurrency`      | string | Base currency (USD)         |
 | `24hrChange`        | number | 24-hour price change %      |
 | `assetDistribution` | array  | Distribution across wallets |
