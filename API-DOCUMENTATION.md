@@ -446,7 +446,11 @@ GET /v1/holdings
 
 **Required Permissions:** `read:holdings`
 
-**Query Parameters:** None
+**Query Parameters:**
+
+| Parameter | Type    | Description                                                                         | Example |
+| --------- | ------- | ----------------------------------------------------------------------------------- | ------- |
+| `isSpam`  | boolean | Include spam token holdings. Default is `false` (spam excluded). Pass `true` to include spam tokens. | `true`  |
 
 **Response Structure:**
 
@@ -569,6 +573,7 @@ GET /v1/transactions
 | `isMissingPurchase` | boolean | Transactions missing purchase data       | `true`                  |
 | `isEdited`          | boolean | Manually edited transactions             | `true`                  |
 | `isManual`          | boolean | Manually created transactions            | `true`                  |
+| `isSpam`            | boolean | Include spam transactions. Default is `false` (spam excluded). Pass `true` to include spam. | `true` |
 | `transactionType`   | string  | Transaction types (comma-separated)      | `swap,deposit,withdraw` |
 | `label`             | string  | Transaction labels (comma-separated)     | `DeFi,Swap,Purchase`    |
 | `order`             | string  | Sort order (`asc` or `desc`)             | `desc`                  |
@@ -864,10 +869,11 @@ GET /v1/nft-holdings
 | `source`     | string | Filter by data sources (comma-separated, max 30) | `opensea,alchemy`               |
 | `collection` | string | Filter by collections (comma-separated, max 30)  | `boredapeyachtclub,cryptopunks` |
 | `chain`      | string | Filter by blockchain (comma-separated)           | `ethereum,polygon`              |
-| `tokenId`    | string | Specific token ID                                | `1234`                          |
-| `contract`   | string | Contract address                                 | `0xBC4CA0...`                   |
-| `limit`      | number | Number of NFTs (1-1000, default: 100)            | `50`                            |
-| `offset`     | number | Pagination offset (default: 0)                   | `0`                             |
+| `tokenId`    | string  | Specific token ID                                | `1234`                          |
+| `contract`   | string  | Contract address                                 | `0xBC4CA0...`                   |
+| `isSpam`     | boolean | Include spam NFTs. Default is `false` (spam excluded). Pass `true` to include spam NFTs. | `true` |
+| `limit`      | number  | Number of NFTs (1-1000, default: 100)            | `50`                            |
+| `offset`     | number  | Pagination offset (default: 0)                   | `0`                             |
 
 **Response Structure:**
 
