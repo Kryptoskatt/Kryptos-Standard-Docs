@@ -76,6 +76,21 @@ Save your Client Secret securely - it will only be shown once! Store it in a sec
 
 ![Save Client Credentials](/img/developer-portal/secret-saving.png)
 
+## Step 6: Configure Transaction Limits (Optional)
+
+Cap how many transactions each user imports through your app — useful for free tiers, pilots, or trial flows. Configured on the **Connected Accounts** page in your workspace.
+
+Connect distinguishes two grant types:
+
+- **Guest** — accounts created on the fly inside your Connect flow. Limits apply.
+- **Linked** — users who signed in with their existing Kryptos account. Limits don't apply because they own their account and manage their own volume across every app they connect to.
+
+**Workspace default** — sets the limit for every *new* Guest user. Capped at 100,000. Click **Edit** on the *Default Transaction Limit* card.
+
+**Per-user override** — raise or lower the cap for a single Guest grant. Expand the user's row and edit the *Transaction Import Limit* section. Overrides are not capped.
+
+**Resolution order:** per-user override → workspace default → platform default (100,000, limiter on). The first defined value wins. Disabling the limiter at any level removes the cap for that scope.
+
 ## Next Steps
 
 Now that you have your OAuth credentials, you're ready to implement the authentication flow:
