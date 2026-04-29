@@ -610,6 +610,92 @@ async function listGrants() {
 }
 ```
 
+### Resync Integration
+
+Trigger a resync on a connected user's wallet, exchange, or CSV integration. Useful when you want to re-pull recent transactions on demand (e.g. a "Refresh" button in your app) or fully re-ingest after a data change.
+
+**Endpoint:** `POST https://connect-api.kryptos.io/developer/integrations/{walletId}/resync`
+
+```javascript
+async function resyncIntegration(walletId, userId, mode = "latest") {
+  const response = await axios.post(
+    `https://connect-api.kryptos.io/developer/integrations/${walletId}/resync`,
+    {
+      user_id: userId,
+      mode, // "latest" or "from_start"
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    },
+  );
+
+  return response.data;
+}
+```
+
+**Modes:**
+
+| Mode         | What it does                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| `latest`     | Incremental refresh — re-pull from where the last sync left off. Wallets/exchanges only.    |
+| `from_start` | Wipe and re-pull from scratch. Works for wallets, exchanges, and CSVs.                      |
+
+**Behavior by integration type:**
+
+- **Wallet/exchange** — both modes are supported. The resync runs asynchronously on the Kryptos sync workers.
+- **CSV** — only `from_start` is supported. Returns `409 CSV_RESYNC_LATEST_UNSUPPORTED` for `mode: "latest"` (CSVs have no incremental concept). The same `walletId` is reused; the underlying handler atomically wipes the wallet's data and re-ingests from the originally uploaded file in one step.
+
+**Response (202 — wallet/exchange):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "mode": "latest",
+    "integration_type": "wallet",
+    "wallet_id": "wallet-uuid",
+    "status": "queued"
+  }
+}
+```
+
+**Response (202 — CSV from_start):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "mode": "from_start",
+    "integration_type": "csv",
+    "wallet_id": "wallet-uuid",
+    "job_id": "job_xyz789",
+    "status": "ongoing"
+  }
+}
+```
+
+**Errors:**
+
+| Status | Code                            | Description                                                          |
+| ------ | ------------------------------- | -------------------------------------------------------------------- |
+| 401    | -                               | Invalid client credentials.                                          |
+| 403    | `GRANT_NOT_FOUND`               | The user has not granted your client access (or revoked it).         |
+| 404    | `INTEGRATION_NOT_FOUND`         | No wallet with this `walletId` exists for the user.                  |
+| 404    | `CSV_SOURCE_MISSING`            | CSV resync requested but no original file is on record.              |
+| 409    | `CSV_RESYNC_LATEST_UNSUPPORTED` | `mode: "latest"` is not valid for CSVs — use `"from_start"` instead. |
+
+:::info Asynchronous behavior
+The endpoint returns 202 immediately and the resync runs in the background. To observe progress:
+
+- Poll the user's integrations list to watch `key.status` transition from `SYNCING` back to `COMPLETED`.
+- For CSV resyncs, the response includes a `job_id` you can poll for finer-grained status.
+- Listen for the `integration.updated` and `integration.failed` webhook events.
+:::
+
 ---
 
 ## Error Handling
