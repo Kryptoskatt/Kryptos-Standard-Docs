@@ -390,7 +390,8 @@ GET /v1/userinfo
     "name": "John Doe",
     "email": "john@example.com",
     "email_verified": true,
-    "preferred_username": "john@example.com"
+    "preferred_username": "john@example.com",
+    "language": "en"
   },
   "scopes": ["openid", "profile", "email"]
 }
