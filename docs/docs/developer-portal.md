@@ -91,6 +91,10 @@ Connect distinguishes two grant types:
 
 **Resolution order:** per-user override → workspace default → platform default (100,000, limiter on). The first defined value wins. Disabling the limiter at any level removes the cap for that scope.
 
+:::tip Programmatic Access
+You can also manage transaction limits via the API using your client credentials. See [Update Transaction Limit](/docs/kryptos-connect/backend#update-transaction-limit) in the backend guide.
+:::
+
 ## Next Steps
 
 Now that you have your OAuth credentials, you're ready to implement the authentication flow:

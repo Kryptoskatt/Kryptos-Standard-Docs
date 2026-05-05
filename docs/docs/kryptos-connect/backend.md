@@ -696,6 +696,84 @@ The endpoint returns 202 immediately and the resync runs in the background. To o
 - Listen for the `integration.updated` and `integration.failed` webhook events.
 :::
 
+### Update Transaction Limit
+
+Set or update the per-user transaction import limit for a Guest (anonymous) user. Useful for automating billing tier upgrades, free-trial caps, or admin tooling.
+
+**Endpoint:** `PATCH https://connect-api.kryptos.io/developer/grants/{grantId}/transaction-limit`
+
+```javascript
+async function updateTransactionLimit(grantId, { transactionLimit, enableLimiter }) {
+  const response = await axios.patch(
+    `https://connect-api.kryptos.io/developer/grants/${grantId}/transaction-limit`,
+    {
+      transactionLimit,
+      enableLimiter,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+// Examples:
+// Raise the limit for a user
+await updateTransactionLimit("cgrant_abc123", { transactionLimit: 10000 });
+
+// Disable the limiter entirely
+await updateTransactionLimit("cgrant_abc123", { enableLimiter: false });
+```
+
+**Path Parameters:**
+
+| Parameter | Type   | Description                                                       |
+| --------- | ------ | ----------------------------------------------------------------- |
+| `grantId` | string | The grant ID returned from token exchange (e.g. `cgrant_abc123`). |
+
+**Request Body:**
+
+| Field              | Type    | Required | Description                                      |
+| ------------------ | ------- | -------- | ------------------------------------------------ |
+| `transactionLimit` | number  | No*      | Positive integer. Per-user limit (not capped).   |
+| `enableLimiter`    | boolean | No*      | Whether the limiter is active for this user.     |
+
+\* At least one field is required.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "grant_id": "cgrant_abc123xyz789",
+    "user_id": "anon_user_uid",
+    "transaction_limit": 10000,
+    "enable_limiter": true
+  }
+}
+```
+
+**Errors:**
+
+| Status | Code              | Description                                              |
+| ------ | ----------------- | -------------------------------------------------------- |
+| 400    | `NOT_ANON_USER`   | User is not a Guest account. Limits only apply to Guest users. |
+| 401    | -                 | Invalid client credentials.                              |
+| 403    | `ACCESS_DENIED`   | Grant does not belong to this client.                    |
+| 404    | `GRANT_NOT_FOUND` | No grant found with this ID.                             |
+
+:::info Guest accounts only
+Transaction limits only apply to **Guest** (anonymous) accounts created through your Connect flow. Linked users (who signed in with their existing Kryptos account) manage their own volume and are not subject to developer-imposed limits.
+
+**Resolution order:** per-user override (this endpoint) → workspace default (Developer Portal) → platform default (100,000, limiter on). The first defined value wins. Setting `enableLimiter: false` removes the cap entirely for that user.
+:::
+
 ---
 
 ## Error Handling
