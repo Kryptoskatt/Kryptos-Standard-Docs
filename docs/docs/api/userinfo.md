@@ -34,7 +34,8 @@ curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
     "email": "john@example.com",
     "email_verified": true,
     "preferred_username": "john@example.com",
-    "language": "en"
+    "language": "en",
+    "transaction_limit": 15000
   },
   "scopes": ["openid", "profile", "email"]
 }
@@ -49,5 +50,6 @@ curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
 | `userInfo.email`              | string  | `email`   | Email address                                                            |
 | `userInfo.email_verified`     | boolean | `email`   | Email verification status                                                |
 | `userInfo.preferred_username` | string  | `profile` | Preferred username                                                       |
-| `userInfo.language`           | string  | `profile` | User's preferred language (e.g. `"en"`). Defaults to `"en"` if not set. |
-| `scopes`                      | array   |           | Granted OAuth scopes                                                     |
+| `userInfo.language`           | string       | `profile` | User's preferred language (e.g. `"en"`). Defaults to `"en"` if not set.                                                                       |
+| `userInfo.transaction_limit`  | number\|null | `profile` | Effective transaction import cap for this user. `null` means no limit. Resolution order: per-user override → workspace default → platform default (100,000). |
+| `scopes`                      | array        |           | Granted OAuth scopes.                                                                                                                          |

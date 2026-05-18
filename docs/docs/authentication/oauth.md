@@ -30,7 +30,7 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 | Scope            | Description                                  |
 | ---------------- | -------------------------------------------- |
 | `openid`         | Basic OpenID Connect access (required)       |
-| `profile`        | User profile (name, picture, updated_at)     |
+| `profile`        | User profile (name, preferred_username, language, transaction_limit) |
 | `email`          | Email address and verified status            |
 | `offline_access` | Allow refresh tokens for offline data access |
 
