@@ -50,7 +50,7 @@ integrations:read tax:read accounting:read reports:read workspace:read users:rea
 | Scope                | Description                                    |
 | -------------------- | ---------------------------------------------- |
 | `openid`             | Required for OpenID Connect authentication     |
-| `profile`            | User profile information                       |
+| `profile`            | User profile information (name, language, `transaction_limit`) |
 | `offline_access`     | Enable refresh tokens for continuous access    |
 | `email`              | User email address                             |
 | `portfolios:read`    | Read portfolio holdings and balances           |

@@ -10,6 +10,14 @@ All notable changes to the Kryptos Connect API.
 
 ---
 
+## May 2026
+
+**Enhancements**
+
+- `GET /v1/userinfo` — the `profile` scope response now includes `transaction_limit` (number | null). Reflects the effective limit applied to the user: per-user override if set, otherwise the workspace default, otherwise the platform default (100,000). `null` means the limiter is disabled and no cap applies.
+
+---
+
 ## April 2026
 
 **New**
