@@ -232,4 +232,4 @@ See **[Reconciliation Tools](/mcp/mcp-reconciliation)** for data quality validat
 - **Email:** [support@kryptos.io](mailto:support@kryptos.io)
 - **Website:** [kryptos.io](https://kryptos.io)
 - **Developer Portal:** [dashboard.kryptos.io](https://dashboard.kryptos.io/)
-- **GitHub:** [github.com/Kryptoskatt](https://github.com/Kryptoskatt)
+
