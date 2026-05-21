@@ -6,8 +6,8 @@ sidebar_position: 2
 
 # API Key Authentication
 
-:::warning Enterprise Only
-API key support is currently available for **Enterprise customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
+:::info Paid plans only
+API key support is available for **paying customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
 :::
 
 ## Usage

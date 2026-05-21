@@ -6,13 +6,17 @@ sidebar_position: 2
 
 # MCP Tools Reference
 
-Reference for all 12 portfolio and data tools available in the Kryptos MCP Server.
+These are the 12 tools your AI uses to read and update your Kryptos data. You don't call these directly — instead, you ask your AI things in plain English ("show my top holdings", "add a manual BTC purchase") and it picks the right tool. This page lists what each tool does, along with example prompts you can try.
 
-## Portfolio Tools
+> **Tip:** Skim the example prompts under each tool to get a feel for what kinds of questions work well.
+
+## Portfolio tools
+
+Read your account, holdings, and historical portfolio value.
 
 ### get_user_info
 
-Get authenticated user's profile information.
+Returns your basic Kryptos account info (name, email, workspace).
 
 **Required Scope:** `profile`
 
@@ -26,7 +30,7 @@ Get authenticated user's profile information.
 
 ### get_holdings
 
-Get cryptocurrency portfolio holdings with asset distribution, cost basis, unrealized P&L, and 24h changes.
+Returns your current crypto holdings — each asset's amount, value, cost basis, unrealized P&L, and 24-hour change.
 
 **Required Scope:** `portfolios:read`
 
@@ -45,7 +49,7 @@ Get cryptocurrency portfolio holdings with asset distribution, cost basis, unrea
 
 ### get_holdings_graph
 
-Get historical portfolio value and cost basis graph data over time.
+Returns the data points for charting your portfolio value (and cost basis) over time.
 
 **Required Scope:** `portfolios:read`
 
@@ -62,11 +66,13 @@ Get historical portfolio value and cost basis graph data over time.
 
 ---
 
-## Transaction Tools
+## Transaction tools
+
+Search, summarize, recategorize, and add transactions.
 
 ### get_transactions
 
-Get transaction history with advanced filtering. Use `get_integrations` to discover available wallet IDs.
+Search your transaction history with detailed filters. Use `get_integrations` first if you need to look up a wallet ID.
 
 **Required Scope:** `transactions:read`
 
@@ -99,7 +105,7 @@ Get transaction history with advanced filtering. Use `get_integrations` to disco
 
 ### get_transaction_summary
 
-Get aggregated transaction statistics.
+Returns totals and breakdowns of your transaction activity over a time period — useful for "how much did I trade last quarter?" type questions.
 
 **Required Scope:** `transactions:read`
 
@@ -118,7 +124,7 @@ Get aggregated transaction statistics.
 
 ### update_transaction_label
 
-Update the label (category) of a single transaction.
+Changes the category (label) on one transaction — for example, marking a transfer as "Staking Rewards".
 
 **Required Scope:** `transactions:write`
 
@@ -138,7 +144,7 @@ Update the label (category) of a single transaction.
 
 ### bulk_update_transaction_labels
 
-Update labels for multiple transactions at once.
+Changes the category on up to 100 transactions in one go — handy after a big import where everything came in with generic labels.
 
 **Required Scope:** `transactions:write`
 
@@ -158,7 +164,7 @@ Update labels for multiple transactions at once.
 
 ### create_manual_transaction
 
-Create manual transaction(s) for missing trades, old purchases, or off-chain activities.
+Adds transactions Kryptos doesn't already know about — old purchases from before you started tracking, off-chain trades, gifts, and so on. You can add up to 50 at once.
 
 **Required Scope:** `transactions:write`
 
@@ -193,11 +199,13 @@ Create manual transaction(s) for missing trades, old purchases, or off-chain act
 
 ---
 
-## DeFi & NFT Tools
+## DeFi & NFT tools
+
+Inspect positions outside your spot wallet.
 
 ### get_defi_holdings
 
-Get DeFi positions (lending, staking, farming, derivatives).
+Returns your DeFi positions — anything lent, staked, farmed, or open as a derivative.
 
 **Required Scope:** `portfolios:read`
 
@@ -219,7 +227,7 @@ Get DeFi positions (lending, staking, farming, derivatives).
 
 ### get_nft_holdings
 
-Get NFT holdings with collection metadata.
+Returns the NFTs in your wallets, with collection info like floor price and traits.
 
 **Required Scope:** `portfolios:read`
 
@@ -241,17 +249,17 @@ Get NFT holdings with collection metadata.
 
 ---
 
-## Profiling & Integrations
+## Profiling & integrations
+
+Higher-level insights and a list of everything connected.
 
 ### get_profiling
 
-Get comprehensive user profiling data including classification, portfolio overview, asset breakdown, activity summary, and AI-ready insights.
+Returns a big-picture view of your activity — your investor "type" (e.g. NFT Maniac, DeFi Hodler, Futures Trader, Hodler, BTC Keeper, Degen), a portfolio overview, asset breakdown, and recent activity summary.
 
 **Required Scope:** `profile`
 
 **Parameters:** None
-
-**User classifications include:** NFT Maniac, DeFi Hodler, Futures Trader, Hodler, BTC Keeper, Degen
 
 **Example prompt:**
 
@@ -261,7 +269,7 @@ Get comprehensive user profiling data including classification, portfolio overvi
 
 ### get_integrations
 
-Get connected wallets, exchanges, and blockchain integrations.
+Lists every wallet, exchange, and blockchain you've connected to Kryptos. Use this when you need a wallet ID to pass to another tool.
 
 **Required Scope:** `integrations:read`
 
@@ -279,25 +287,22 @@ Get connected wallets, exchanges, and blockchain integrations.
 
 ---
 
-## Pagination
+## Working with lots of results
 
-Many tools support pagination via `limit` and `offset` parameters:
+Most tools return results in pages so the response stays manageable. If you have hundreds or thousands of transactions, your AI will page through them automatically when needed — you usually don't need to think about this.
 
-| Parameter | Default | Max | Description |
-|-----------|---------|-----|-------------|
-| `limit` | 100 | 1000 | Number of items per page |
-| `offset` | 0 | — | Number of items to skip |
+For reference:
 
-For tools using `page`/`pageSize` (get_integrations):
+| Parameter | Default | Max | What it does |
+|-----------|---------|-----|--------------|
+| `limit` | 100 | 1000 | How many items to return at once |
+| `offset` | 0 | — | How many items to skip (for the next page) |
 
-| Parameter | Default | Max | Description |
-|-----------|---------|-----|-------------|
-| `page` | 1 | — | Page number |
-| `pageSize` | 25 | 200 | Items per page |
+`get_integrations` uses `page` / `pageSize` instead (default 25, max 200 per page).
 
 ---
 
-## Next Steps
+## Next steps
 
-- **[Reconciliation Tools →](/mcp/mcp-reconciliation)** – Data quality validation and correction tools
-- **[MCP Overview →](/mcp/mcp-overview)** – Setup and configuration
+- **[Reconciliation tools →](/mcp/mcp-reconciliation)** – Find and fix gaps in your data
+- **[MCP overview →](/mcp/mcp-overview)** – Setup and configuration

@@ -6,25 +6,25 @@ sidebar_position: 3
 
 # Reconciliation Tools
 
-Data quality validation and correction tools for cryptocurrency portfolios. Detect missing transactions, price data, cost basis, and counterparty identification issues.
+"Reconciliation" is the process of making sure your Kryptos data is clean and complete: every transaction is accounted for, every coin has a price, every sell has a matching purchase, and every transaction is properly categorized. Getting this right matters most around tax time — without it, P&L numbers and tax reports can be off.
 
-All reconciliation tools require valid authentication via the MCP setup. Tools operate on the authenticated user's portfolio data and return current database state.
+These six tools help you find the gaps, and the write tools (see [Fixing what you find](#fixing-what-you-find) below) help you fix them.
 
 ---
 
 ## get_missing_balances
 
-Detect wallet balance mismatches between API-reported balance and calculated balance from transaction history.
+Spots cases where your wallet's actual balance doesn't match what your transaction history adds up to — a sign that some transactions are missing.
 
 **Required Scope:** `transactions:read`
 
 **Parameters:** None
 
-**Returns:** Balance discrepancies by currency and wallet.
+**Returns:** Balance gaps by currency and wallet.
 
-**Interpretation:**
-- **Negative difference** = missing buy/deposit transactions (API shows more than history calculates)
-- **Positive difference** = missing sell/withdrawal transactions (API shows less than history calculates)
+**How to read the result:**
+- **Wallet has more than history shows** → you're missing some buys or deposits
+- **Wallet has less than history shows** → you're missing some sells or withdrawals
 
 **Example prompt:**
 
@@ -34,21 +34,21 @@ Detect wallet balance mismatches between API-reported balance and calculated bal
 
 ## get_missing_prices
 
-Find transactions missing historical price data at the time of transaction.
+Finds transactions where Kryptos doesn't know the price of the coin at the time of the trade.
 
 **Required Scope:** `transactions:read`
 
 **Parameters:** None
 
-**Returns:** Transactions grouped by currency and source wallet that lack price data.
+**Returns:** Transactions (grouped by coin and wallet) that are missing a price.
 
-**Why this matters:** Without prices, P&L calculations fail and tax reports are incomplete.
+**Why it matters:** Without a price, Kryptos can't calculate P&L or generate an accurate tax report for that transaction.
 
-**Common causes:**
-- Low-cap tokens with no price history
-- Transactions before token listing on price feeds
-- Delisted tokens
-- Private/unlisted tokens
+**Why this happens:**
+- The coin is small or obscure and has no price history available
+- The trade happened before the coin was listed on any price feed
+- The coin has since been delisted
+- It's a private or unlisted token
 
 **Example prompt:**
 
@@ -58,21 +58,21 @@ Find transactions missing historical price data at the time of transaction.
 
 ## get_missing_purchases
 
-Find sell transactions without corresponding purchase transactions (missing cost basis).
+Finds sells where Kryptos doesn't know how the coin was originally acquired — i.e., the cost basis is missing.
 
 **Required Scope:** `transactions:read`
 
 **Parameters:** None
 
-**Returns:** Sell transactions grouped by currency and source wallet that lack purchase records.
+**Returns:** Sells (grouped by coin and wallet) with no matching buy.
 
-**Why this matters:** Capital gains = sale price - cost basis. No cost basis means gains can't be calculated, and tax reports fail.
+**Why it matters:** Capital gain = what you sold for − what you paid for it. If Kryptos doesn't know what you paid, it can't calculate the gain, and your tax report will be incomplete.
 
-**Common causes:**
-- Transferred crypto from external wallet (no purchase record)
-- Received crypto as payment/gift (not categorized as acquisition)
-- Pre-tracking purchases (bought before Kryptos tracking started)
-- Airdrops/forks not recorded
+**Why this happens:**
+- You transferred coins in from a wallet Kryptos doesn't track
+- You received them as a gift, payment, or airdrop and never categorized it as an acquisition
+- You bought them before you started using Kryptos
+- A fork or airdrop wasn't recorded
 
 **Example prompt:**
 
@@ -82,7 +82,7 @@ Find sell transactions without corresponding purchase transactions (missing cost
 
 ## get_uncategorized_transactions
 
-Find deposits and withdrawals with default labels requiring manual categorization.
+Finds deposits and withdrawals that still have generic labels and need to be properly categorized (e.g. as "Staking Rewards", "Airdrop", "Transfer", etc.).
 
 **Required Scope:** `transactions:read`
 
@@ -93,7 +93,7 @@ Find deposits and withdrawals with default labels requiring manual categorizatio
 | `limit` | number | No | 100 | Maximum results |
 | `offset` | number | No | 0 | Pagination offset |
 
-**Returns:** Paginated list of transactions with generic/default labels.
+**Returns:** A paginated list of transactions still tagged with generic labels.
 
 **Example prompt:**
 
@@ -101,9 +101,9 @@ Find deposits and withdrawals with default labels requiring manual categorizatio
 
 ---
 
-### Supported Transaction Labels
+### Labels you can use
 
-When categorizing transactions, use only labels from this list:
+When categorizing, ask your AI to pick from this list (these are the categories Kryptos recognizes for tax and reporting purposes):
 
 **DeFi & Swaps:** `DeFi Swap`, `Swap`, `Trade`, `Cross Chain Swaps`, `Add Liquidity`, `Liquidity Withdrawal`, `Wrap`, `Unwrap`
 
@@ -139,7 +139,7 @@ When categorizing transactions, use only labels from this list:
 
 ## get_high_pnl_transactions
 
-Flag transactions with unusually high capital gains indicating potential data quality issues.
+Flags transactions with unusually large gains — usually a sign that something's off (wrong cost basis, missing prior purchases, bad price data) rather than a real windfall.
 
 **Required Scope:** `transactions:read`
 
@@ -150,12 +150,12 @@ Flag transactions with unusually high capital gains indicating potential data qu
 | `limit` | number | No | 100 | Maximum results |
 | `offset` | number | No | 0 | Pagination offset |
 
-**Detection method:** Uses statistical analysis to determine outlier threshold.
+**How it decides what's "unusual":** Statistical analysis of your own transactions — it flags genuine outliers, not just big numbers.
 
-**Red flags:**
-- Gain % &gt; 1000% (unless early crypto adopter)
-- Cost basis suspiciously low (&lt; $10 for major crypto)
-- Sale price doesn't match market price on transaction date
+**What usually indicates a real problem:**
+- A gain over 1000% (possible for early adopters, but worth a second look)
+- A suspiciously low cost basis (e.g. less than $10 for BTC or ETH)
+- Sale price that doesn't match the market price on that date
 
 **Example prompt:**
 
@@ -165,7 +165,7 @@ Flag transactions with unusually high capital gains indicating potential data qu
 
 ## get_missing_integrations
 
-Find unidentified transaction counterparties (addresses not recognized as known exchanges/wallets).
+Finds addresses you've transacted with that Kryptos hasn't matched to a known exchange or wallet. Connecting these (or labeling them) makes your transaction history more meaningful.
 
 **Required Scope:** `integrations:read`
 
@@ -178,7 +178,7 @@ Find unidentified transaction counterparties (addresses not recognized as known 
 | `timeStart` | string | No | — | Filter start time (ISO 8601) |
 | `timeEnd` | string | No | — | Filter end time (ISO 8601) |
 
-**Returns:** Paginated list of unrecognized counterparty addresses.
+**Returns:** A paginated list of unrecognized addresses you've sent to or received from.
 
 **Example prompt:**
 
@@ -186,63 +186,62 @@ Find unidentified transaction counterparties (addresses not recognized as known 
 
 ---
 
-## Recommended Audit Sequence
+## A good order to run these in
 
-### Phase 1: Data Completeness
-Run once after initial import:
+You don't have to follow this exactly, but this is the order that catches the most issues with the least re-work.
 
-1. **`get_missing_balances`** → Fix missing transactions first
-2. **`get_missing_prices`** → Ensure price coverage
-3. **`get_missing_purchases`** → Establish cost basis
+### After you first import your data
 
-### Phase 2: Data Quality
-Run before tax reporting:
+1. **`get_missing_balances`** — fill in missing transactions first
+2. **`get_missing_prices`** — make sure every transaction has a price
+3. **`get_missing_purchases`** — make sure every sell has a matching buy
 
-4. **`get_uncategorized_transactions`** → Categorize everything
-5. **`get_high_pnl_transactions`** → Fix outliers
-6. **`get_missing_integrations`** → Label counterparties
+### Before doing your taxes
 
-### Phase 3: Ongoing Maintenance
-Monthly or quarterly:
+4. **`get_uncategorized_transactions`** — give every transaction a proper category
+5. **`get_high_pnl_transactions`** — investigate any suspiciously large gains
+6. **`get_missing_integrations`** — label the unknown addresses
 
-- Re-run all tools after adding new integrations
-- Check uncategorized after bulk imports
-- Audit high P&L before finalizing tax reports
+### Ongoing (monthly or quarterly)
+
+- Re-run everything after connecting a new wallet or exchange
+- Check uncategorized after any bulk import
+- Audit high-P&L items before finalizing tax reports
 
 ---
 
-## Common Patterns & Fixes
+## Common situations and how to handle them
 
-### Many missing balances across wallets
+### Lots of missing balances across many wallets
 
-**Cause:** Partial transaction import (only recent history)
-**Fix:** Re-import full transaction history from all sources, or use `create_manual_transaction` to add missing entries.
+**Usually means:** Only partial transaction history was imported.
+**Fix:** Re-import the full history from each wallet/exchange, or use `create_manual_transaction` to add the missing entries.
 
-### Missing prices for specific date range
+### Missing prices for a specific date range
 
-**Cause:** Price feed gap or exchange maintenance
-**Fix:** Contact support or manually add prices for that period.
+**Usually means:** A gap in the price feed (e.g. exchange downtime).
+**Fix:** Contact [support@kryptos.io](mailto:support@kryptos.io), or add prices manually for that window.
 
-### All sales missing purchases
+### Every sell shows as missing a purchase
 
-**Cause:** Transferred crypto from external source not tracked
-**Fix:** Add "Transfer" transactions or initial "Buy" entries using `create_manual_transaction`.
+**Usually means:** The coin was transferred in from a source Kryptos doesn't track.
+**Fix:** Add "Transfer" entries or initial "Buy" entries with `create_manual_transaction`.
 
-### High P&L on small transactions
+### Huge gains showing up on small transactions
 
-**Cause:** Wrong cost basis method (FIFO vs specific ID)
-**Fix:** Check workspace cost basis settings in the Kryptos platform.
+**Usually means:** Your cost basis method (FIFO, LIFO, specific ID) doesn't match how you actually acquired the coin.
+**Fix:** Check the cost basis setting for your workspace in the Kryptos dashboard.
 
 ### Hundreds of uncategorized transactions
 
-**Cause:** Bulk exchange import with generic labels
-**Fix:** Use `bulk_update_transaction_labels` for pattern-based categorization (e.g., all from Uniswap Router = DeFi Swap).
+**Usually means:** A bulk import dropped everything in with generic labels.
+**Fix:** Use `bulk_update_transaction_labels` to fix them in groups (e.g. "everything from Uniswap Router → DeFi Swap").
 
 ---
 
-## Write Operations
+## Fixing what you find
 
-Use these tools to fix issues discovered during reconciliation:
+Once reconciliation surfaces an issue, these tools let you fix it:
 
 ### update_transaction_label
 
@@ -266,23 +265,23 @@ Update labels for multiple transactions (max 100) in one call.
 
 ### create_manual_transaction
 
-Create manual transactions for missing trades, old purchases, or off-chain activities.
+Add transactions Kryptos doesn't already know about.
 
-**Common scenarios:**
+**Common examples:**
 
-- **Old purchase before tracking:** Add a `trade` transaction with `sentCurrency` (USD) and `receivedCurrency` (BTC/ETH)
-- **Staking reward:** Add a `deposit` with `receivedCurrency` only and label `Staking Rewards`
-- **Transfer between wallets:** Add a `withdrawal` with `sentCurrency` and label `Transfer`
+- **Old purchase from before you started tracking:** a `trade` with USD going out (`sentCurrency`) and BTC/ETH coming in (`receivedCurrency`)
+- **Staking reward:** a `deposit` with only `receivedCurrency` and the label `Staking Rewards`
+- **Transfer between two wallets:** a `withdrawal` with only `sentCurrency` and the label `Transfer`
 
-**Rules of thumb:**
-- For **trades**: provide both `sentCurrency` and `receivedCurrency`
-- For **deposits**: provide only `receivedCurrency`
-- For **withdrawals**: provide only `sentCurrency`
-- Always include `netValue.fiatValue` for accurate cost basis
+**Quick rules:**
+- A **trade** needs both `sentCurrency` and `receivedCurrency`
+- A **deposit** needs only `receivedCurrency`
+- A **withdrawal** needs only `sentCurrency`
+- Always include `netValue.fiatValue` — it's what Kryptos uses for cost basis
 
 ---
 
-## Next Steps
+## Next steps
 
-- **[MCP Overview →](/mcp/mcp-overview)** – Setup and configuration
-- **[Tools Reference →](/mcp/mcp-tools)** – Portfolio and data tools
+- **[MCP overview →](/mcp/mcp-overview)** – Setup and configuration
+- **[Portfolio & Data tools →](/mcp/mcp-tools)** – Read your holdings, transactions, and more

@@ -81,7 +81,7 @@ Save your Client Secret securely - it will only be shown once! Store it in a sec
 Now that you have your OAuth credentials, you're ready to implement the authentication flow:
 
 - **[OAuth 2.0 Authentication →](/authentication/oauth)** - Learn how to implement the authorization code flow with PKCE
-- **[API Key Authentication →](/authentication/api-key)** - Alternative authentication for enterprise customers
+- **[API Key Authentication →](/authentication/api-key)** - Alternative authentication for paid plans
 
 ## Need Help?
 
