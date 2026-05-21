@@ -33,9 +33,9 @@ const sidebars = {
       label: "MCP Server",
       collapsed: false,
       items: [
-        "mcp/overview",
-        "mcp/tools",
-        "mcp/reconciliation",
+        "mcp/mcp-overview",
+        "mcp/mcp-tools",
+        "mcp/mcp-reconciliation",
       ],
     },
     {

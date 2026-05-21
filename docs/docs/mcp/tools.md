@@ -299,5 +299,5 @@ For tools using `page`/`pageSize` (get_integrations):
 
 ## Next Steps
 
-- **[Reconciliation Tools →](/mcp/reconciliation)** – Data quality validation and correction tools
-- **[MCP Overview →](/mcp/overview)** – Setup and configuration
+- **[Reconciliation Tools →](/mcp/mcp-reconciliation)** – Data quality validation and correction tools
+- **[MCP Overview →](/mcp/mcp-overview)** – Setup and configuration

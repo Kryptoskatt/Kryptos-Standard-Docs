@@ -284,5 +284,5 @@ Create manual transactions for missing trades, old purchases, or off-chain activ
 
 ## Next Steps
 
-- **[MCP Overview →](/mcp/overview)** – Setup and configuration
-- **[Tools Reference →](/mcp/tools)** – Portfolio and data tools
+- **[MCP Overview →](/mcp/mcp-overview)** – Setup and configuration
+- **[Tools Reference →](/mcp/mcp-tools)** – Portfolio and data tools
