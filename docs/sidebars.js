@@ -30,6 +30,16 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "MCP Server",
+      collapsed: false,
+      items: [
+        "mcp/overview",
+        "mcp/tools",
+        "mcp/reconciliation",
+      ],
+    },
+    {
+      type: "category",
       label: "Public Endpoints",
       collapsed: false,
       items: ["public-endpoints/integrations"],
