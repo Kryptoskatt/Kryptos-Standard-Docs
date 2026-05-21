@@ -174,4 +174,4 @@ This endpoint is useful for:
 - This endpoint does **not** require authentication
 - Returns all available integrations regardless of user's connected accounts
 - Data is relatively static and can be cached for improved performance
-- Use [`/v1/integrations`](/api/integrations) to get a user's connected integrations (requires authentication)
+- Use [`/v1/integrations`](/docs/api/integrations) to get a user's connected integrations (requires authentication)

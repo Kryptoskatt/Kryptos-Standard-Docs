@@ -5,7 +5,19 @@ const sidebars = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["intro", "kryptos-connect", "developer-portal"],
+      items: ["intro", "developer-portal"],
+    },
+    {
+      type: "category",
+      label: "Kryptos Connect",
+      collapsed: false,
+      items: [
+        "kryptos-connect/overview",
+        "kryptos-connect/web-sdk",
+        "kryptos-connect/mobile-sdk",
+        "kryptos-connect/backend",
+        "kryptos-connect/examples",
+      ],
     },
     {
       type: "category",
@@ -15,7 +27,19 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "V1 Endpoints",
+      label: "Webhooks",
+      collapsed: false,
+      items: ["webhooks/setup", "webhooks/events"],
+    },
+    {
+      type: "category",
+      label: "Recipes",
+      collapsed: false,
+      items: ["recipes/post-transactions-apikey"],
+    },
+    {
+      type: "category",
+      label: "API Endpoints",
       collapsed: false,
       items: [
         "api/health",
@@ -46,7 +70,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "V0 Endpoints (Legacy)",
+      label: "Legacy (V0)",
       collapsed: true,
       items: [
         "api-legacy/wallets",
@@ -66,4 +90,3 @@ const sidebars = {
 };
 
 export default sidebars;
-

@@ -33,7 +33,9 @@ curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
     "name": "John Doe",
     "email": "john@example.com",
     "email_verified": true,
-    "preferred_username": "john@example.com"
+    "preferred_username": "john@example.com",
+    "language": "en",
+    "transaction_limit": 15000
   },
   "scopes": ["openid", "profile", "email"]
 }
@@ -41,11 +43,13 @@ curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
 
 ## Response Fields
 
-| Field                         | Type    | Description               |
-| ----------------------------- | ------- | ------------------------- |
-| `userInfo.sub`                | string  | User ID                   |
-| `userInfo.name`               | string  | User's full name          |
-| `userInfo.email`              | string  | Email address             |
-| `userInfo.email_verified`     | boolean | Email verification status |
-| `userInfo.preferred_username` | string  | Preferred username        |
-| `scopes`                      | array   | Granted OAuth scopes      |
+| Field                         | Type    | Scope     | Description                                                              |
+| ----------------------------- | ------- | --------- | ------------------------------------------------------------------------ |
+| `userInfo.sub`                | string  | `openid`  | User ID                                                                  |
+| `userInfo.name`               | string  | `profile` | User's full name                                                         |
+| `userInfo.email`              | string  | `email`   | Email address                                                            |
+| `userInfo.email_verified`     | boolean | `email`   | Email verification status                                                |
+| `userInfo.preferred_username` | string  | `profile` | Preferred username                                                       |
+| `userInfo.language`           | string       | `profile` | User's preferred language (e.g. `"en"`). Defaults to `"en"` if not set.                                                                       |
+| `userInfo.transaction_limit`  | number\|null | `profile` | Effective transaction import cap for this user. `null` means no limit. Resolution order: per-user override → workspace default → platform default (100,000). |
+| `scopes`                      | array        |           | Granted OAuth scopes.                                                                                                                          |

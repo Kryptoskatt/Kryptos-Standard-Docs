@@ -59,7 +59,15 @@ curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" 
       "logoUrl": "https://...",
       "isContract": false,
       "alias": "DeFi Wallet",
-      "status": "active",
+      "status": "PARTIALLY SYNCED",
+      "message": "We have been notified of the issue with ethereum and will fix it soon. Your account will be resynced.",
+      "lastSyncLog": {
+        "Balances": "COMPLETED",
+        "Defi Balances": "COMPLETED",
+        "NFT Holdings": "FAILED",
+        "Transactions": "FAILED"
+      },
+      "limitExceeded": true,
       "addedOn": 1641081600000,
       "lastSyncedAt": 1672617600000,
       "category": "blockchain",
@@ -92,7 +100,10 @@ curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" 
 | `logoUrl`            | string  | Provider logo URL                                       |
 | `isContract`         | boolean | Whether the address is a smart contract                 |
 | `alias`              | string  | User-defined alias for the integration                  |
-| `status`             | string  | Integration status (`active`, `inactive`, `error`)      |
+| `status`             | string  | Sync status: `ONGOING`, `COMPLETED`, `PARTIALLY SYNCED`, `FAILED`. Defaults to `active` when never synced. |
+| `message`            | string  | Human-readable message from the last sync failure. Omitted when there is no error. |
+| `lastSyncLog`        | object  | Per-function sync result e.g. `{ "Transactions": "FAILED", "Balances": "COMPLETED" }`. Omitted when no sync has run. |
+| `limitExceeded`      | boolean | `true` when the last sync failed due to the user's transaction limit being reached. The field is omitted entirely otherwise (it is never returned as `false`). |
 | `addedOn`            | number  | Timestamp when integration was added (ms)               |
 | `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                  |
 | `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |
