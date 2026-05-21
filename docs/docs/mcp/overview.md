@@ -93,7 +93,7 @@ Open your Claude config file (see paths below) and add the snippet:
 }
 ```
 
-Replace `YOUR_API_KEY` with your Kryptos API key. See **[API Key authentication →](/authentication/api-key)** for how to generate one.
+Replace `YOUR_API_KEY` with your Kryptos API key. See **[API Key authentication →](/docs/authentication/api-key)** for how to generate one.
 
 ### Claude Code (VS Code extension / older config)
 
@@ -122,7 +122,7 @@ Use the "Log in with Kryptos" method above (`claude mcp add --transport http`) i
 
 ### Getting an API key
 
-API keys are created in the Kryptos dashboard. Full instructions, including how to set permissions and (optionally) restrict by IP, are in the **[API Key guide →](/authentication/api-key)**.
+API keys are created in the Kryptos dashboard. Full instructions, including how to set permissions and (optionally) restrict by IP, are in the **[API Key guide →](/docs/authentication/api-key)**.
 
 When you generate the key, make sure these permissions are turned on:
 
@@ -157,8 +157,8 @@ The server provides 18 tools, split into two groups:
 | **Portfolio & Data** | 12 | Read your holdings, transactions, DeFi, NFTs, and account info |
 | **Reconciliation** | 6 | Find and fix gaps in your portfolio data |
 
-- **[Portfolio & Data tools →](/mcp/mcp-tools)**
-- **[Reconciliation tools →](/mcp/mcp-reconciliation)**
+- **[Portfolio & Data tools →](/docs/mcp/mcp-tools)**
+- **[Reconciliation tools →](/docs/mcp/mcp-reconciliation)**
 
 ---
 

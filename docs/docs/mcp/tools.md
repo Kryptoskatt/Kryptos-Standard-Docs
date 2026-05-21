@@ -304,5 +304,5 @@ For reference:
 
 ## Next steps
 
-- **[Reconciliation tools →](/mcp/mcp-reconciliation)** – Find and fix gaps in your data
-- **[MCP overview →](/mcp/mcp-overview)** – Setup and configuration
+- **[Reconciliation tools →](/docs/mcp/mcp-reconciliation)** – Find and fix gaps in your data
+- **[MCP overview →](/docs/mcp/mcp-overview)** – Setup and configuration

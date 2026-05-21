@@ -283,5 +283,5 @@ Add transactions Kryptos doesn't already know about.
 
 ## Next steps
 
-- **[MCP overview →](/mcp/mcp-overview)** – Setup and configuration
-- **[Portfolio & Data tools →](/mcp/mcp-tools)** – Read your holdings, transactions, and more
+- **[MCP overview →](/docs/mcp/mcp-overview)** – Setup and configuration
+- **[Portfolio & Data tools →](/docs/mcp/mcp-tools)** – Read your holdings, transactions, and more
