@@ -134,9 +134,8 @@ The MCP server provides 18 tools across 3 categories:
 
 | Category | Tools | Description |
 |----------|-------|-------------|
-| **Portfolio & Data** | 10 tools | Holdings, transactions, DeFi, NFTs, profiling |
+| **Portfolio & Data** | 12 tools | Holdings, transactions, DeFi, NFTs, profiling, integrations |
 | **Reconciliation** | 6 tools | Missing balances, prices, purchases, uncategorized, high P&L, integrations |
-| **Write Operations** | 2 tools | Label updates (single & bulk), manual transactions |
 
 See **[Tools Reference](/mcp/tools)** for portfolio and data tools.
 See **[Reconciliation Tools](/mcp/reconciliation)** for data quality validation tools.
