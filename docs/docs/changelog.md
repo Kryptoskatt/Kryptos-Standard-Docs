@@ -15,6 +15,7 @@ All notable changes to the Kryptos Connect API.
 **Enhancements**
 
 - `GET /v1/userinfo` — the `profile` scope response now includes `transaction_limit` (number | null). Reflects the effective limit applied to the user: per-user override if set, otherwise the workspace default, otherwise the platform default (100,000). `null` means the limiter is disabled and no cap applies.
+- `GET /v1/integrations` — each integration now includes a new `lastSyncLogDetails` field alongside `lastSyncLog`. Where `lastSyncLog` is the flat `{ stage: status }` map (unchanged), `lastSyncLogDetails` carries `{ status, message?, limitExceeded? }` per stage so clients can show stage-specific failure reasons (e.g. which sync step hit the transaction-import limit) without parsing the wallet-level `message`. The existing `lastSyncLog`, `message`, and `limitExceeded` fields are unchanged.
 
 ---
 

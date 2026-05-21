@@ -60,12 +60,25 @@ curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" 
       "isContract": false,
       "alias": "DeFi Wallet",
       "status": "PARTIALLY SYNCED",
-      "message": "We have been notified of the issue with ethereum and will fix it soon. Your account will be resynced.",
+      "message": "Unable to fetch transactions for ethereum due to transaction limit reached, kindly update your plan",
       "lastSyncLog": {
         "Balances": "COMPLETED",
         "Defi Balances": "COMPLETED",
         "NFT Holdings": "FAILED",
         "Transactions": "FAILED"
+      },
+      "lastSyncLogDetails": {
+        "Balances": { "status": "COMPLETED" },
+        "Defi Balances": { "status": "COMPLETED" },
+        "NFT Holdings": {
+          "status": "FAILED",
+          "message": "We have been notified of the issue with ethereum and will fix it soon. Your account will be resynced."
+        },
+        "Transactions": {
+          "status": "FAILED",
+          "message": "Unable to fetch transactions for ethereum due to transaction limit reached, kindly update your plan",
+          "limitExceeded": true
+        }
       },
       "limitExceeded": true,
       "addedOn": 1641081600000,
@@ -101,9 +114,10 @@ curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" 
 | `isContract`         | boolean | Whether the address is a smart contract                 |
 | `alias`              | string  | User-defined alias for the integration                  |
 | `status`             | string  | Sync status: `ONGOING`, `COMPLETED`, `PARTIALLY SYNCED`, `FAILED`. Defaults to `active` when never synced. |
-| `message`            | string  | Human-readable message from the last sync failure. Omitted when there is no error. |
-| `lastSyncLog`        | object  | Per-function sync result e.g. `{ "Transactions": "FAILED", "Balances": "COMPLETED" }`. Omitted when no sync has run. |
-| `limitExceeded`      | boolean | `true` when the last sync failed due to the user's transaction limit being reached. The field is omitted entirely otherwise (it is never returned as `false`). |
+| `message`            | string  | Wallet-level summary message. When any stage hit the transaction-import limit, this carries the limit-exceeded message; otherwise it's the message from the most relevant failed stage. Omitted when there is no error. |
+| `lastSyncLog`        | object  | Per-function status map, e.g. `{ "Transactions": "FAILED", "Balances": "COMPLETED" }`. Omitted when no sync has run. |
+| `lastSyncLogDetails` | object  | Per-function detail map. Each stage carries `{ status, message?, limitExceeded? }`, so you can show stage-specific failure reasons without parsing the wallet-level `message`. `lastSyncLog` is the flattened (status-only) view of this object — both convey the same per-stage status and are emitted together. Omitted when no sync has run. |
+| `limitExceeded`      | boolean | `true` when the last sync failed due to the user's transaction limit being reached on any stage. The field is omitted entirely otherwise (it is never returned as `false`). |
 | `addedOn`            | number  | Timestamp when integration was added (ms)               |
 | `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                  |
 | `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |
