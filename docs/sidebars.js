@@ -18,6 +18,7 @@ const sidebars = {
         "kryptos-connect/css-theming",
         "kryptos-connect/backend",
         "kryptos-connect/examples",
+        "kryptos-connect/demo-apps",
       ],
     },
     {
