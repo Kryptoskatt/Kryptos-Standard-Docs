@@ -15,8 +15,10 @@ const sidebars = {
         "kryptos-connect/overview",
         "kryptos-connect/web-sdk",
         "kryptos-connect/mobile-sdk",
+        "kryptos-connect/css-theming",
         "kryptos-connect/backend",
         "kryptos-connect/examples",
+        "kryptos-connect/demo-apps",
       ],
     },
     {

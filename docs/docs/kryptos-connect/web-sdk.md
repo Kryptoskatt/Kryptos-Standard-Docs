@@ -35,175 +35,179 @@ yarn add @kryptos_connect/web-sdk
 ## Prerequisites
 
 1. **Client ID** from the [Kryptos Developer Portal](https://dashboard.kryptos.io)
-2. **WalletConnect Project ID** from [WalletConnect Cloud](https://cloud.walletconnect.com)
+2. **WalletConnect Project ID** from [WalletConnect Cloud](https://cloud.walletconnect.com) _(optional)_
 
 ## Quick Start
 
 ```tsx
-// 1. Import styles (required)
-import "@kryptos_connect/web-sdk/dist/styles/index.css";
+import { KryptosConnect, KryptosConnectButton } from "@kryptos_connect/web-sdk";
 
-import {
-  KryptosConnectProvider,
-  KryptosConnectButton,
-} from "@kryptos_connect/web-sdk";
+// 1. Initialize once (or on every render to keep config in sync)
+KryptosConnect.init({
+  clientId: "your-client-id",
+  appName: "My App",
+  appLogo: "https://yourapp.com/logo.png",
+  theme: "light", // "light" | "dark" | "auto"
+  language: "en",
+  authMethods: ["email", "anonymous"],
+});
 
-// 2. Wrap your app with the provider
+// 2. Drop in the button
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={(consent) => console.log(consent.public_token)}
+  onConnectError={(err) => console.error(err)}
+/>;
+```
+
+## Full Example
+
+```tsx
+import { KryptosConnect, KryptosConnectButton } from "@kryptos_connect/web-sdk";
+import { useState } from "react";
+
+const BASE_URL = "https://connect-api.kryptos.io";
+const CLIENT_ID = "your-client-id";
+const CLIENT_SECRET = "your-client-secret"; // keep server-side in production
+const SCOPES = "openid profile offline_access email portfolios:read integrations:read";
+
 function App() {
-  return (
-    <KryptosConnectProvider
-      config={{
-        appName: "My DeFi App",
-        appLogo: "https://yourapp.com/logo.png",
-        clientId: "your-kryptos-client-id",
-        theme: "light",
-        walletConnectProjectId: "your-walletconnect-project-id",
-      }}
-    >
-      <ConnectButton />
-    </KryptosConnectProvider>
-  );
-}
+  const [accessToken, setAccessToken] = useState(null);
 
-// 3. Use the connect button
-function ConnectButton() {
+  KryptosConnect.init({
+    clientId: CLIENT_ID,
+    appName: "My App",
+    theme: "light",
+    language: "en",
+    authMethods: ["email", "anonymous"],
+  });
+
+  async function generateLinkToken(existingAccessToken?: string | null) {
+    const body: Record<string, unknown> = { scopes: SCOPES };
+    if (existingAccessToken) body.access_token = existingAccessToken;
+
+    const res = await fetch(`${BASE_URL}/link-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Client-Id": CLIENT_ID,
+        "X-Client-Secret": CLIENT_SECRET,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return { link_token: data.data.link_token, isAuthorized: !!existingAccessToken };
+  }
+
+  async function handleSuccess(consent) {
+    if (!consent) return; // re-auth — no new token
+    const res = await fetch(`${BASE_URL}/token/exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        public_token: consent.public_token,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+      }),
+    });
+    const data = await res.json();
+    setAccessToken(data.data.access_token);
+  }
+
   return (
-    <KryptosConnectButton
-      generateLinkToken={async () => {
-        // Call your backend to create a link token
-        const response = await fetch("/api/kryptos/create-link-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        const data = await response.json();
-        return {
-          link_token: data.link_token,
-          isAuthorized: data.isAuthorized,
-        };
-      }}
-      onConnectSuccess={(userConsent) => {
-        if (userConsent?.public_token) {
-          // New user - exchange public token for access token
-          fetch("/api/kryptos/exchange-token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ public_token: userConsent.public_token }),
-          });
-        }
-        // If userConsent is null, user was already authenticated
-      }}
-      onConnectError={(error) => {
-        console.error("Connection failed:", error);
-      }}
-    >
-      Connect to Kryptos
-    </KryptosConnectButton>
+    <>
+      {/* Default button */}
+      <KryptosConnectButton
+        generateLinkToken={generateLinkToken}
+        onConnectSuccess={handleSuccess}
+        onConnectError={(err) => console.error(err)}
+      />
+
+      {/* Pre-select a specific integration */}
+      <KryptosConnectButton
+        generateLinkToken={generateLinkToken}
+        onConnectSuccess={handleSuccess}
+        onConnectError={(err) => console.error(err)}
+        integrationName="coinbase"
+      />
+
+      {/* Custom label */}
+      <KryptosConnectButton
+        generateLinkToken={generateLinkToken}
+        onConnectSuccess={handleSuccess}
+        onConnectError={(err) => console.error(err)}
+        size="lg"
+      >
+        Link your crypto account
+      </KryptosConnectButton>
+
+      {/* Re-authorize with stored access token */}
+      {accessToken && (
+        <KryptosConnectButton
+          generateLinkToken={() => generateLinkToken(accessToken)}
+          onConnectSuccess={handleSuccess}
+          onConnectError={(err) => console.error(err)}
+        >
+          Add more integrations
+        </KryptosConnectButton>
+      )}
+    </>
   );
 }
 ```
 
 ## User Flow Variations
 
-The SDK automatically handles two different user flows based on the `isAuthorized` flag returned from `generateLinkToken`:
+The SDK handles two flows based on the `isAuthorized` flag returned from `generateLinkToken`:
 
 ### Flow 1: New User (`isAuthorized: false` or undefined)
 
 ```
-INIT → CONNECT → INTEGRATION → STATUS
+click → AUTH → INTEGRATION → onConnectSuccess({ public_token })
 ```
 
-- User goes through authentication (controlled by `authMethods` prop)
-  - **Email Login:** Enter email → receive OTP → verify OTP
-  - **Anonymous:** proceed without credentials
-- Account is created on the backend
-- User selects integrations to connect
-- Returns `public_token` in `onConnectSuccess` callback
+Exchange `public_token` server-side for a long-lived `access_token`.
 
-**When to use:** First-time users or users without an existing access token.
-
-### Flow 2: Authenticated User (`isAuthorized: true`)
+### Flow 2: Returning User (`isAuthorized: true`)
 
 ```
-INIT → INTEGRATION → STATUS
+click → INTEGRATION → onConnectSuccess(null)
 ```
 
-- Skips authentication (account already exists on the backend)
-- User directly selects integrations
-- Returns `null` in `onConnectSuccess` callback (no new token needed)
+Pass stored `access_token` in the link-token request body and return `isAuthorized: true`. No new token is issued.
 
-**When to use:** Returning users with a stored access token who want to add more integrations.
+## `KryptosConnect.init` Config
 
-**Implementation Example:**
-
-```tsx
-generateLinkToken={async () => {
-  const user = getCurrentUser(); // Your auth logic
-
-  const response = await fetch("/api/kryptos/create-link-token", {
-    method: "POST",
-    body: JSON.stringify({
-      // Include access_token if user is logged in
-      access_token: user?.kryptosAccessToken || undefined,
-    }),
-  });
-
-  const data = await response.json();
-
-  return {
-    link_token: data.link_token,
-    // isAuthorized will be true if access_token was valid
-    isAuthorized: !!user?.kryptosAccessToken,
-  };
-}}
-```
-
-## Provider Configuration
-
-Wrap your application with `KryptosConnectProvider`:
-
-| Option                   | Type                                                           | Required | Description                                                   |
-| ------------------------ | -------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
-| `appName`                | string                                                         | Yes      | Your application name                                         |
-| `appLogo`                | string \| React.ReactNode                                      | No       | Logo URL or React component                                   |
-| `clientId`               | string                                                         | Yes      | Kryptos client ID from Developer Portal                       |
-| `theme`                  | `"light"` \| `"dark"`                                          | No       | Visual theme (default: `"light"`)                             |
-| `walletConnectProjectId` | string                                                         | Yes      | WalletConnect project ID                                      |
-| `authMethods`            | `("email" \| "anonymous")[]`                                   | No       | Authentication methods to show. Defaults to both when not set |
-| `language`               | `"en" \| "fr" \| "de" \| "pt" \| "sv" \| "es" \| "pl" \| "it"` | No       | UI language for the connect flow (default: `"en"`)            |
+| Key                      | Type                          | Required | Description                                                           |
+| ------------------------ | ----------------------------- | -------- | --------------------------------------------------------------------- |
+| `clientId`               | `string`                      | Yes      | Your Kryptos client ID.                                               |
+| `appName`                | `string`                      | Yes      | Displayed in the connect UI header.                                   |
+| `appLogo`                | `ReactNode \| string`         | No       | Logo shown in the connect UI.                                         |
+| `walletConnectProjectId` | `string`                      | No       | Required if using WalletConnect.                                      |
+| `theme`                  | `"light" \| "dark" \| "auto"` | No       | UI theme. Default `"light"`.                                          |
+| `language`               | `string`                      | No       | UI language. Supported: `en fr de pt sv es pl it`.                    |
+| `authMethods`            | `("email" \| "anonymous")[]`  | No       | Auth methods shown. Default: both.                                    |
+| `cssVars`                | `Record<string, string>`      | No       | Override `--kc-*` CSS variables in the connect UI and trigger button. |
 
 ### Restricting Auth Methods
 
-By default, both `email` and `anonymous` login options are shown. Use `authMethods` in the provider config to restrict which options appear:
-
 ```tsx
 // Email only
-<KryptosConnectProvider
-  config={{
-    appName: "My App",
-    clientId: "your-client-id",
-    walletConnectProjectId: "your-walletconnect-project-id",
-    authMethods: ["email"],
-  }}
->
-  {children}
-</KryptosConnectProvider>
+KryptosConnect.init({
+  clientId: "your-client-id",
+  appName: "My App",
+  authMethods: ["email"],
+});
 
 // Anonymous only
-<KryptosConnectProvider
-  config={{
-    appName: "My App",
-    clientId: "your-client-id",
-    walletConnectProjectId: "your-walletconnect-project-id",
-    authMethods: ["anonymous"],
-  }}
->
-  {children}
-</KryptosConnectProvider>
+KryptosConnect.init({
+  clientId: "your-client-id",
+  appName: "My App",
+  authMethods: ["anonymous"],
+});
 ```
 
 ### Setting the Language
-
-By default, the connect flow UI is shown in English. Use the `language` prop to render the interface in a different supported language:
 
 | Code   | Language   |
 | ------ | ---------- |
@@ -216,159 +220,78 @@ By default, the connect flow UI is shown in English. Use the `language` prop to 
 | `"pl"` | Polish     |
 | `"it"` | Italian    |
 
-```tsx
-<KryptosConnectProvider
-  config={{
-    appName: "My App",
-    clientId: "your-client-id",
-    walletConnectProjectId: "your-walletconnect-project-id",
-    language: "fr", // French
-  }}
->
-  {children}
-</KryptosConnectProvider>
-```
+## `KryptosConnectButton` Props
 
-## Button Configuration
-
-The `KryptosConnectButton` component triggers the connection flow:
-
-| Option              | Type                                                            | Required | Description                                                                                                                |
+| Prop                | Type                                                            | Required | Description                                                                                                                |
 | ------------------- | --------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Function that returns link token from your backend                                                                         |
-| `onConnectSuccess`  | `(userConsent: UserConsent \| null) => void`                    | Yes      | Callback on successful connection                                                                                          |
-| `onConnectError`    | `(error: Error) => void`                                        | Yes      | Callback on connection failure                                                                                             |
-| `integrationName`   | string                                                          | No       | Direct integration ID to bypass selection page                                                                             |
-| `children`          | React.ReactNode                                                 | No       | Button text. Defaults to "Connect [integrationName] Account" if `integrationName` is set, otherwise "Connect with Kryptos" |
-| `size`              | `"sm"` \| `"md"` \| `"lg"`                                      | No       | Button size (default: `"md"`)                                                                                              |
-| `disabled`          | boolean                                                         | No       | Disables the button (also auto-disabled during loading)                                                                    |
-| `className`         | string                                                          | No       | Custom CSS class                                                                                                           |
-| `style`             | React.CSSProperties                                             | No       | Inline styles                                                                                                              |
+| `generateLinkToken` | `() => Promise<{ link_token: string; isAuthorized?: boolean }>` | Yes      | Called on click. Return `isAuthorized: true` to skip auth for existing users.                                              |
+| `onConnectSuccess`  | `(data: UserConsent \| null) => void`                           | Yes      | Called on success. `data` is `null` when `isAuthorized` was `true`.                                                        |
+| `onConnectError`    | `(error: Error) => void`                                        | Yes      | Called on error or dismissal.                                                                                              |
+| `size`              | `"sm" \| "md" \| "lg"`                                          | No       | Button size. Default `"md"`.                                                                                               |
+| `integrationName`   | `string`                                                        | No       | Skip the integration list and open a specific integration directly.                                                        |
+| `extraConfig`       | `Record<string, unknown>`                                       | No       | Per-button config overrides, merged onto the global config.                                                                |
+| `children`          | `React.ReactNode`                                               | No       | Custom button label.                                                                                                       |
+| `className`         | `string`                                                        | No       | Extra CSS class on the `<button>` element.                                                                                 |
+| `style`             | `React.CSSProperties`                                           | No       | Inline styles on the `<button>` element.                                                                                   |
 
 ## Direct Integration Flow
 
-The `integrationName` prop allows you to direct users to a specific integration, bypassing the general integration selection page. This is useful when you want to provide dedicated buttons for specific exchanges or wallets.
+The `integrationName` prop directs users to a specific integration, bypassing the integration selection page.
 
-**Getting Supported Integration IDs:**
-
-Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/docs/public-endpoints/integrations) documentation).
-
-**Usage Example:**
+Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/docs/public-endpoints/integrations)).
 
 ```tsx
-// Direct connection to a specific integration (e.g., Binance)
+// Connect directly to Binance
 <KryptosConnectButton
   generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
   integrationName="binance"
-  onConnectSuccess={(userConsent) => {
-    console.log("Binance connected:", userConsent);
-  }}
 >
   Connect Binance Account
 </KryptosConnectButton>
 
-// Without children - uses default button text
-<KryptosConnectButton
-  generateLinkToken={generateLinkToken}
-  integrationName="metamask"
-  onConnectSuccess={(userConsent) => {
-    console.log("MetaMask connected:", userConsent);
-  }}
-  // Button will display: "Connect using Metamask"
-/>
-```
-
-**Use Cases:**
-
-1. **Dedicated Integration Buttons**: Create separate buttons for popular integrations
-
-```tsx
-<KryptosConnectButton integrationName="binance">
-  Connect Binance
-</KryptosConnectButton>
-<KryptosConnectButton integrationName="coinbase">
-  Connect Coinbase
-</KryptosConnectButton>
-<KryptosConnectButton integrationName="metamask">
-  Connect MetaMask
-</KryptosConnectButton>
-```
-
-2. **Contextual Integration**: Direct users to relevant integrations based on their context
-
-```tsx
-// In an exchange-focused feature
-<KryptosConnectButton integrationName="kraken">
-  Add Kraken Account
-</KryptosConnectButton>
-```
-
-3. **Onboarding Flows**: Guide users to connect specific integrations during onboarding
-
-```tsx
-// Step 1: Connect wallet
-<KryptosConnectButton integrationName="metamask">
-  Connect Your Wallet
-</KryptosConnectButton>
-
-// Step 2: Connect exchange
-<KryptosConnectButton integrationName="binance">
-  Connect Your Exchange
-</KryptosConnectButton>
+// Dedicated buttons for popular integrations
+<KryptosConnectButton integrationName="binance">Connect Binance</KryptosConnectButton>
+<KryptosConnectButton integrationName="coinbase">Connect Coinbase</KryptosConnectButton>
+<KryptosConnectButton integrationName="metamask">Connect MetaMask</KryptosConnectButton>
 ```
 
 :::info
-The `integrationName` value must match an integration ID from the supported providers list. An invalid ID will result in an error.
+The `integrationName` value must match an integration ID from the supported providers list.
 :::
 
-## TypeScript Support
+## Theming & Customization
 
-```typescript
-import type {
-  KryptosConnectButtonProps,
-  KryptosConnectProviderProps,
-  UserConsent,
-} from "@kryptos_connect/web-sdk";
+Theme the connect UI by passing `cssVars` to `KryptosConnect.init`. The connect UI is sandboxed — global stylesheet overrides have no effect. `--kc-primary` and `--kc-primary-text` also apply to the trigger button in your page.
 
-interface UserConsent {
-  public_token: string;
-}
+```tsx
+KryptosConnect.init({
+  clientId: "your-client-id",
+  appName: "My App",
+  cssVars: {
+    "--kc-primary":       "#6366f1",
+    "--kc-primary-hover": "#4f46e5",
+    "--kc-primary-text":  "#ffffff",
+    "--kc-border-focus":  "#6366f1",
+  },
+});
 ```
 
-## Customization
-
-### CSS Variables
-
-```css
-:root {
-  --kc-primary: #8b5cf6;
-  --kc-primary-hover: #7c3aed;
-  --kc-bg-primary: #ffffff;
-  --kc-text-primary: #000000;
-  --kc-border: #e5e7eb;
-  --kc-border-radius: 8px;
-}
-
-[data-kc-theme="dark"] {
-  --kc-bg-primary: #1a1a1a;
-  --kc-text-primary: #ffffff;
-  --kc-border: #404040;
-}
-```
-
-### Custom Button Styling
+For per-button overrides, use the `style` or `className` prop directly on `KryptosConnectButton`:
 
 ```tsx
 <KryptosConnectButton
-  className="my-custom-button"
-  style={{
-    background: "linear-gradient(to right, #667eea, #764ba2)",
-    borderRadius: "12px",
-  }}
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
+  style={{ background: "linear-gradient(to right, #667eea, #764ba2)", borderRadius: "12px" }}
 >
   Connect Wallet
 </KryptosConnectButton>
 ```
+
+For the complete variable reference, see [Theming & Customization](./css-theming).
 
 ## Framework Integration
 
@@ -376,28 +299,19 @@ interface UserConsent {
 
 ```tsx
 // app/layout.tsx
-import { KryptosConnectProvider } from "@kryptos_connect/web-sdk";
-import "@kryptos_connect/web-sdk/dist/styles/index.css";
+import { KryptosConnect } from "@kryptos_connect/web-sdk";
 
-const config = {
+KryptosConnect.init({
   appName: "My Next.js App",
   clientId: process.env.NEXT_PUBLIC_KRYPTOS_CLIENT_ID!,
-  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-  theme: "light" as const,
-};
+  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  theme: "light",
+});
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <KryptosConnectProvider config={config}>
-          {children}
-        </KryptosConnectProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
@@ -407,23 +321,24 @@ export default function RootLayout({
 
 ```tsx
 // main.tsx
-import ReactDOM from "react-dom/client";
-import { KryptosConnectProvider } from "@kryptos_connect/web-sdk";
-import "@kryptos_connect/web-sdk/dist/styles/index.css";
-import App from "./App";
+import { KryptosConnect } from "@kryptos_connect/web-sdk";
 
-const config = {
+KryptosConnect.init({
   appName: "My React App",
   clientId: import.meta.env.VITE_KRYPTOS_CLIENT_ID,
   walletConnectProjectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
-  theme: "light" as const,
-};
+  theme: "light",
+});
+```
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <KryptosConnectProvider config={config}>
-    <App />
-  </KryptosConnectProvider>,
-);
+## TypeScript Support
+
+```typescript
+import type { UserConsent } from "@kryptos_connect/web-sdk";
+
+interface UserConsent {
+  public_token: string;
+}
 ```
 
 ## Browser Support
@@ -440,6 +355,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ## Next steps
 
-- [Backend Implementation](./backend) -- set up the server-side token exchange and API integration
-- [Examples](./examples) -- complete integration examples for common use cases
-- [Mobile SDK](./mobile-sdk) -- integrate Kryptos Connect in React Native applications
+- [Backend Implementation](./backend) — set up the server-side token exchange and API integration
+- [Examples](./examples) — complete integration examples for common use cases
+- [Mobile SDK](./mobile-sdk) — integrate Kryptos Connect in React Native applications
