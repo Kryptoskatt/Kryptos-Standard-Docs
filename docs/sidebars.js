@@ -62,6 +62,7 @@ const sidebars = {
         "mcp/mcp-overview",
         "mcp/mcp-tools",
         "mcp/mcp-reconciliation",
+        "mcp/mcp-accounting",
       ],
     },
     {

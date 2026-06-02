@@ -103,7 +103,7 @@ Finds deposits and withdrawals that still have generic labels and need to be pro
 
 ### Labels you can use
 
-When categorizing, ask your AI to pick from this list (these are the categories Kryptos recognizes for tax and reporting purposes):
+When categorizing, ask your AI to pick from this list (these are the categories Kryptos recognizes for tax and reporting purposes). Your AI can also fetch the authoritative, up-to-date list at any time with the **`get_supported_labels`** tool — see [Portfolio, transactions & wallet tools](/docs/mcp/mcp-tools#get_supported_labels).
 
 **DeFi & Swaps:** `DeFi Swap`, `Swap`, `Trade`, `Cross Chain Swaps`, `Add Liquidity`, `Liquidity Withdrawal`, `Wrap`, `Unwrap`
 

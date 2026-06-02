@@ -22,8 +22,10 @@ Once connected, you can ask your AI things like:
 - **Find data issues** – "Are any of my transactions missing prices or cost basis?"
 - **Fix labels** – "Recategorize all my Uniswap swaps as DeFi Swap"
 - **Add missing trades** – "Add a manual BTC purchase from January 2024"
+- **Connect wallets** – "Connect my Binance account" or "Add my Ethereum address"
+- **Do your accounting** – "Categorize my transactions and push the journals to Xero"
 
-Under the hood, the server provides 18 tools your AI uses on your behalf.
+Under the hood, the server provides 39 tools your AI uses on your behalf.
 
 ## How to connect
 
@@ -78,15 +80,17 @@ You should see Kryptos tools in the list — anything starting with `get_`, `upd
 
 ## Available tools
 
-The server provides 18 tools, split into two groups:
+The server provides 39 tools, split into these groups:
 
 | Group | Tools | What they do |
 |-------|-------|--------------|
-| **Portfolio & Data** | 12 | Read your holdings, transactions, DeFi, NFTs, and account info |
+| **Portfolio, transactions & wallets** | 17 | Read holdings, transactions, DeFi/NFTs, account info; add wallets; manage portfolios |
 | **Reconciliation** | 6 | Find and fix gaps in your portfolio data |
+| **Accounting & ERP** | 16 | Chart of accounts, categorization rules, and syncing journals to Xero / QuickBooks |
 
-- **[Portfolio & Data tools →](/docs/mcp/mcp-tools)**
+- **[Portfolio, transactions & wallet tools →](/docs/mcp/mcp-tools)**
 - **[Reconciliation tools →](/docs/mcp/mcp-reconciliation)**
+- **[Accounting & ERP tools →](/docs/mcp/mcp-accounting)**
 
 ---
 
