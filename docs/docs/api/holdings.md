@@ -23,6 +23,24 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
 ```
 
+## Query Parameters
+
+| Parameter                 | Type   | Default | Description                                                                                                                                                            |
+| ------------------------- | ------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isSpam`                  | string | `false` | Set to `true` to include assets flagged as spam. Omitted or any other value excludes them.                                                                            |
+| `calculatedBalanceFilter` | string | `all`   | Filter holdings by balance source. `all`: live and calculated balances. `only`: calculated balances only (CSV/custom wallets). `exclude`: live balances only. Unknown values fall back to `all`. |
+
+> Calculated balances are quantities derived from manually-imported transactions (CSV uploads, custom wallets) rather than fetched live from a connected exchange or on-chain address.
+
+### Example
+
+```bash
+curl -X GET "https://connect.kryptos.io/api/v1/holdings?calculatedBalanceFilter=exclude" \
+  -H "Authorization: Bearer ACCESS_TOKEN" \
+  -H "X-Client-Id: YOUR_CLIENT_ID" \
+  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+```
+
 ## Response
 
 ```json
@@ -49,6 +67,7 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
       "marketLinks": {
         "coinmarketcap": "https://..."
       },
+      "hasCalculatedBalance": false,
       "assetDistribution": [
         {
           "quantity": 1.5,
@@ -56,7 +75,8 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
             "provider": "Ledger",
             "walletId": "wallet_123"
           },
-          "allocationPercentage": 60
+          "allocationPercentage": 60,
+          "isCalculatedBalance": false
         },
         {
           "quantity": 1.0,
@@ -64,7 +84,8 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
             "provider": "MetaMask",
             "walletId": "wallet_456"
           },
-          "allocationPercentage": 40
+          "allocationPercentage": 40,
+          "isCalculatedBalance": false
         }
       ]
     }
@@ -96,7 +117,17 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
 | `roi`               | number | Return on investment % for this asset (`unrealizedPnL / costbasis * 100`; `0` when cost basis is unknown) |
 | `baseCurrency`      | string | Base currency (USD)         |
 | `24hrChange`        | number | 24-hour price change %      |
+| `hasCalculatedBalance` | boolean | `true` if any wallet contributing to this asset holds a calculated balance (CSV/custom wallet) |
 | `assetDistribution` | array  | Distribution across wallets |
+
+### Asset Distribution Object
+
+| Field                  | Type    | Description                                                              |
+| ---------------------- | ------- | ------------------------------------------------------------------------ |
+| `quantity`             | number  | Quantity held in this wallet                                             |
+| `account`              | object  | Account details (`provider`, `walletId`)                                 |
+| `allocationPercentage` | number  | Share of the asset's total value held in this wallet                     |
+| `isCalculatedBalance`  | boolean | `true` if this wallet's balance is calculated (CSV/custom wallet) rather than live |
 
 ### Summary Object
 
