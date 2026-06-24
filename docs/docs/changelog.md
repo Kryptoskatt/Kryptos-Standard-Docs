@@ -14,6 +14,7 @@ All notable changes to the Kryptos Connect API.
 
 **New**
 
+- Web SDK & Mobile SDK — Integration form pre-fill via `extraConfig={{ prefill: { address, apiKey, secretKey, password, accountName } }}` on `KryptosConnectButton`. For EVM wallets, supplying an `address` automatically triggers chain detection and pre-selects all detected chains.
 - Demo Apps — Live interactive demos published at [demo-connect.kryptos.io](https://demo-connect.kryptos.io).
 
 **Enhancements**
