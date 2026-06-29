@@ -240,8 +240,46 @@ KryptosConnect.init({
 | `integrationName`   | `string`                                                        | No       | Skip the integration list and open a specific integration directly.                |
 | `buttonLabel`       | `string`                                                        | No       | Button text.                                                                       |
 | `buttonHeight`      | `number`                                                        | No       | Button height in dp. Default `56`.                                                 |
-| `extraConfig`       | `Record<string, unknown>`                                       | No       | Per-button config overrides, merged onto the global config.                        |
+| `extraConfig`       | `Record<string, unknown>`                                       | No       | Per-button config overrides merged onto the global config. Pass `prefill` here to pre-populate integration form fields.    |
 | `style`             | `StyleProp<ViewStyle>`                                          | No       | Style for the button. `backgroundColor` overrides `--kc-primary` for that button.  |
+
+### Pre-filling Integration Forms
+
+Pass a `prefill` object inside `extraConfig` to pre-populate the integration form when the user reaches the connection step. All fields are optional — pass only the ones you have.
+
+| Field                    | Type     | Description                                                               |
+| ------------------------ | -------- | ------------------------------------------------------------------------- |
+| `prefill.address`        | `string` | Wallet or blockchain address. Triggers chain auto-detect for EVM wallets. |
+| `prefill.apiKey`         | `string` | API key for exchange or API-based integrations.                           |
+| `prefill.secretKey`      | `string` | Secret key for integrations that require one.                             |
+| `prefill.password`       | `string` | Password for integrations that require one.                               |
+| `prefill.accountName`    | `string` | Account name for account-based integrations.                              |
+
+```tsx
+// Pre-fill a wallet address — chains are auto-detected
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
+  integrationName="ethereum"
+  buttonLabel="Connect Wallet"
+  extraConfig={{ prefill: { address: "0x1234567890123456789012345678901234567890" } }}
+/>
+
+// Pre-fill API credentials for an exchange
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
+  integrationName="binance"
+  buttonLabel="Connect Binance"
+  extraConfig={{ prefill: { apiKey: "user-api-key", secretKey: "user-secret-key" } }}
+/>
+```
+
+:::info
+Prefilled values populate the form as editable defaults — the user can still change them before submitting. For EVM wallets, providing an `address` automatically triggers chain detection and pre-selects all detected chains.
+:::
 
 ## Theming & Customization
 
