@@ -10,6 +10,14 @@ All notable changes to the Kryptos Connect API.
 
 ---
 
+## July 2026
+
+**Enhancements**
+
+- `GET /v1/holdings` — calculated balances (quantities derived from the transaction ledger, e.g. CSV uploads / custom wallets) are now **excluded by default**; the holdings list and its `summary` net-worth totals reflect live balances only. Pass `?calculatedBalances=true` to instead return the ledger-computed balances (the `calculatedBalances` set, maintained for every user).
+
+---
+
 ## May 2026
 
 **New**

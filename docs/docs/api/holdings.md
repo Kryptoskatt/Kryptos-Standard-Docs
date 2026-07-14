@@ -28,14 +28,15 @@ curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
 | Parameter                 | Type   | Default | Description                                                                                                                                                            |
 | ------------------------- | ------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `isSpam`                  | string | `false` | Set to `true` to include assets flagged as spam. Omitted or any other value excludes them.                                                                            |
-| `calculatedBalanceFilter` | string | `all`   | Filter holdings by balance source. `all`: live and calculated balances. `only`: calculated balances only (CSV/custom wallets). `exclude`: live balances only. Unknown values fall back to `all`. |
+| `calculatedBalances`      | string | `false` | Set to `true` to return balances computed from the transaction ledger (the `calculatedBalances` collection, maintained for every user). By default (`false`) the endpoint returns live balances only. |
 
-> Calculated balances are quantities derived from manually-imported transactions (CSV uploads, custom wallets) rather than fetched live from a connected exchange or on-chain address.
+> Calculated balances are quantities recomputed from the transaction ledger rather than fetched live from a connected exchange or on-chain address. By default the endpoint returns live balances (and the corresponding summary/net-worth totals); pass `calculatedBalances=true` to return the ledger-computed set instead.
 
 ### Example
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings?calculatedBalanceFilter=exclude" \
+# Return ledger-computed balances instead of live balances
+curl -X GET "https://connect.kryptos.io/api/v1/holdings?calculatedBalances=true" \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "X-Client-Id: YOUR_CLIENT_ID" \
   -H "X-Client-Secret: YOUR_CLIENT_SECRET"
