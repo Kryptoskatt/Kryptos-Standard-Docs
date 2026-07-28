@@ -60,13 +60,6 @@ const config = {
     {
       tagName: "meta",
       attributes: {
-        name: "twitter:card",
-        content: "summary_large_image",
-      },
-    },
-    {
-      tagName: "meta",
-      attributes: {
         name: "twitter:title",
         content: "Kryptos API Documentation",
       },
@@ -120,9 +113,11 @@ const config = {
   ],
 
   themeConfig: {
+    image: "img/logo.png",
     metadata: [
       { name: "robots", content: "index, follow" },
       { name: "theme-color", content: "#10b981" },
+      { name: "twitter:card", content: "summary" },
     ],
     colorMode: {
       defaultMode: "dark",
@@ -178,7 +173,10 @@ const config = {
         {
           title: "Resources",
           items: [
-            { label: "Developer Portal", href: "https://dashboard.kryptos.io/" },
+            {
+              label: "Developer Portal",
+              href: "https://dashboard.kryptos.io/",
+            },
             { label: "GitHub", href: "https://github.com/Kryptoskatt" },
             { label: "Changelog", to: "/docs/changelog" },
           ],
@@ -196,7 +194,14 @@ const config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ["bash", "json", "typescript", "python", "php", "go"],
+      additionalLanguages: [
+        "bash",
+        "json",
+        "typescript",
+        "python",
+        "php",
+        "go",
+      ],
     },
   },
 };
