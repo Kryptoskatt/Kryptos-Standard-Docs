@@ -187,6 +187,8 @@ Pass stored `access_token` in the link-token request body and return `isAuthoriz
 | `theme`                  | `"light" \| "dark" \| "auto"` | No       | UI theme. Default `"light"`.                                          |
 | `language`               | `string`                      | No       | UI language. Supported: `en fr de pt sv es pl it`.                    |
 | `authMethods`            | `("email" \| "anonymous")[]`  | No       | Auth methods shown. Default: both.                                    |
+| `detectUsedChains`       | `boolean`                     | No       | Detect which chains an EVM address is active on. Default `true`.      |
+| `autoSelectAllChains`    | `boolean`                     | No       | Pre-select every detected chain. Default `true`.                      |
 | `cssVars`                | `Record<string, string>`      | No       | Override `--kc-*` CSS variables in the connect UI and trigger button. |
 
 ### Restricting Auth Methods
@@ -229,7 +231,6 @@ KryptosConnect.init({
 | `onConnectError`    | `(error: Error) => void`                                        | Yes      | Called on error or dismissal.                                                                                              |
 | `size`              | `"sm" \| "md" \| "lg"`                                          | No       | Button size. Default `"md"`.                                                                                               |
 | `integrationName`   | `string`                                                        | No       | Skip the integration list and open a specific integration directly.                                                        |
-| `extraConfig`       | `Record<string, unknown>`                                       | No       | Per-button config overrides, merged onto the global config.                                                                |
 | `extraConfig`       | `Record<string, unknown>`                                       | No       | Per-button config overrides merged onto the global config. Pass `prefill` here to pre-populate integration form fields.    |
 | `children`          | `React.ReactNode`                                               | No       | Custom button label.                                                                                                       |
 | `className`         | `string`                                                        | No       | Extra CSS class on the `<button>` element.                                                                                 |
@@ -268,7 +269,75 @@ Pass a `prefill` object inside `extraConfig` to pre-populate the integration for
 ```
 
 :::info
-Prefilled values populate the form as editable defaults — the user can still change them before submitting. For EVM wallets, providing an `address` automatically triggers chain detection and pre-selects all detected chains.
+Prefilled values populate the form as editable defaults — the user can still change them before submitting. For EVM wallets, providing an `address` automatically triggers chain detection and pre-selects all detected chains. Use [EVM chain detection](#evm-chain-detection) to change that behaviour.
+:::
+
+### EVM chain detection
+
+When a user enters an EVM address — by typing it or via `prefill` — the connect UI looks the address up to discover which chains it has activity on, then offers those chains for selection so the user can connect them all at once.
+
+Two booleans control this. Both can be set globally in `KryptosConnect.init` or per-button inside `extraConfig`.
+
+| Key                   | Type      | Default | Description                                                                                                                                                                          |
+| --------------------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `detectUsedChains`    | `boolean` | `true`  | Whether the address is looked up at all. When `false`, no lookup happens and only the chain the flow was initiated with (from `integrationName`) is connected, as a single integration. |
+| `autoSelectAllChains` | `boolean` | `true`  | Whether every detected chain is pre-selected. When `false`, only the initiating chain is selected — the others are still listed, but the user opts into each one.                       |
+
+Both default to `true`, so the default behaviour is: detect every chain the address is active on and pre-select all of them.
+
+#### Combinations
+
+| `detectUsedChains` | `autoSelectAllChains` | Result                                                                                          |
+| ------------------ | --------------------- | ----------------------------------------------------------------------------------------------- |
+| `true`             | `true`                | Chains are looked up and all are pre-selected. **(default)**                                    |
+| `true`             | `false`               | Chains are looked up and listed, but only the initiating chain is pre-selected.                  |
+| `false`            | _(any)_               | No lookup. The initiating chain is connected as a single integration; `autoSelectAllChains` is ignored. |
+
+#### Examples
+
+Detect chains, but let the user opt into each one beyond the chain they picked:
+
+```tsx
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
+  integrationName="ethereum"
+  extraConfig={{
+    prefill: { address: "0x1234567890123456789012345678901234567890" },
+    detectUsedChains: true,
+    autoSelectAllChains: false,
+  }}
+/>
+```
+
+Skip chain detection entirely and connect only Ethereum:
+
+```tsx
+<KryptosConnectButton
+  generateLinkToken={generateLinkToken}
+  onConnectSuccess={handleSuccess}
+  onConnectError={(err) => console.error(err)}
+  integrationName="ethereum"
+  extraConfig={{
+    prefill: { address: "0x1234567890123456789012345678901234567890" },
+    detectUsedChains: false,
+  }}
+/>
+```
+
+Turn detection off globally for every button:
+
+```tsx
+KryptosConnect.init({
+  clientId: "your-client-id",
+  appName: "My App",
+  detectUsedChains: false,
+});
+```
+
+:::note
+Both flags only affect EVM wallet integrations — other integrations are unaffected. The lookup is debounced by 500ms as the user types and re-runs whenever the address changes. If it fails or returns no chains, nothing is pre-selected, so a user is never opted into chains they did not choose.
 :::
 
 ## Direct Integration Flow
