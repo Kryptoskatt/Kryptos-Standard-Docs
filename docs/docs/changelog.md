@@ -10,6 +10,55 @@ All notable changes to the Kryptos Connect API.
 
 ---
 
+## August 2026
+
+**Breaking — new API base URL**
+
+The data API has moved to a new backend. The base URL is now **`https://api-v2.kryptos.io`**, and the
+`/api` path prefix is gone: `https://connect.kryptos.io/api/v1/holdings` becomes
+`https://api-v2.kryptos.io/v1/holdings`.
+
+- **`X-Client-Id` and `X-Client-Secret` are no longer used on data calls.** `Authorization: Bearer` is
+  the only header needed. Client credentials are still required on the Kryptos Connect
+  link-token and token-exchange endpoints.
+- **`user_id` and `timestamp` removed** from response envelopes.
+- **Endpoints renamed:** `/v1/defi-holdings` → `/v1/defi`, `/v1/nft-holdings` → `/v1/nfts`,
+  `/v1/userinfo` → `/v1/users/me`, `/v1/transactions/label-types` → `/v1/labels`,
+  `/v1/integrations/providers` → `/v1/providers`, `/v1/counterparties` → `/v1/counter-parties`.
+- **Holdings fields renamed:** `costbasis` → `costBasis`, `roi` → `roiPercentage` (now `null` rather
+  than `0` when cost basis is unknown), and `24hrChange` split into `change24h` (absolute) and
+  `change24hPercentage`. New: `assetId`, `costPerUnit`, `transactionCount`, `isSpam`.
+- **The inline holdings `summary` block is gone** — `GET /v1/holdings` returns a top-level `totalValue`.
+- **Ledger quantities are decimal strings**, not numbers, to preserve 18-decimal precision.
+- **Removed:** the entire `/v0/*` surface, `GET /v1/profiling` and `GET /v1/holdings/graph`.
+
+See **[Migrating from the previous API](/docs/api/migrating-from-connect-apis)** for the complete
+mapping and a migration checklist.
+
+**New**
+
+- `GET /v1/ledgers` and `GET /v1/ledgers/{id}` — query transaction legs directly across transactions,
+  with running balances and per-leg accounting figures.
+- `GET /v1/calculated-balances` — ledger-derived balances with `isMissingTransactionHistory` and
+  `lastLedgerTimestamp` reconciliation flags.
+- `GET /v1/spam` — the assets being excluded from balances and totals.
+- `GET /v1/integrations/{id}/assets` — per-asset breakdown for one connected account.
+- `GET /v1/portfolios` — group accounts, and scope any portfolio query with `/portfolio/{portfolioId}`.
+- Richer transaction filtering: exclusion filters (`notLabels`, `notWalletIds`, …) and data-quality
+  flags (`isMissingTransaction`, `hasMissingPrice`, `hasMissingAsset`) that replace the previous
+  reconciliation endpoints.
+- `x-api-key` is now accepted on the portfolio and transaction endpoints, not just the user profile.
+
+**Documentation**
+
+- Kryptos Connect — new [Link Token API](/docs/kryptos-connect/link-token-api) page documenting the
+  session endpoints the SDKs drive: OTP email login, workspace selection, consent, and the
+  `x-link-token` credential. Guest vs Linked users are now explained rather than assumed.
+- Sandbox mode has been removed from the product and from these docs.
+- MCP Server documentation consolidated into a single install-and-go page.
+
+---
+
 ## July 2026
 
 **Enhancements**
@@ -92,9 +141,3 @@ All notable changes to the Kryptos Connect API.
 - V1 API endpoints (Holdings, Transactions, DeFi, NFT, Integrations, Profiling)
 - Granular permission scopes
 - API documentation
-
----
-
-## Upcoming
-
-- Kryptos Connect Widget

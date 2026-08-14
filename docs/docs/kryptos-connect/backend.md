@@ -417,16 +417,9 @@ Use the access token to call Kryptos APIs:
 
 ```javascript
 async function getUserHoldings(accessToken) {
-  const response = await axios.get(
-    "https://connect.kryptos.io/api/v1/holdings",
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
-        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
-      },
-    },
-  );
+  const response = await axios.get("https://api-v2.kryptos.io/v1/holdings", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 
   return response.data;
 }
@@ -639,17 +632,19 @@ async function resyncIntegration(walletId, userId, mode = "latest") {
 
 **Modes:**
 
-| Mode         | What it does                                                                                |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `latest`     | Incremental refresh — re-pull from where the last sync left off. Wallets/exchanges only.    |
-| `from_start` | Wipe and re-pull from scratch. Works for wallets, exchanges, and CSVs.                      |
+| Mode         | What it does                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| `latest`     | Incremental refresh — re-pull from where the last sync left off.                          |
+| `from_start` | Wipe this integration's data and re-pull everything.                                      |
 
 **Behavior by integration type:**
 
 - **Wallet/exchange** — both modes are supported. The resync runs asynchronously on the Kryptos sync workers.
-- **CSV** — only `from_start` is supported. Returns `409 CSV_RESYNC_LATEST_UNSUPPORTED` for `mode: "latest"` (CSVs have no incremental concept). The same `walletId` is reused; the underlying handler atomically wipes the wallet's data and re-ingests from the originally uploaded file in one step.
+- **CSV** — **not supported in either mode.** `latest` returns `409 CSV_RESYNC_LATEST_UNSUPPORTED` and
+  `from_start` returns `409 CSV_RESYNC_UNSUPPORTED`. To re-import a CSV, upload the file again through
+  the SDK — there is nothing to re-fetch from.
 
-**Response (202 — wallet/exchange):**
+**Response (202):**
 
 ```json
 {
@@ -658,42 +653,44 @@ async function resyncIntegration(walletId, userId, mode = "latest") {
     "mode": "latest",
     "integration_type": "wallet",
     "wallet_id": "wallet-uuid",
-    "status": "queued"
+    "job_id": "sync_a1b2c3d4e5f6",
+    "status": "queued",
+    "note": "Resync runs asynchronously. Poll GET /v1/sync/{job_id}, or GET /v1/integrations to observe status transitioning through SYNCING → COMPLETED."
   }
 }
 ```
 
-**Response (202 — CSV from_start):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "mode": "from_start",
-    "integration_type": "csv",
-    "wallet_id": "wallet-uuid",
-    "job_id": "job_xyz789",
-    "status": "ongoing"
-  }
-}
-```
+`job_id` is the sync id — poll it at
+`GET /v1/sync/{job_id}` with the user's access token.
 
 **Errors:**
 
-| Status | Code                            | Description                                                          |
-| ------ | ------------------------------- | -------------------------------------------------------------------- |
-| 401    | -                               | Invalid client credentials.                                          |
-| 403    | `GRANT_NOT_FOUND`               | The user has not granted your client access (or revoked it).         |
-| 404    | `INTEGRATION_NOT_FOUND`         | No wallet with this `walletId` exists for the user.                  |
-| 404    | `CSV_SOURCE_MISSING`            | CSV resync requested but no original file is on record.              |
-| 409    | `CSV_RESYNC_LATEST_UNSUPPORTED` | `mode: "latest"` is not valid for CSVs — use `"from_start"` instead. |
+| Status | Code                            | Description                                                              |
+| ------ | ------------------------------- | ------------------------------------------------------------------------ |
+| 401    | -                               | Invalid client credentials.                                              |
+| 403    | `GRANT_NOT_FOUND`               | The user has not granted your client access (or revoked it).             |
+| 404    | `INTEGRATION_NOT_FOUND`         | No wallet with this `walletId` exists for the user.                      |
+| 409    | `CSV_RESYNC_LATEST_UNSUPPORTED` | `mode: "latest"` is not valid for a CSV integration.                     |
+| 409    | `CSV_RESYNC_UNSUPPORTED`        | CSV integrations cannot be resynced — upload the file again instead.      |
+| 409    | `SYNC_DISABLED`                 | Syncing is turned off for this integration.                              |
 
 :::info Asynchronous behavior
 The endpoint returns 202 immediately and the resync runs in the background. To observe progress:
 
-- Poll the user's integrations list to watch `key.status` transition from `SYNCING` back to `COMPLETED`.
-- For CSV resyncs, the response includes a `job_id` you can poll for finer-grained status.
-- Listen for the `integration.updated` and `integration.failed` webhook events.
+- Poll `GET /v1/sync/{job_id}` with the user's access token. Wait
+  for a terminal status: `completed`, `partially_synced`, `failed` or `cancelled`. Note
+  `partially_synced` is a success with some rows dropped, not a failure.
+- Or poll [`GET /v1/integrations`](/docs/api/integrations) and watch the integration's `latestSync`.
+- Or listen for the [`integration.updated` and `integration.failed`](/docs/webhooks/events) webhook
+  events, which saves you polling entirely.
+:::
+
+:::tip There are two resync endpoints
+This one is a **partner** endpoint: client credentials, addressed by `user_id`, for acting on a user's
+integration from your backend. There is also
+`POST /v1/integrations/{id}/resync`, which takes the **user's access token** and offers the full option
+set (`functions`, time windows, price-only resync). Use this one when you hold only client credentials;
+use `/v1` when you hold an access token.
 :::
 
 ### Update Transaction Limit
@@ -823,6 +820,9 @@ async function makeApiCallWithCheck(endpoint, accessToken, grantId) {
 
 ## Next Steps
 
+- [Link Token API](./link-token-api) — every session endpoint, including the login and
+  workspace-selection steps the SDK drives for you
 - [Web SDK](./web-sdk) and [Mobile SDK](./mobile-sdk) for frontend integration
 - [Examples](./examples) for complete end-to-end examples
-- [API Endpoints](/docs/api/health) for data API reference
+- [API Overview](/docs/api/overview) — base URL, auth, response shapes and error codes
+- [Webhooks](/docs/webhooks/setup) — get notified instead of polling

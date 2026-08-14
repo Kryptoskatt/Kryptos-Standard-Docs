@@ -60,7 +60,8 @@ See how users connect their accounts through the Kryptos Connect widget:
    Pass link_token to the SDK widget
    ↓
 3. USER AUTHENTICATES
-   User logs in or creates anonymous account
+   Guest login (no account), or email login with a one-time code.
+   An email user with existing workspaces also picks which one to share.
    ↓
 4. USER GRANTS CONSENT
    User approves requested permissions
@@ -77,11 +78,17 @@ See how users connect their accounts through the Kryptos Connect widget:
 
 ### Authentication Methods
 
-| Method             | Header/Body                               | Used For             |
-| ------------------ | ----------------------------------------- | -------------------- |
-| Client Credentials | `X-Client-Id` + `X-Client-Secret` headers | Creating link tokens |
-| Link Token         | `X-LINK-TOKEN` header                     | Widget operations    |
-| Bearer Token       | `Authorization: Bearer {access_token}`    | Data API calls       |
+| Method             | Header                                    | Used For                                   |
+| ------------------ | ----------------------------------------- | ------------------------------------------ |
+| Client Credentials | `X-Client-Id` + `X-Client-Secret`         | Creating link tokens, exchanging and revoking tokens — **backend only** |
+| Link Token         | `x-link-token`                            | Widget operations, and adding integrations from the browser |
+| Bearer Token       | `Authorization: Bearer {access_token}`    | Data API calls from your backend           |
+
+Client credentials may also be sent in the JSON body as `client_id` and `client_secret`, which the SDK
+examples use. Either way they belong on your server, never in frontend code.
+
+For the full request and response detail of every session endpoint, see the
+**[Link Token API](./link-token-api)**.
 
 ---
 
@@ -107,18 +114,23 @@ integrations:read tax:read accounting:read reports:read workspace:read users:rea
 
 ### API Scopes
 
-| Resource     | Read Scope          | Write Scope          | Description                     |
-| ------------ | ------------------- | -------------------- | ------------------------------- |
-| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings              |
-| Transactions | `transactions:read` | `transactions:write` | Transaction history             |
-| Balances     | `balances:read`     | `balances:write`     | Account balances                |
-| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges |
-| DeFi         | `defi:read`         | `defi:write`         | DeFi protocol positions         |
-| NFT          | `nft:read`          | `nft:write`          | NFT collections                 |
-| Tax          | `tax:read`          | `tax:write`          | Tax calculations                |
-| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger               |
-| Reports      | `reports:read`      | `reports:write`      | Generated reports               |
-| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings              |
+| Resource     | Read Scope          | Write Scope          | Covers                                  |
+| ------------ | ------------------- | -------------------- | --------------------------------------- |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   | Holdings, balances, DeFi, NFTs, dashboard, graphs |
+| Transactions | `transactions:read` | `transactions:write` | Transactions, ledgers, labels, spam     |
+| Integrations | `integrations:read` | `integrations:write` | Connected wallets, exchanges, sync, CSV |
+| Contacts     | `contacts:read`     | `contacts:write`     | Contacts and counterparties             |
+| Tax          | `tax:read`          | `tax:write`          | Tax calculations                        |
+| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger                       |
+| Reports      | `reports:read`      | `reports:write`      | Generated reports                       |
+| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings                      |
+| Users        | `users:read`        | `users:write`        | User profile                            |
+
+There is **no separate `balances`, `defi` or `nft` scope** — all three are covered by `portfolios:read`.
+`contacts:*` is not in the default set above and must be requested explicitly.
+
+A grant can never exceed what the consenting member's role allows, so check the `scope` value returned
+with the access token rather than assuming you received everything you requested.
 
 ---
 
@@ -145,33 +157,20 @@ integrations:read tax:read accounting:read reports:read workspace:read users:rea
 
 ---
 
-## Sandbox Mode
+## Guest and Linked users
 
-New clients are created in **sandbox mode** by default, which has the following limitations:
+Connect produces two kinds of user, and the difference affects what you can do with the session:
 
-### Supported Chains
+|  | Guest | Linked |
+| --- | --- | --- |
+| Created by | Guest login (no email) | Email login with a one-time code |
+| Kryptos account | **None** — the workspace is the identity | Yes |
+| Can sign in to Kryptos directly | No | Yes |
+| Subject to developer transaction limits | Yes | No |
 
-Only **Ethereum** and **Solana** are available in sandbox mode.
-
-### Test Addresses
-
-Use these pre-approved test addresses for sandbox testing:
-
-| Chain    | Test Address                                   |
-| -------- | ---------------------------------------------- |
-| Ethereum | `0x47c2e31e9ce22437bcf6313d2b9e98245a7bfcfa`   |
-| Solana   | `2r8Hm938GzCQ2gXTP2deDarkn52ezYf1UUaEzMpkwrk1` |
-
-### Sandbox Errors
-
-| Error Code                     | Description                            |
-| ------------------------------ | -------------------------------------- |
-| `SANDBOX_PROVIDER_NOT_ALLOWED` | Provider not available in sandbox mode |
-| `SANDBOX_ADDRESS_NOT_ALLOWED`  | Address not allowed in sandbox mode    |
-
-### Production Access
-
-To upgrade to production mode with full access to all chains and addresses, contact us at [support@kryptos.io](mailto:support@kryptos.io).
+Both are offered by default; control which with `authMethods` in the SDK. See
+[Guest vs Linked users](./link-token-api#guest-vs-linked-users) for the detail, including why
+`GET /v1/users/me` returns `404` for a Guest.
 
 ---
 

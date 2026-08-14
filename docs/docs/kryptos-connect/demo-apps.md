@@ -34,7 +34,7 @@ Track every NFT across wallets and marketplaces.
 
 View all NFTs held across multiple wallets and chains in one place, with metadata, collection info, and marketplace pricing pulled via a single API call.
 
-**API used:** [NFT Holdings API](/docs/api/nft-holdings)
+**API used:** [NFT Holdings API](/docs/api/nfts)
 
 [Try the NFT Portfolio Demo →](https://demo-connect.kryptos.io/demo/nfts)
 
@@ -62,7 +62,7 @@ All DeFi positions in one unified dashboard.
 
 Connect your wallet to see all DeFi positions (staking, lending pools, yield farms) normalized across protocols with real-time USD valuations.
 
-**API used:** [DeFi Holdings API](/docs/api/defi-holdings)
+**API used:** [DeFi Holdings API](/docs/api/defi)
 
 [Try the DeFi Demo →](https://demo-connect.kryptos.io/demo/defi)
 
@@ -70,13 +70,11 @@ Connect your wallet to see all DeFi positions (staking, lending pools, yield far
 
 ## Portfolio Insights
 
-A rich investor profile from a single API call.
+Net worth, cost basis, and portfolio composition at a glance.
 
-> Kryptos analyses every connected portfolio and returns a rich investor profile — type, size tier, asset breakdown, activity level, and P&L — in a single API call.
+> Kryptos aggregates every connected account into one set of portfolio totals — value, cost basis, unrealized P&L, and allocation breakdown.
 
-Get a rich investor profile from your portfolio: investor type, size tier, asset allocation breakdown, activity level, and full P&L summary — all from one API call.
-
-**API used:** [Profiling API](/docs/api/profiling)
+**API used:** [Holdings API](/docs/api/holdings)
 
 [Try the Portfolio Insights Demo →](https://demo-connect.kryptos.io/demo/portfolio)
 

@@ -138,7 +138,7 @@ const config = {
           position: "left",
         },
         {
-          to: "/docs/api/health",
+          to: "/docs/api/overview",
           label: "API Reference",
           position: "left",
         },
@@ -167,7 +167,7 @@ const config = {
           items: [
             { label: "Getting Started", to: "/docs/intro" },
             { label: "Authentication", to: "/docs/authentication/oauth" },
-            { label: "API Reference", to: "/docs/api/health" },
+            { label: "API Reference", to: "/docs/api/overview" },
           ],
         },
         {

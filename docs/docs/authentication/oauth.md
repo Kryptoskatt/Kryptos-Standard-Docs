@@ -38,14 +38,27 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 
 | Resource     | Read Scope          | Write Scope          | Description                          |
 | ------------ | ------------------- | -------------------- | ------------------------------------ |
-| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings and balances      |
-| Transactions | `transactions:read` | `transactions:write` | Transaction history and trades       |
-| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges      |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   | Holdings, DeFi, NFTs, balances       |
+| Transactions | `transactions:read` | `transactions:write` | Transactions, ledgers, labels, spam  |
+| Integrations | `integrations:read` | `integrations:write` | Connected wallets, exchanges, sync, CSV |
+| Contacts     | `contacts:read`     | `contacts:write`     | Contacts and counterparties          |
 | Tax          | `tax:read`          | `tax:write`          | Tax calculations and reports         |
 | Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger entries            |
 | Reports      | `reports:read`      | `reports:write`      | Generated reports and exports        |
+| Invoices     | `invoices:read`     | `invoices:write`     | Invoicing                            |
+| Swaps        | `swaps:read`        | `swaps:write`        | Swaps                                |
 | Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings and configuration |
 | Users        | `users:read`        | `users:write`        | User profile and preferences         |
+
+:::caution Not all scopes are granted by default
+`contacts:*`, `invoices:*` and `swaps:*` are **not** in the default client scope set below. They are
+fully supported, but you must request them explicitly in the authorization request — otherwise
+`/v1/contacts` and `/v1/counter-parties` return `403 insufficient_scope`.
+:::
+
+A grant can never exceed what the consenting member's role allows, so a member with a limited role may
+produce a narrower grant than you requested. **Read the `scope` value returned with the token** and
+degrade gracefully rather than assuming you received everything you asked for.
 
 ## Authorization Flow
 
@@ -209,19 +222,20 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
 Use the access token to call APIs:
 
 ```bash
-curl -X GET https://connect.kryptos.io/api/v1/holdings \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET https://api-v2.kryptos.io/v1/holdings \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
 ## Required Headers
 
-| Header            | Description             |
-| ----------------- | ----------------------- |
-| `Authorization`   | `Bearer {access_token}` |
-| `X-Client-Id`     | Your client ID          |
-| `X-Client-Secret` | Your client secret      |
+| Header          | Description             |
+| --------------- | ----------------------- |
+| `Authorization` | `Bearer {access_token}` |
+
+That is the only header data calls need. `X-Client-Id` and `X-Client-Secret` were required by the
+previous API and are no longer used — see
+[Migrating from the previous API](/docs/api/migrating-from-connect-apis). Client credentials are still
+required on the OIDC token endpoint itself, as shown above.
 
 ## Code Examples
 
@@ -234,7 +248,7 @@ class KryptosClient {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.oauthUrl = "https://oauth.kryptos.io";
-    this.apiUrl = "https://connect-api.kryptos.io";
+    this.apiUrl = "https://api-v2.kryptos.io";
     this.accessToken = null;
   }
 
@@ -308,24 +322,16 @@ class KryptosClient {
 
   // Get user holdings
   async getHoldings() {
-    const response = await fetch(`${this.apiUrl}/api/v1/holdings`, {
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        "X-Client-Id": this.clientId,
-        "X-Client-Secret": this.clientSecret,
-      },
+    const response = await fetch(`${this.apiUrl}/v1/holdings`, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
     });
     return response.json();
   }
 
   // Get user info
   async getUserInfo() {
-    const response = await fetch(`${this.apiUrl}/api/v1/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        "X-Client-Id": this.clientId,
-        "X-Client-Secret": this.clientSecret,
-      },
+    const response = await fetch(`${this.apiUrl}/v1/users/me`, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
     });
     return response.json();
   }
@@ -371,7 +377,7 @@ class KryptosClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.oauth_url = 'https://oauth.kryptos.io'
-        self.api_url = 'https://connect-api.kryptos.io'
+        self.api_url = 'https://api-v2.kryptos.io'
         self.access_token = None
 
     def generate_pkce(self):
@@ -415,21 +421,13 @@ class KryptosClient:
         return tokens
 
     def get_holdings(self):
-        headers = {
-            'Authorization': f'Bearer {self.access_token}',
-            'X-Client-Id': self.client_id,
-            'X-Client-Secret': self.client_secret
-        }
-        response = requests.get(f"{self.api_url}/api/v1/holdings", headers=headers)
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = requests.get(f"{self.api_url}/v1/holdings", headers=headers)
         return response.json()
 
     def get_userinfo(self):
-        headers = {
-            'Authorization': f'Bearer {self.access_token}',
-            'X-Client-Id': self.client_id,
-            'X-Client-Secret': self.client_secret
-        }
-        response = requests.get(f"{self.api_url}/api/v1/userinfo", headers=headers)
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = requests.get(f"{self.api_url}/v1/users/me", headers=headers)
         return response.json()
 
 # Usage
@@ -457,7 +455,7 @@ class KryptosClient {
     private $clientId;
     private $clientSecret;
     private $oauthUrl = 'https://oauth.kryptos.io';
-    private $apiUrl = 'https://connect-api.kryptos.io';
+    private $apiUrl = 'https://api-v2.kryptos.io';
     private $accessToken;
 
     public function __construct($clientId, $clientSecret) {
@@ -514,11 +512,11 @@ class KryptosClient {
     }
 
     public function getHoldings() {
-        return $this->makeApiCall('/api/v1/holdings');
+        return $this->makeApiCall('/v1/holdings');
     }
 
     public function getUserInfo() {
-        return $this->makeApiCall('/api/v1/userinfo');
+        return $this->makeApiCall('/v1/users/me');
     }
 
     private function makeApiCall($endpoint) {
@@ -526,9 +524,7 @@ class KryptosClient {
         curl_setopt($ch, CURLOPT_URL, $this->apiUrl . $endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $this->accessToken,
-            'X-Client-Id: ' . $this->clientId,
-            'X-Client-Secret: ' . $this->clientSecret
+            'Authorization: Bearer ' . $this->accessToken
         ]);
 
         $response = curl_exec($ch);
@@ -585,7 +581,7 @@ func NewKryptosClient(clientID, clientSecret string) *KryptosClient {
         ClientID:     clientID,
         ClientSecret: clientSecret,
         OAuthURL:     "https://oauth.kryptos.io",
-        APIURL:       "https://connect-api.kryptos.io",
+        APIURL:       "https://api-v2.kryptos.io",
     }
 }
 
@@ -635,14 +631,12 @@ func (c *KryptosClient) ExchangeCode(code, redirectURI, codeVerifier string) err
 }
 
 func (c *KryptosClient) GetHoldings() (map[string]interface{}, error) {
-    return c.makeAPICall("/api/v1/holdings")
+    return c.makeAPICall("/v1/holdings")
 }
 
 func (c *KryptosClient) makeAPICall(endpoint string) (map[string]interface{}, error) {
     req, _ := http.NewRequest("GET", c.APIURL+endpoint, nil)
     req.Header.Set("Authorization", "Bearer "+c.AccessToken)
-    req.Header.Set("X-Client-Id", c.ClientID)
-    req.Header.Set("X-Client-Secret", c.ClientSecret)
 
     resp, err := http.DefaultClient.Do(req)
     if err != nil {
@@ -706,16 +700,12 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
   -d "code_verifier=YOUR_CODE_VERIFIER"
 
 # Step 4: Call API with access token
-curl -X GET https://connect.kryptos.io/api/v1/holdings \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET https://api-v2.kryptos.io/v1/holdings \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 
 # Get user info
-curl -X GET https://connect.kryptos.io/api/v1/userinfo \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET https://api-v2.kryptos.io/v1/users/me \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
 </TabItem>
@@ -759,22 +749,37 @@ curl -X GET https://oauth.kryptos.io/oidc/userinfo \
 
 ```json
 {
-  "sub": "firebase_user_uid",
+  "sub": "user_9f2c8a",
   "name": "John Doe",
-  "email": "john@example.com",
-  "email_verified": true,
   "picture": "https://example.com/avatar.jpg",
   "updated_at": 1642248600,
-  "portfolios_access": true,
-  "transactions_access": true,
-  "integrations_access": true,
-  "tax_access": true,
-  "accounting_access": false,
-  "reports_access": true,
-  "workspace_access": false,
-  "users_access": false
+  "email": "john@example.com",
+  "email_verified": true
 }
 ```
+
+Claims are returned only for the scopes you were granted: `name`, `picture` and `updated_at` require
+`profile`; `email` and `email_verified` require `email`. `sub` is always present and is the user's
+stable id — the same value [`GET /v1/users/me`](/docs/api/userinfo) returns as `uid`.
+
+`userinfo` does **not** report which scopes you hold. Read the `scope` value returned with the access
+token instead. (Earlier documentation showed `portfolios_access`-style booleans here; they were never
+populated and are gone.)
+
+### Access token claims
+
+Beyond the standard OIDC claims, the access token itself carries the workspace the grant is bound to:
+
+| Claim | Description |
+| --- | --- |
+| `workspaceId` | Workspace this token can access |
+| `workspaceName` | Its display name |
+| `workspaceType` | Workspace type |
+| `role` | The granting member's role, which bounds the scopes |
+| `plan` | Active plan name, when the workspace has one |
+
+Because the workspace is in the token, data calls omit the workspace parameter entirely — see
+[Workspaces](/docs/api/overview#workspaces). Inspect these claims with the introspection endpoint.
 
 ## Error Handling
 

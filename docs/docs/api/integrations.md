@@ -1,169 +1,175 @@
 ---
 id: integrations
 title: Integrations
-sidebar_position: 8
+sidebar_position: 11
 ---
 
 # Integrations
 
-<span className="badge badge--get">GET</span> `/v1/integrations`
+A connected exchange, wallet or blockchain address, with its sync state and per-asset holdings.
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `integrations:read`
 
-Retrieve a paginated list of user-connected wallets and exchanges with metadata, sync status, and transaction counts.
+| | Endpoint | Returns |
+| --- | --- | --- |
+| <span className="badge badge--get">GET</span> | `/v1/integrations` | List, filter, paginate |
+| <span className="badge badge--get">GET</span> | `/v1/integrations/{id}` | One integration, with sync and CSV history |
+| <span className="badge badge--get">GET</span> | `/v1/integrations/search` | Typeahead search |
+| <span className="badge badge--get">GET</span> | `/v1/integrations/sync-status` | Most recent sync time |
+| <span className="badge badge--get">GET</span> | `/v1/integrations/{id}/assets` | Per-asset holdings breakdown |
 
-**Required Permission:** `integrations:read`
+Users connect accounts through the [Kryptos Connect widget](/docs/kryptos-connect/overview), which
+handles credentials, OAuth and CSV upload for you.
 
-## Request
+## List integrations
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/integrations?page=1&pageSize=25" \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&page=1&limit=50" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
-## Query Parameters
+### Query Parameters
 
-| Parameter     | Type   | Default | Description                           |
-| ------------- | ------ | ------- | ------------------------------------- |
-| `page`        | number | 1       | Page number for pagination            |
-| `pageSize`    | number | 25      | Number of items per page (max: 200)   |
-| `searchedKey` | string | -       | Optional search term for fuzzy search |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `workspaceId` | string | — | Required unless your token is workspace-bound |
+| `primaryPortfolioId` | string | — | Scope to one portfolio |
+| `providerId` | string | — | Filter by provider |
+| `providerType` | string | — | `exchange`, `blockchain`, `wallet`, `service`, `aggregator`, `custom` |
+| `status` | string | — | `pending`, `active`, `inactive`, `suspended`, `error` |
+| `search` | string | — | Match on alias, address and account name |
+| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's |
+| `fields` | string | — | `summary` returns a lighter payload |
+| `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |
+| `sortOrder` | string | `desc` | `asc` or `desc` |
+| `page` | integer | `1` | Page number |
+| `limit` | integer | `50` | 1–100, silently clamped |
 
-## Response
+### Response
 
 ```json
 {
-  "data": [
-    {
-      "provider": "binance",
-      "providerPublicName": "Binance",
-      "publicAddress": null,
-      "walletId": "wallet_abc123",
-      "logoUrl": "https://...",
-      "isContract": false,
-      "alias": "Main Trading Account",
-      "status": "active",
-      "addedOn": 1640995200000,
-      "lastSyncedAt": 1672531200000,
-      "category": "exchange",
-      "type": "api",
-      "totalTransactions": 1542
-    },
-    {
-      "provider": "ethereum",
-      "providerPublicName": "Ethereum",
-      "publicAddress": "0x1234...abcd",
-      "walletId": "wallet_def456",
-      "logoUrl": "https://...",
-      "isContract": false,
-      "alias": "DeFi Wallet",
-      "status": "PARTIALLY SYNCED",
-      "message": "Unable to fetch transactions for ethereum due to transaction limit reached, kindly update your plan",
-      "lastSyncLog": {
-        "Balances": "COMPLETED",
-        "Defi Balances": "COMPLETED",
-        "NFT Holdings": "FAILED",
-        "Transactions": "FAILED"
-      },
-      "lastSyncLogDetails": {
-        "Balances": { "status": "COMPLETED" },
-        "Defi Balances": { "status": "COMPLETED" },
-        "NFT Holdings": {
-          "status": "FAILED",
-          "message": "We have been notified of the issue with ethereum and will fix it soon. Your account will be resynced."
+  "success": true,
+  "data": {
+    "integrations": [
+      {
+        "id": "int_9f2c",
+        "workspaceId": "ws_12ab",
+        "providerId": "binance",
+        "primaryPortfolioId": "pf_main",
+        "alias": "Main exchange",
+        "accountStatus": "active",
+        "credentialKind": "api_key",
+        "credentialValidationStatus": "valid",
+        "importMethod": "api",
+        "syncEnabled": true,
+        "isCustomWallet": false,
+        "lastSyncId": "sync_7712",
+        "lastSyncedAt": "2026-08-13T09:14:22.000Z",
+        "latestSync": {
+          "id": "sync_7712",
+          "status": "completed",
+          "syncKind": "api",
+          "mode": "incremental",
+          "progressPercent": 100,
+          "recordsProcessed": 412,
+          "recordsFailed": 0,
+          "completedAt": "2026-08-13T09:16:02.000Z"
         },
-        "Transactions": {
-          "status": "FAILED",
-          "message": "Unable to fetch transactions for ethereum due to transaction limit reached, kindly update your plan",
-          "limitExceeded": true
-        }
-      },
-      "limitExceeded": true,
-      "addedOn": 1641081600000,
-      "lastSyncedAt": 1672617600000,
-      "category": "blockchain",
-      "type": "api",
-      "totalTransactions": 328
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "pageSize": 25,
-    "totalCount": 12,
-    "hasNextPage": false,
-    "hasPreviousPage": false
-  },
-  "user_id": "user_123",
-  "timestamp": 1672531200000
+        "txnCounts": { "total": 1284, "byType": { "trade": 900, "deposit": 220 } },
+        "netValue": 150000,
+        "baseCurrency": "USD",
+        "metadataUpdatedAt": "2026-08-13T09:16:30.000Z",
+        "hasMissingBalance": false,
+        "assetLogos": ["https://...", "https://..."],
+        "createdAt": "2026-01-04T11:02:00.000Z",
+        "updatedAt": "2026-08-13T09:16:30.000Z",
+        "deletedAt": null
+      }
+    ],
+    "pagination": { "page": 1, "limit": 50, "total": 7, "totalPages": 1, "hasMore": false },
+    "providerCounts": { "binance": 1, "ethereum": 3 }
+  }
 }
 ```
 
-## Response Fields
+### Response Fields
 
-### Integration Object
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Integration id — the `walletId` other endpoints refer to |
+| `providerId` | string | Provider slug. See [Providers](/docs/api/providers) |
+| `primaryPortfolioId` | string \| null | Portfolio it belongs to |
+| `alias` | string \| null | User-facing name |
+| `accountStatus` | string | `pending`, `active`, `inactive`, `suspended`, `deleting`, `deleted`, `error` |
+| `credentialKind` | string | `api_key`, `oauth`, `address`, `account_name`, `wallet_connect`, `csv`, `none` |
+| `credentialValidationStatus` | string \| null | `valid`, `invalid`, `expired`, `pending` |
+| `importMethod` | string \| null | `api`, `csv` or `oauth` |
+| `syncEnabled` | boolean | Automatic syncing is on |
+| `isCustomWallet` | boolean | A manual wallet with no provider connection |
+| `lastSyncId`, `lastSyncedAt` | string | Most recent sync |
+| `latestSync` | object \| null | Most recent sync of any status; `null` if never synced |
+| `txnCounts` | object \| null | `{ total, byType }`; `null` until first computed |
+| `netValue` | number \| null | Holdings value in the workspace base currency |
+| `metadataUpdatedAt` | string \| null | When `txnCounts` and `netValue` were last refreshed |
+| `hasMissingBalance` | boolean | See below |
+| `assetLogos` | array | Up to 5 asset logos, for list rendering |
+| `createdAt`, `updatedAt`, `deletedAt` | string | ISO 8601 timestamps |
 
-| Field                | Type    | Description                                             |
-| -------------------- | ------- | ------------------------------------------------------- |
-| `provider`           | string  | Provider identifier (e.g., `binance`, `ethereum`)       |
-| `providerPublicName` | string  | Human-readable provider name                            |
-| `publicAddress`      | string  | Wallet address (for blockchain wallets)                 |
-| `walletId`           | string  | Unique wallet/integration identifier                    |
-| `logoUrl`            | string  | Provider logo URL                                       |
-| `isContract`         | boolean | Whether the address is a smart contract                 |
-| `alias`              | string  | User-defined alias for the integration                  |
-| `status`             | string  | Sync status: `ONGOING`, `COMPLETED`, `PARTIALLY SYNCED`, `FAILED`. Defaults to `active` when never synced. |
-| `message`            | string  | Wallet-level summary message. When any stage hit the transaction-import limit, this carries the limit-exceeded message; otherwise it's the message from the most relevant failed stage. Omitted when there is no error. |
-| `lastSyncLog`        | object  | Per-function status map, e.g. `{ "Transactions": "FAILED", "Balances": "COMPLETED" }`. Omitted when no sync has run. |
-| `lastSyncLogDetails` | object  | Per-function detail map. Each stage carries `{ status, message?, limitExceeded? }`, so you can show stage-specific failure reasons without parsing the wallet-level `message`. `lastSyncLog` is the flattened (status-only) view of this object — both convey the same per-stage status and are emitted together. Omitted when no sync has run. |
-| `limitExceeded`      | boolean | `true` when the last sync failed due to the user's transaction limit being reached on any stage. The field is omitted entirely otherwise (it is never returned as `false`). |
-| `addedOn`            | number  | Timestamp when integration was added (ms)               |
-| `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                  |
-| `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown` |
-| `type`               | string  | Integration type: `api` or `csv`                        |
-| `totalTransactions`  | number  | Total number of transactions from this integration      |
+`txnCounts` and `netValue` come from cached metadata refreshed by the recompute pipeline, so
+`metadataUpdatedAt` may lag `lastSyncedAt` by a few seconds after a sync. Compare the two before
+presenting the numbers as current. **`txnCounts.total` is not additive across integrations** — an
+internal transfer is counted for both wallets it touches. `netValue` *is* additive.
 
-### Pagination Object
+`hasMissingBalance` is `true` when any asset's ledger-derived balance differs from the
+provider-reported one by more than 0.01. It is evaluated live per request, so it always agrees with the
+`hasMissingBalance` filter. CSV and manual integrations have no provider-reported balance to compare, so
+they are `false` — unverifiable, not verified.
 
-| Field             | Type    | Description                  |
-| ----------------- | ------- | ---------------------------- |
-| `page`            | number  | Current page number          |
-| `pageSize`        | number  | Items per page               |
-| `totalCount`      | number  | Total number of integrations |
-| `hasNextPage`     | boolean | Whether more pages exist     |
-| `hasPreviousPage` | boolean | Whether previous pages exist |
+### Sync status values
 
-## Search
+`latestSync.status` is one of `pending`, `queued`, `in_progress`, `completed`, `partially_synced`,
+`failed`, `cancelled`. The last four are terminal.
 
-The `searchedKey` parameter enables fuzzy search across multiple fields:
+`partially_synced` is a **success with losses**, not a failure — read `recordsFailed`. Treating it as a
+failure will make users re-run syncs that already imported most of their data.
 
-- `alias` - User-defined integration name
-- `address` - Wallet address
-- `accountName` - Account name
-- `walletId` - Wallet identifier
-- `public_name` - Provider public name
-- `exchange` - Exchange name
+## One integration
+
+`GET /v1/integrations/{id}` returns the same object as `{ success, data }`, plus two fields the list
+omits:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `credentials` | object \| null | For `address` and `account_name` kinds only, with secrets masked; `null` for secret-bearing kinds |
+| `csvUploads` | array | Upload history, newest first: `uploadId`, `fileName`, `fileSize`, `fileType`, `status`, `rowCount`, `summary`, `uploadedAt` |
+
+Secrets are never returned for `api_key`, `oauth` or `wallet_connect` credentials.
+
+## Per-asset breakdown
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/integrations?searchedKey=binance" \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET "https://api-v2.kryptos.io/v1/integrations/int_9f2c/assets?workspaceId=WORKSPACE_ID" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
-## Integration Categories
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `workspaceId` | string | — | Required unless your token is workspace-bound |
+| `q` | string | — | Match on asset symbol or name, max 100 characters |
+| `includeSpam` | boolean | `false` | Include assets flagged as spam |
+| `minValue` | number | — | Drop assets worth less than this |
+| `page` | integer | `1` | Page number |
+| `limit` | integer | `50` | 1–100 |
 
-| Category     | Description                                       |
-| ------------ | ------------------------------------------------- |
-| `exchange`   | Centralized exchanges (Binance, Coinbase)         |
-| `wallet`     | Software/hardware wallets (MetaMask, Ledger)      |
-| `blockchain` | Direct blockchain connections (Ethereum, Bitcoin) |
-| `unknown`    | Unclassified integrations                         |
+Returns `{ success, data: { assets, pagination } }` — the per-asset detail behind this integration's
+`netValue`.
 
-## Integration Types
+## Helpers
 
-| Type  | Description                     |
-| ----- | ------------------------------- |
-| `api` | Connected via API keys or OAuth |
-| `csv` | Imported via CSV file upload    |
+**`GET /v1/integrations/search`** — typeahead. Both `workspaceId` and `q` are required; omitting either
+returns `400`. Returns `{ success, data: { integrations } }`.
+
+**`GET /v1/integrations/sync-status`** — returns `{ success, data: { lastSyncedAt } }`, the most recent
+sync across the workspace. It takes only an optional `portfolioId`; the workspace comes from your token
+rather than a query parameter.

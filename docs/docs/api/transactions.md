@@ -1,249 +1,218 @@
 ---
 id: transactions
 title: Transactions
-sidebar_position: 4
+sidebar_position: 7
 ---
 
 # Transactions
 
-<span className="badge badge--get">GET</span> `/v1/transactions`
+The transaction record, with filtering across labels, types, accounts, assets, addresses and time.
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `transactions:read`
 
-Retrieve user's transaction history with advanced filtering options.
+| | Endpoint | Returns |
+| --- | --- | --- |
+| <span className="badge badge--get">GET</span> | `/v1/transactions` | Filtered, paginated list |
+| <span className="badge badge--get">GET</span> | `/v1/transactions/counts` | Counts by label and type |
+| <span className="badge badge--get">GET</span> | `/v1/transactions/{id}` | One transaction |
+| <span className="badge badge--get">GET</span> | `/v1/transactions/{id}/ledgers` | Its ledger legs |
 
-**Required Permission:** `transactions:read`
+Transactions and [ledgers](/docs/api/ledgers) use a different response envelope from the rest of the
+API — **`{ data, meta }` with no `success` field**, and errors nested as
+`{ error: { code, message } }`. See [API Overview](/docs/api/overview#response-shapes).
 
-## Request
+## List transactions
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=10&order=desc" \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET "https://api-v2.kryptos.io/v1/transactions?limit=50&types=trade" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
-## Query Parameters
+### Query Parameters
 
-| Parameter           | Type    | Description                                    |
-| ------------------- | ------- | ---------------------------------------------- |
-| `walletId`          | string  | Filter by wallet IDs (comma-separated)         |
-| `currencyId`        | string  | Filter by currency IDs (comma-separated)       |
-| `trxId`             | string  | Specific transaction ID                        |
-| `isNft`             | boolean | Filter NFT transactions                        |
-| `isMissingPrice`    | boolean | Transactions missing price data                |
-| `isMissingPurchase` | boolean | Transactions missing purchase data             |
-| `isEdited`          | boolean | Manually edited transactions                   |
-| `isManual`          | boolean | Manually created transactions                  |
-| `transactionType`   | string  | Types: `swap`, `deposit`, `withdraw`           |
-| `label`             | string  | Labels (comma-separated)                       |
-| `order`             | string  | Sort order: `asc`, `desc`                      |
-| `timeStart`         | number  | Start timestamp (Unix ms)                      |
-| `timeEnd`           | number  | End timestamp (Unix ms)                        |
-| `limit`             | number  | Max results (1-1000, default: 100)             |
-| `offset`            | number  | Number of records to skip (min: 0, default: 0) |
+Comma-separated list parameters — pass `?labels=Buy,Sell`:
 
-## Response
+| Parameter | Description |
+| --- | --- |
+| `labels` | Transaction labels. See [Labels](/docs/api/labels) |
+| `types` | Canonical types: `deposit`, `withdrawal`, `trade`, `transfer`, `payment` |
+| `walletIds` | Connected account ids |
+| `assetIds` | Kryptos asset ids |
+| `providers` | Provider ids, e.g. `binance` |
+| `importSourceTypes` | `API`, `CSV`, `Manual` |
+| `ledgerTypes` | `incoming`, `outgoing`, `fee` |
+| `tags` | User tags |
+| `fromAddresses`, `toAddresses`, `addresses` | On-chain addresses |
+
+Every one of those has an exclusion twin — `notLabels`, `notTypes`, `notWalletIds`, `notAssetIds`,
+`notProviders`, `notImportSourceTypes`, `notLedgerTypes`, `notTags`, `notFromAddresses`,
+`notToAddresses` — so you can filter a category out rather than in.
+
+Boolean flags (pass `true`):
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `isDefiTrx` | — | DeFi transactions only |
+| `isNFTTrx` | — | NFT transactions only |
+| `isManual` | — | Manually created only |
+| `isEdited` | — | Edited only |
+| `includeSpam` | `false` | Include spam-labelled transactions |
+| `includeIgnored` | `false` | Include Ignore-labelled transactions |
+| `hasMissingPrice` | — | Missing a price on at least one leg |
+| `hasMissingAsset` | — | An unresolved asset on at least one leg |
+| `isMissingTransaction` | — | Running balance went negative here — missing acquisition history |
+| `isHighPnLReviewed` | — | Already reviewed for unusually high P&L |
+| `isUncategorisedIgnored` | — | Dismissed from the uncategorised queue |
+| `isMissingPriceIgnored` | — | Dismissed from the missing-price queue |
+
+Spam- and Ignore-labelled transactions are **excluded by default**. Totals computed from an
+unfiltered list will not match a UI that shows them.
+
+Ranges, sorting and paging:
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `startTime`, `endTime` | number | — | Unix **milliseconds** |
+| `minValue`, `maxValue` | number | — | Transaction fiat value bounds |
+| `minTotalGains` | number | — | Minimum realized gain — use to find high-P&L transactions |
+| `search` | string | — | Free text |
+| `coaTagStatus` | string | — | `tagged`, `partial`, `untagged` (enterprise) |
+| `coaSyncStatus` | string | — | `synced`, `unsynced` (enterprise) |
+| `sortBy` | string | `timestamp` | `timestamp`, `netValue`, `totalGains`, `createdAt` |
+| `sortOrder` | string | `desc` | `asc` or `desc` |
+| `limit` | integer | `50` | 1–200 |
+| `offset` | integer | `0` | Rows to skip |
+
+### Response
 
 ```json
 {
-  "message": "User transactions retrieved successfully",
   "data": [
     {
-      "id": "trx_123",
-      "transactionPlatfromId": "0xabc123...",
-      "timestamp": 1640995200000,
-      "label": "Swap",
-      "description": "Swapped ETH for USDC",
+      "id": "8f14e45f-ceea-467a-9a3b-1c2f0d7e5a91",
+      "workspaceId": "ws_12ab",
+      "transactionPlatformId": "0x9c2f...",
+      "timestamp": 1721088000000,
+      "type": "trade",
+      "label": "Trade",
+      "description": "Swap USDC for ETH",
+      "notes": null,
+      "importSource": { "type": "API", "importedAt": 1721088300000, "walletId": "int_9f2c", "syncId": "sync_7712", "functionName": "fetchTrades" },
+      "isManual": false,
+      "isEdited": false,
+      "isDefiTrx": false,
+      "isNFTTrx": false,
+      "isMissingTransaction": false,
+      "protocol": null,
+      "tags": [],
+      "comments": [],
+      "netValue": { "fiatValue": 3200, "currency": "USD" },
+      "totalCostbasis": 3100,
+      "totalGains": 100,
+      "explorerLink": "https://etherscan.io/tx/0x9c2f...",
       "incomingAssets": [
         {
-          "asset": {
-            "tokenId": "usd-coin",
-            "symbol": "USDC",
-            "publicName": "USD Coin",
-            "type": "crypto"
-          },
-          "quantity": 3000,
-          "price": 1.0,
+          "id": "led_31c9",
+          "assetId": "a3f1c8e0-9d42-4b17-8c55-6e0b2f7a1d34",
+          "assetRaw": { "symbol": "ETH" },
+          "quantity": "1.000000000000000000",
           "baseCurrency": "USD",
-          "timestamp": 1640995200000,
-          "type": "incoming",
-          "toAccount": {
-            "provider": "MetaMask",
-            "walletId": "wallet_123",
-            "publicAddress": "0x742d35..."
-          }
+          "price": { "price": 3200, "baseCurrency": "USD", "timestamp": 1721088000000, "source": "cmc" },
+          "value": 3200,
+          "fromAccount": null,
+          "toAccount": { "provider": "binance", "walletId": "int_9f2c" },
+          "label": "Buy",
+          "asset": { "symbol": "ETH", "name": "Ethereum", "logoUrl": "https://...", "type": "crypto" }
         }
       ],
-      "outgoingAssets": [
-        {
-          "asset": {
-            "tokenId": "ethereum",
-            "symbol": "ETH",
-            "publicName": "Ethereum",
-            "type": "crypto"
-          },
-          "quantity": 1.5,
-          "price": 2000,
-          "baseCurrency": "USD",
-          "timestamp": 1640995200000,
-          "type": "outgoing",
-          "fromAccount": {
-            "provider": "MetaMask",
-            "walletId": "wallet_123",
-            "publicAddress": "0x742d35..."
-          }
-        }
-      ],
-      "fee": [
-        {
-          "asset": {
-            "tokenId": "ethereum",
-            "symbol": "ETH",
-            "type": "crypto"
-          },
-          "quantity": 0.005,
-          "price": 2000,
-          "baseCurrency": "USD",
-          "type": "fee"
-        }
-      ],
-      "metadata": {
-        "importSource": "API",
-        "isManual": false,
-        "isEdited": false,
-        "isDefiTrx": false,
-        "isNFTTrx": false
-      },
-      "totalCostbasis": 3000.00,
-      "totalGains": 0.00,
-      "tags": [],
-      "ledger": [],
-      "rawTrx": {}
+      "outgoingAssets": [],
+      "fee": []
     }
   ],
-  "pagination": {
-    "limit": 100,
-    "offset": 0,
-    "returned_count": 1,
-    "totalCount": 1542,
-    "hasNextPage": true,
-    "hasPreviousPage": false
-  },
-  "user_id": "user_123",
-  "timestamp": 1640995200000
+  "meta": { "limit": 50, "offset": 0, "hasMore": true, "total": 1284 }
 }
 ```
 
-## Pagination
+### Response Fields
 
-The response includes a `pagination` object with the following fields:
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Transaction UUID |
+| `transactionPlatformId` | string | On-chain hash or exchange-side id |
+| `timestamp` | number | Unix milliseconds |
+| `type` | string \| null | Canonical type derived from the label; `null` when the label maps to none |
+| `label` | string | Transaction label |
+| `description`, `notes` | string | Free text |
+| `importSource` | object | `type` (`API`/`CSV`/`Manual`), `importedAt`, `walletId`, `csvLink`, `syncId`, `functionName` |
+| `isManual`, `isEdited`, `isDefiTrx`, `isNFTTrx` | boolean | Provenance and classification flags |
+| `isMissingTransaction` | boolean | Set by the balance stage — the running balance went negative here |
+| `protocol` | object | DeFi protocol context, when applicable |
+| `tags` | array | User tags |
+| `comments` | array | `{ id, text, timestamp, author }` |
+| `netValue` | object | `{ fiatValue, currency }`; `fiatValue` is `null` when unpriced |
+| `totalCostbasis` | number | Cost basis consumed |
+| `totalGains` | number | Realized gain or loss |
+| `explorerLink` | string \| null | Block-explorer URL; `null` for exchange transactions and unknown chains |
+| `incomingAssets`, `outgoingAssets`, `fee` | array | Ledger legs, see below |
+| `coaJournal`, `coaStatus` | object | Chart-of-accounts state — **enterprise workspaces only**, absent otherwise |
 
-| Field             | Type    | Description                                                    |
-| ----------------- | ------- | -------------------------------------------------------------- |
-| `limit`           | number  | Maximum number of results requested                            |
-| `offset`          | number  | Number of records skipped                                      |
-| `returned_count`  | number  | Actual number of transactions returned in this page            |
-| `totalCount`      | number  | Total number of transactions matching the filters              |
-| `hasNextPage`     | boolean | Whether another page exists after this one                     |
-| `hasPreviousPage` | boolean | Whether a previous page exists (i.e. `offset > 0`)             |
+### Ledger legs
 
-### Pagination Example
+Each entry in `incomingAssets`, `outgoingAssets` and `fee`:
 
-To retrieve transactions in pages of 50:
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Ledger id |
+| `assetId` | string \| null | Resolved Kryptos asset; `null` while unresolved |
+| `assetRaw` | object | As reported by the source, before resolution |
+| `quantity` | **string** | Decimal string, up to 18 places |
+| `baseCurrency` | string | Fiat currency for `price` and `value` |
+| `price` | object \| null | `{ price, baseCurrency, timestamp, source }`; `null` when unpriced |
+| `value` | number \| null | `quantity × price`, derived on read; `null` when unpriced |
+| `fromAccount`, `toAccount` | object \| null | Counterparty accounts |
+| `label`, `description`, `internalLabel` | string | Per-leg annotations |
+| `asset` | object \| null | Resolved display data: `symbol`, `name`, `logoUrl`, `type` |
+
+`quantity` is a **string**, not a number, deliberately — crypto quantities carry up to 18 decimal
+places and JSON numbers are IEEE-754 doubles. Parsing it into a float silently loses precision on
+large or high-precision balances. Use a decimal library. `value` is a number because it is a rounded
+fiat amount.
+
+Which account field a leg populates follows the direction: incoming legs carry `toAccount`, outgoing
+and fee legs carry `fromAccount`, and a transfer between two of the user's own accounts carries both.
+
+## Counts
 
 ```bash
-# First page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=0" \
-  -H "Authorization: Bearer ACCESS_TOKEN"
-
-# Second page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=50" \
-  -H "Authorization: Bearer ACCESS_TOKEN"
-
-# Third page
-curl -X GET "https://connect.kryptos.io/api/v1/transactions?limit=50&offset=100" \
+curl -X GET "https://api-v2.kryptos.io/v1/transactions/counts" \
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
-## Transaction Labels
+Returns `{ data }` with per-label and per-type counts for the workspace — cheaper than paging the list
+to build a summary.
 
-Use these labels with the `label` query parameter to filter transactions.
+## One transaction
 
-| Label                          | Description                       |
-| ------------------------------ | --------------------------------- |
-| `Add Liquidity`                | Adding liquidity to a pool        |
-| `Airdrops`                     | Airdrop received                  |
-| `Approve`                      | Token approval transaction        |
-| `Income`                       | General income                    |
-| `Borrow`                       | Borrowing assets                  |
-| `Borrow Interest`              | Interest paid on borrowed assets  |
-| `Bridge Receive`               | Receiving from cross-chain bridge |
-| `Bridge Send`                  | Sending via cross-chain bridge    |
-| `Bridge Transfer`              | Cross-chain bridge transfer       |
-| `Burn`                         | Token burn                        |
-| `Buy`                          | Purchase transaction              |
-| `Cashback`                     | Cashback reward                   |
-| `Casualty Loss`                | Loss due to casualty              |
-| `Collateral Deposit`           | Depositing collateral             |
-| `Collateral Withdrawal`        | Withdrawing collateral            |
-| `DeFi Swap`                    | Decentralized exchange swap       |
-| `Donations`                    | Charitable donation               |
-| `Expense`                      | General expense                   |
-| `Failed`                       | Failed transaction                |
-| `Farming Rewards`              | Yield farming rewards             |
-| `Fee`                          | Transaction fee                   |
-| `Fiat Deposit`                 | Fiat currency deposit             |
-| `Fiat Withdrawal`              | Fiat currency withdrawal          |
-| `Funding Fee Paid`             | Futures funding fee paid          |
-| `Funding Fee Received`         | Futures funding fee received      |
-| `Futures Expense`              | Futures trading expense           |
-| `ICO investment`               | ICO participation                 |
-| `Ignore`                       | Ignored transaction               |
-| `Incoming Gift`                | Gift received                     |
-| `Transfer`                     | General transfer                  |
-| `Lend`                         | Lending assets                    |
-| `Liquidation`                  | Liquidation event                 |
-| `Loan`                         | Loan received                     |
-| `Loan Interest`                | Interest earned on loan           |
-| `Loan Payback`                 | Loan repayment                    |
-| `Lost`                         | Lost assets                       |
-| `Margin Fee`                   | Margin trading fee                |
-| `Mining`                       | Mining reward                     |
-| `Mint NFT`                     | NFT minting                       |
-| `NFT Buy`                      | NFT purchase                      |
-| `NFT Sell`                     | NFT sale                          |
-| `Outgoing Gift`                | Gift sent                         |
-| `Realized Loss`                | Realized trading loss             |
-| `Realized Profit`              | Realized trading profit           |
-| `Resource Staking`             | Resource staking (e.g., EOS)      |
-| `Reward`                       | General reward                    |
-| `Royalties`                    | Royalty payment                   |
-| `Sell`                         | Sale transaction                  |
-| `Liquidity Withdrawal`         | Removing liquidity from pool      |
-| `Spam`                         | Spam transaction                  |
-| `Stake`                        | Staking assets                    |
-| `Unstake`                      | Unstaking assets                  |
-| `Staking Rewards`              | Staking reward                    |
-| `Security Token Offering(STO)` | STO participation                 |
-| `Stolen`                       | Stolen assets                     |
-| `Trade`                        | General trade                     |
-| `Withdrawal`                   | Withdrawal                        |
-| `Deposit`                      | Deposit                           |
-| `Payment`                      | Payment transaction               |
-| `Swap`                         | Token swap                        |
-| `Fork`                         | Blockchain fork                   |
-| `Wrap`                         | Token wrapping                    |
-| `Unwrap`                       | Token unwrapping                  |
-| `Buy (Fiat to Crypto)`         | Fiat to crypto purchase           |
-| `Sell (Crypto to Fiat)`        | Crypto to fiat sale               |
-| `Cross Chain Swaps`            | Cross-chain swap                  |
-| `Rex Withdrawal`               | REX withdrawal (EOS)              |
-| `Rex Deposit`                  | REX deposit (EOS)                 |
-| `Interest`                     | Interest earned                   |
-| `Earn`                         | Earnings                          |
-| `Centralized Stake`            | CEX staking                       |
-| `Centralized Lending`          | CEX lending                       |
-| `Vault Deposit`                | Vault deposit                     |
-| `Vault Withdrawal`             | Vault withdrawal                  |
-| `Unknown`                      | Unknown transaction type          |
+`GET /v1/transactions/{id}` returns `{ data }` with a single transaction in the shape above, or
+`404 { "error": { "code": "NOT_FOUND", "message": "…" } }`.
+
+For enterprise workspaces the single-transaction fetch also includes `coaJournal.lines`, which the
+list response omits.
+
+## Its ledger legs
+
+`GET /v1/transactions/{id}/ledgers` returns `{ data }` — an array of the transaction's legs. It is the
+same data as the three leg arrays above, flattened, which is convenient when you want the legs without
+re-parsing the transaction. To query legs across many transactions, use
+[`GET /v1/ledgers`](/docs/api/ledgers).
+
+## Errors
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| 404 | `NOT_FOUND` | No such transaction in this workspace |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
+```json
+{ "error": { "code": "NOT_FOUND", "message": "Transaction not found" } }
+```

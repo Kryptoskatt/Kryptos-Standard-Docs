@@ -62,56 +62,54 @@ KryptosConnect.init({
 
 ## Full Example
 
+:::danger Never put the client secret in frontend code
+`/link-token` and `/token/exchange` authenticate with your **client secret**. Anyone who can read your
+JavaScript bundle can read a secret embedded in it, and use it to mint link tokens against your client.
+Both calls belong on your server; the frontend calls endpoints you own. The example below follows that
+shape — see [Backend Integration](./backend) for the server side.
+:::
+
 ```tsx
 import { KryptosConnect, KryptosConnectButton } from "@kryptos_connect/web-sdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const BASE_URL = "https://connect-api.kryptos.io";
-const CLIENT_ID = "your-client-id";
-const CLIENT_SECRET = "your-client-secret"; // keep server-side in production
-const SCOPES = "openid profile offline_access email portfolios:read integrations:read";
+const CLIENT_ID = "your-client-id"; // public — safe in frontend code
 
 function App() {
   const [accessToken, setAccessToken] = useState(null);
 
-  KryptosConnect.init({
-    clientId: CLIENT_ID,
-    appName: "My App",
-    theme: "light",
-    language: "en",
-    authMethods: ["email", "anonymous"],
-  });
-
-  async function generateLinkToken(existingAccessToken?: string | null) {
-    const body: Record<string, unknown> = { scopes: SCOPES };
-    if (existingAccessToken) body.access_token = existingAccessToken;
-
-    const res = await fetch(`${BASE_URL}/link-token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Client-Id": CLIENT_ID,
-        "X-Client-Secret": CLIENT_SECRET,
-      },
-      body: JSON.stringify(body),
+  useEffect(() => {
+    KryptosConnect.init({
+      clientId: CLIENT_ID,
+      appName: "My App",
+      theme: "light",
+      language: "en",
+      authMethods: ["email", "anonymous"],
     });
-    const data = await res.json();
-    return { link_token: data.data.link_token, isAuthorized: !!existingAccessToken };
+  }, []);
+
+  // Your backend holds the client secret, calls POST /link-token, and returns
+  // { link_token, isAuthorized }.
+  async function generateLinkToken(existingAccessToken?: string | null) {
+    const res = await fetch("/api/kryptos/link-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token: existingAccessToken ?? undefined }),
+    });
+    return res.json(); // { link_token, isAuthorized }
   }
 
   async function handleSuccess(consent) {
-    if (!consent) return; // re-auth — no new token
-    const res = await fetch(`${BASE_URL}/token/exchange`, {
+    if (!consent) return; // returning user — consent was skipped, nothing to exchange
+
+    // Your backend calls POST /token/exchange and stores the access token.
+    const res = await fetch("/api/kryptos/exchange", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        public_token: consent.public_token,
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-      }),
+      body: JSON.stringify({ public_token: consent.public_token }),
     });
     const data = await res.json();
-    setAccessToken(data.data.access_token);
+    setAccessToken(data.access_token);
   }
 
   return (
@@ -344,7 +342,7 @@ Both flags only affect EVM wallet integrations — other integrations are unaffe
 
 The `integrationName` prop directs users to a specific integration, bypassing the integration selection page.
 
-Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/docs/public-endpoints/integrations)).
+Fetch available integration IDs from the public Kryptos API endpoint (see [Public Endpoints - Integrations](/docs/api/providers)).
 
 ```tsx
 // Connect directly to Binance

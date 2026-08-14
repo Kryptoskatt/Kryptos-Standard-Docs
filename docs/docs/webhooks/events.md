@@ -66,7 +66,7 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
     "logoUrl": "https://storage.googleapis.com/kryptos-public/logos/binance.png",
     "isContract": false,
     "alias": "Main Trading Account",
-    "status": "active",
+    "status": "QUEUED",
     "addedOn": 1640995200000,
     "lastSyncedAt": 1672531200000,
     "category": "exchange",
@@ -88,12 +88,32 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 | `logoUrl`            | string  | Provider logo URL                                            |
 | `isContract`         | boolean | Whether the address is a smart contract                      |
 | `alias`              | string  | User-defined alias for the integration                       |
-| `status`             | string  | Integration status: `QUEUED`, `ONGOING`, `COMPLETED`, `FAILED` |
+| `status`             | string  | Integration status — see below                               |
+| `errorMessage`       | string  | Present on `integration.failed`: why the sync failed         |
 | `addedOn`            | number  | Timestamp when integration was added (ms)                    |
 | `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                       |
 | `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown`      |
 | `type`               | string  | Integration type: `api` or `csv`                             |
 | `totalTransactions`  | number  | Total number of transactions from this integration           |
+
+### Status values
+
+| Status | Terminal | Meaning |
+| --- | --- | --- |
+| `QUEUED` | no | Waiting to sync |
+| `SYNCING` | no | Sync running |
+| `COMPLETED` | **yes** | Sync finished |
+| `FAILED` | **yes** | Sync failed or was cancelled — read `errorMessage` |
+| `DELETING` | **yes** | Integration is being removed |
+| `INACTIVE` | **yes** | Syncing is disabled or the integration is suspended |
+
+A sync that finished with some rows dropped reports **`COMPLETED`**, not a separate partial state. If you
+need to know that a sync was partial, read `recordsFailed` from
+`GET /v1/sync/{syncId}`, where the underlying
+`partially_synced` status is visible.
+
+This vocabulary is the webhook's own, and is coarser than the sync status on the API: seven sync states
+fold into these six. Don't compare the two strings directly.
 
 ### Integration Categories
 

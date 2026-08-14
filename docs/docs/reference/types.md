@@ -10,6 +10,18 @@ Standardized type definitions used across the Kryptos ecosystem. These types ser
 
 📦 **GitHub Repository:** [Kryptos-Standard-Docs/types](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/README.md)
 
+:::info Abbreviated on purpose
+The interfaces below show the fields you will use most, not every field a response carries. The
+endpoint pages under [API Reference](/docs/api/overview) are authoritative — they document optional
+fields, nullability, and which fields appear only on list or detail responses.
+:::
+
+:::caution Two things that bite
+`roiPercentage` is `number | null` — `null` means "no cost basis recorded", which is not the same as a
+0% return. And ledger `quantity` is a **decimal string**, not a number, so that 18-decimal amounts
+survive; parsing it as a float loses precision on large balances.
+:::
+
 ## Available Type Files
 
 | File                                                                                                    | Description                               |
@@ -71,23 +83,49 @@ Contains types for handling various transaction scenarios including transfers, f
 ```typescript
 interface Transaction {
   id: string;
-  transactionPlatfromId: string;
-  timestamp: number;
+  workspaceId: string;
+  transactionPlatformId?: string;
+  timestamp: number; // Unix ms
+  type?: string | null; // derived from `label`
   label: string;
   description?: string;
-  incomingAssets: TransactionAsset[];
-  outgoingAssets: TransactionAsset[];
-  fee: TransactionAsset[];
-  metadata: {
-    importSource: string;
-    isManual: boolean;
-    isEdited: boolean;
-    isDefiTrx: boolean;
-    isNFTTrx: boolean;
+  notes?: string;
+  importSource?: {
+    type: "API" | "CSV" | "Manual";
+    importedAt: number;
+    walletId?: string;
+    syncId?: string;
+    functionName?: string;
   };
+  isManual: boolean;
+  isEdited: boolean;
+  isDefiTrx: boolean;
+  isNFTTrx: boolean;
+  isMissingTransaction?: boolean;
   tags: string[];
+  comments?: { id: string; text: string; timestamp: number; author?: string }[];
+  incomingAssets: LedgerLeg[];
+  outgoingAssets: LedgerLeg[];
+  fee: LedgerLeg[];
+  netValue?: { fiatValue: number | null; currency: string };
   totalCostbasis?: number;
   totalGains?: number;
+  explorerLink?: string | null;
+}
+
+interface LedgerLeg {
+  id: string;
+  assetId: string | null;
+  assetRaw: Record<string, unknown>;
+  quantity: string; // decimal string — never parse as a float
+  baseCurrency: string;
+  price: { price: number; baseCurrency: string; timestamp: number; source: string } | null;
+  value?: number | null; // quantity × price, derived on read
+  fromAccount: AccountType | null;
+  toAccount: AccountType | null;
+  label?: string | null;
+  description?: string | null;
+  asset: { symbol: string; name: string; logoUrl: string | null; type: string } | null;
 }
 ```
 
@@ -97,22 +135,38 @@ Types for tracking portfolio holdings including quantity, cost basis, market val
 
 ```typescript
 interface HoldingsType {
+  assetId: string;
   asset: Asset;
   totalQuantity: number;
-  costbasis: number;
+  costBasis: number;
+  costPerUnit: number;
   marketPrice: number;
   marketValue: number;
   unrealizedPnL: number;
+  roiPercentage: number | null; // null when cost basis is 0 — not the same as 0%
+  change24h: number; // absolute
+  change24hPercentage: number; // percentage
   baseCurrency: string;
-  "24hrChange": number;
+  isSpam: boolean;
+  transactionCount: number;
   assetDistribution: {
+    integrationId: string;
     quantity: number;
-    account: {
-      provider: string;
-      walletId: string;
-    };
+    account: AccountType;
     allocationPercentage: number;
+    transactionCount: number;
+    portfolioId?: string;
+    portfolioName?: string;
   }[];
+}
+
+interface AccountType {
+  provider: string;
+  providerPublicName?: string;
+  publicAddress?: string;
+  walletId?: string;
+  logoUrl?: string;
+  alias?: string;
 }
 ```
 
@@ -159,13 +213,27 @@ Comprehensive types for various DeFi activities including lending, staking, farm
 
 ```typescript
 interface DefiHolding {
-  holdingId: string;
-  owner: { provider: string; walletId: string; publicAddress: string };
+  id: string;
+  owner: AccountType;
+  protocolId: string;
   protocolName: string;
+  protocolLogoUrl?: string;
   chain: string;
-  category: "lending" | "staking" | "farming" | "liquidity" | "derivatives";
-  totalValue: { price: number; baseCurrency: string };
-  netValue: { price: number; baseCurrency: string };
+  positionName?: string;
+  category: string; // 18 values — see the DeFi endpoint reference
+  pool?: Record<string, unknown>;
+  portfolio: Record<string, unknown>;
+  totalValue: PriceModel;
+  debtValue?: PriceModel;
+  netValue: PriceModel;
+  isActive: boolean;
+}
+
+interface PriceModel {
+  price: number;
+  baseCurrency: string;
+  timestamp: number;
+  source: string;
 }
 ```
 
@@ -194,12 +262,12 @@ const bitcoin: Asset = {
 
 // Use with API responses
 async function getTypedHoldings(): Promise<HoldingsType[]> {
-  const response = await fetch("https://connect.kryptos.io/api/v1/holdings", {
-    headers: { "X-API-Key": API_KEY },
+  const response = await fetch("https://api-v2.kryptos.io/v1/holdings", {
+    headers: { Authorization: `Bearer ${accessToken}` },
   });
 
-  const data = await response.json();
-  return data.holdings as HoldingsType[];
+  const body = await response.json();
+  return body.data as HoldingsType[];
 }
 ```
 

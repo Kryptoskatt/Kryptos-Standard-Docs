@@ -16,8 +16,8 @@ Kryptos Connect APIs provide access to:
 - **Transaction History** -- Complete transaction records with advanced filtering
 - **DeFi Integration** -- Lending, staking, farming, and derivatives positions
 - **NFT Management** -- Collection tracking with metadata and sales history
-- **Portfolio Insights** -- Analytics and user classification
-- **Tax Calculations** -- Cost basis, P&L, and tax reporting data
+- **Portfolio Insights** -- Net worth, cost basis, allocation, and value over time
+- **Reconciliation** -- Find missing prices, missing purchases, and unconnected accounts
 
 ## Authentication Options
 
@@ -33,23 +33,31 @@ A pre-built widget (Web SDK & Mobile SDK) that handles the complete authenticati
 
 ## Quick Start
 
+**Base URL:** `https://api-v2.kryptos.io`
+
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/holdings" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET "https://api-v2.kryptos.io/v1/holdings" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
+
+A bearer token is the only header you need. See the **[API Overview](/docs/api/overview)** for the
+base URL, workspace resolution, response shapes and error codes.
 
 :::info Step-by-Step Guide
 New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/docs/developer-portal)** for detailed instructions with screenshots.
+:::
+
+:::tip Migrating?
+If you built against `connect.kryptos.io/api`, see **[Migrating from the previous API](/docs/api/migrating-from-connect-apis)** for the complete list of changes.
 :::
 
 ## Next Steps
 
 1. **[Developer Portal Setup](/docs/developer-portal)** -- Create your account and get credentials
 2. **[Set up Authentication](/docs/authentication/oauth)** -- Configure OAuth 2.0 flow
-3. **[Explore Endpoints](/docs/api/health)** -- Browse the API reference
-4. **[View Types](/docs/reference/types)** -- TypeScript definitions
+3. **[API Overview](/docs/api/overview)** -- Base URL, auth, envelopes, and scopes
+4. **[Explore Endpoints](/docs/api/holdings)** -- Browse the API reference
+5. **[View Types](/docs/reference/types)** -- TypeScript definitions
 
 ## Support
 

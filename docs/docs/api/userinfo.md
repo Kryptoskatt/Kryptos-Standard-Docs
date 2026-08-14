@@ -1,55 +1,73 @@
 ---
 id: userinfo
-title: User Info
+title: User Profile
 sidebar_position: 2
 ---
 
-# User Info
+# User Profile
 
-<span className="badge badge--get">GET</span> `/v1/userinfo`
+The authenticated user's profile — who the token belongs to.
 
-**Base URL:** `https://connect.kryptos.io/api`
+**Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `users:read`
 
-Get authenticated user's profile information.
+| | Endpoint |
+| --- | --- |
+| <span className="badge badge--get">GET</span> | `/v1/users/me` |
 
-**Required Permission:** `users:read`
+Unlike most of the API, this endpoint also accepts an [API key](/docs/authentication/api-key) — pass
+`x-api-key` instead of a bearer token.
 
 ## Request
 
 ```bash
-curl -X GET "https://connect.kryptos.io/api/v1/userinfo" \
-  -H "Authorization: Bearer ACCESS_TOKEN" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET"
+curl -X GET "https://api-v2.kryptos.io/v1/users/me" \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
 ## Response
 
 ```json
 {
-  "message": "User information retrieved successfully",
-  "userInfo": {
-    "sub": "user_123",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "email_verified": true,
-    "preferred_username": "john@example.com",
-    "language": "en",
-    "transaction_limit": 15000
-  },
-  "scopes": ["openid", "profile", "email"]
+  "success": true,
+  "data": {
+    "uid": "user_9f2c8a",
+    "email": "alex@example.com",
+    "firstName": "Alex",
+    "lastName": "Rivera",
+    "active": true,
+    "clientType": ["retail"],
+    "preferredLanguage": "en",
+    "createdAt": "2026-01-04T11:02:00.000Z",
+    "updatedAt": "2026-08-01T09:30:00.000Z"
+  }
 }
 ```
 
-## Response Fields
+| Field | Type | Description |
+| --- | --- | --- |
+| `uid` | string | Stable user identifier — matches the `sub` claim in an OIDC token |
+| `email` | string | Email address; unique across Kryptos |
+| `firstName`, `lastName` | string \| null | Name, when provided |
+| `active` | boolean | Account is active |
+| `clientType` | array | One or more of `retail`, `enterprise`, `accountant`, `developer` |
+| `preferredLanguage` | string | Language code, default `en` |
+| `createdAt`, `updatedAt` | string | ISO 8601 |
 
-| Field                         | Type    | Scope     | Description                                                              |
-| ----------------------------- | ------- | --------- | ------------------------------------------------------------------------ |
-| `userInfo.sub`                | string  | `openid`  | User ID                                                                  |
-| `userInfo.name`               | string  | `profile` | User's full name                                                         |
-| `userInfo.email`              | string  | `email`   | Email address                                                            |
-| `userInfo.email_verified`     | boolean | `email`   | Email verification status                                                |
-| `userInfo.preferred_username` | string  | `profile` | Preferred username                                                       |
-| `userInfo.language`           | string       | `profile` | User's preferred language (e.g. `"en"`). Defaults to `"en"` if not set.                                                                       |
-| `userInfo.transaction_limit`  | number\|null | `profile` | Effective transaction import cap for this user. `null` means no limit. Resolution order: per-user override → workspace default → platform default (100,000). |
-| `scopes`                      | array        |           | Granted OAuth scopes.                                                                                                                          |
+`clientType` is an **array**, not a single value — a user can be both `retail` and `accountant`. Branch
+on membership, not equality.
+
+## 404 is expected for a Guest
+
+```json
+{ "success": false, "error": "User not found" }
+```
+
+A `404` here means the token authenticated but no profile exists. That is the normal response for a
+**Kryptos Connect Guest** — a workspace-scoped identity with no user account behind it. Don't treat it as
+an error state; check `is_anonymous` at login instead. See
+[Guest vs Linked users](/docs/kryptos-connect/link-token-api#guest-vs-linked-users).
+
+## Workspaces
+
+A profile does not list the user's workspaces. Portfolio data is workspace-scoped — see
+[Workspaces](/docs/api/overview#workspaces) for how the workspace is resolved from your credential.

@@ -11,6 +11,23 @@ import TabItem from '@theme/TabItem';
 
 Webhooks allow you to receive real-time HTTP POST notifications when events occur in your workspace — including integration changes, transfer detection, and cost basis calculations. Instead of polling the API, webhooks push data to your server as events happen.
 
+## Which events you receive
+
+Webhooks are configured on your **developer workspace**, but they fire for activity in the workspaces
+your users have granted you access to. The rule is:
+
+> You receive an event when it happens in a workspace covered by an active
+> [Kryptos Connect grant](/docs/kryptos-connect/link-token-api) held by one of your OAuth clients.
+
+So no extra wiring per user is needed — a user completing the Connect flow automatically becomes a source
+of events, and revoking their grant stops them. If several of your clients hold grants on the same
+workspace, the event is delivered once per subscribing developer workspace, not once per client.
+
+This is the alternative to polling after a
+[resync](/docs/kryptos-connect/backend#resync-integration) or a
+sync: subscribe to `integration.updated` and
+`integration.failed` and you can drop the poll loop entirely.
+
 ## Prerequisites
 
 Before you begin, ensure you have:

@@ -77,56 +77,55 @@ KryptosConnect.init({
 
 ## Full Example
 
+:::danger Never bundle the client secret into a mobile app
+`/link-token` and `/token/exchange` authenticate with your **client secret**. A shipped app binary can
+be extracted, so a secret compiled into it is a published secret — and it can be used to mint link
+tokens against your client. Both calls belong on your server; the app calls endpoints you own. The
+example below follows that shape — see [Backend Integration](./backend) for the server side.
+:::
+
 ```tsx
 import { KryptosConnect, KryptosConnectButton } from "@kryptos_connect/mobile-sdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const BASE_URL = "https://connect-api.kryptos.io";
-const CLIENT_ID = "your-client-id";
-const CLIENT_SECRET = "your-client-secret"; // keep server-side in production
-const SCOPES = "openid profile offline_access email portfolios:read integrations:read";
+const API_URL = "https://your-api.com";
+const CLIENT_ID = "your-client-id"; // public — safe to ship
 
 export default function App() {
   const [accessToken, setAccessToken] = useState(null);
 
-  KryptosConnect.init({
-    clientId: CLIENT_ID,
-    appName: "My App",
-    theme: "light",
-    language: "en",
-    authMethods: ["email", "anonymous"],
-  });
-
-  async function generateLinkToken(existingAccessToken?: string | null) {
-    const body: Record<string, unknown> = { scopes: SCOPES };
-    if (existingAccessToken) body.access_token = existingAccessToken;
-
-    const res = await fetch(`${BASE_URL}/link-token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Client-Id": CLIENT_ID,
-        "X-Client-Secret": CLIENT_SECRET,
-      },
-      body: JSON.stringify(body),
+  useEffect(() => {
+    KryptosConnect.init({
+      clientId: CLIENT_ID,
+      appName: "My App",
+      theme: "light",
+      language: "en",
+      authMethods: ["email", "anonymous"],
     });
-    const data = await res.json();
-    return { link_token: data.data.link_token, isAuthorized: !!existingAccessToken };
+  }, []);
+
+  // Your backend holds the client secret, calls POST /link-token, and returns
+  // { link_token, isAuthorized }.
+  async function generateLinkToken(existingAccessToken?: string | null) {
+    const res = await fetch(`${API_URL}/api/kryptos/link-token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token: existingAccessToken ?? undefined }),
+    });
+    return res.json(); // { link_token, isAuthorized }
   }
 
   async function handleSuccess(consent) {
-    if (!consent) return; // re-auth — no new token
-    const res = await fetch(`${BASE_URL}/token/exchange`, {
+    if (!consent) return; // returning user — consent was skipped, nothing to exchange
+
+    // Your backend calls POST /token/exchange and stores the access token.
+    const res = await fetch(`${API_URL}/api/kryptos/exchange`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        public_token: consent.public_token,
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-      }),
+      body: JSON.stringify({ public_token: consent.public_token }),
     });
     const data = await res.json();
-    setAccessToken(data.data.access_token);
+    setAccessToken(data.access_token);
   }
 
   return (
@@ -389,7 +388,7 @@ For the complete variable reference, see [Theming & Customization](./css-theming
 
 The `integrationName` prop directs users to a specific integration, bypassing the integration selection page.
 
-Fetch available integration IDs from the public Kryptos API (see [Public Endpoints - Integrations](/docs/public-endpoints/integrations)).
+Fetch available integration IDs from the public Kryptos API (see [Public Endpoints - Integrations](/docs/api/providers)).
 
 ```tsx
 <KryptosConnectButton
@@ -418,12 +417,14 @@ The `integrationName` value must match an integration ID from the supported prov
 
 - **Cross-Platform:** Single codebase for iOS and Android
 - **Expo Support:** Works with Expo and React Native CLI
-- **WalletConnect v2:** Built-in WalletConnect integration
+- **One peer dependency:** `react-native-webview` — the connect UI runs in a WebView, so no WalletConnect
+  packages or crypto polyfills are needed
 - **Theming:** Light, dark, and auto theme support with CSS variable customization
 - **TypeScript:** Full TypeScript support
 
 ## Next steps
 
 - [Backend Implementation](./backend) — set up your server-side integration
+- [Link Token API](./link-token-api) — the session endpoints the SDK calls
 - [Examples](./examples) — complete integration examples
 - [Web SDK](./web-sdk) — integrate Kryptos Connect in web applications
