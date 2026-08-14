@@ -554,7 +554,6 @@ scope, so treat it like a reconnect rather than a hard failure.
 ## Next Steps
 
 - **[Overview](./overview)** — Scopes, tokens, Guest vs Linked
-- **[Link Token API](./link-token-api)** — Every session endpoint in detail
 - **[Web SDK](./web-sdk)** — Web SDK configuration
 - **[Mobile SDK](./mobile-sdk)** — Mobile SDK configuration
 - **[Backend](./backend)** — Backend API reference

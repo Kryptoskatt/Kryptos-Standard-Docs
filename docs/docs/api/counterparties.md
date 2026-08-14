@@ -17,9 +17,9 @@ as an exchange or a DeFi protocol.
 
 Note the **hyphen**: the path is `/v1/counter-parties`, not `/v1/counterparties`.
 
-:::caution `contacts:read` is not granted by default
-Request it explicitly at authorization time, or this endpoint returns `403 insufficient_scope`. See
-[Scopes](/docs/authentication/oauth#available-scopes).
+:::caution `contacts:read` is not in the default client scope set
+Your client has to be **registered** with it — see [Contacts](/docs/api/contacts). Without it this
+endpoint returns `403 insufficient_scope`.
 :::
 
 ## Request

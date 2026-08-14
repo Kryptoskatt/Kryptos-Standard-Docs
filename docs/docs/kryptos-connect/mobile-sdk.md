@@ -425,6 +425,5 @@ The `integrationName` value must match an integration ID from the supported prov
 ## Next steps
 
 - [Backend Implementation](./backend) — set up your server-side integration
-- [Link Token API](./link-token-api) — the session endpoints the SDK calls
 - [Examples](./examples) — complete integration examples
 - [Web SDK](./web-sdk) — integrate Kryptos Connect in web applications

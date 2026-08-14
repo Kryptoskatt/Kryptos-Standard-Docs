@@ -17,7 +17,6 @@ const sidebars = {
         "kryptos-connect/mobile-sdk",
         "kryptos-connect/css-theming",
         "kryptos-connect/backend",
-        "kryptos-connect/link-token-api",
         "kryptos-connect/examples",
         "kryptos-connect/demo-apps",
       ],

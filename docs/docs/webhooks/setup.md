@@ -17,7 +17,7 @@ Webhooks are configured on your **developer workspace**, but they fire for activ
 your users have granted you access to. The rule is:
 
 > You receive an event when it happens in a workspace covered by an active
-> [Kryptos Connect grant](/docs/kryptos-connect/link-token-api) held by one of your OAuth clients.
+> [Kryptos Connect grant](/docs/kryptos-connect/overview) held by one of your OAuth clients.
 
 So no extra wiring per user is needed — a user completing the Connect flow automatically becomes a source
 of events, and revoking their grant stops them. If several of your clients hold grants on the same

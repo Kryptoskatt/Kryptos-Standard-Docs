@@ -65,7 +65,7 @@ on membership, not equality.
 A `404` here means the token authenticated but no profile exists. That is the normal response for a
 **Kryptos Connect Guest** — a workspace-scoped identity with no user account behind it. Don't treat it as
 an error state; check `is_anonymous` at login instead. See
-[Guest vs Linked users](/docs/kryptos-connect/link-token-api#guest-vs-linked-users).
+[Guest and Linked users](/docs/kryptos-connect/overview#guest-and-linked-users).
 
 ## Workspaces
 

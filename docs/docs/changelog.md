@@ -51,9 +51,8 @@ mapping and a migration checklist.
 
 **Documentation**
 
-- Kryptos Connect — new [Link Token API](/docs/kryptos-connect/link-token-api) page documenting the
-  session endpoints the SDKs drive: OTP email login, workspace selection, consent, and the
-  `x-link-token` credential. Guest vs Linked users are now explained rather than assumed.
+- Kryptos Connect — Guest and Linked users are now explained rather than assumed, including why
+  `GET /v1/users/me` returns `404` for a Guest and which sessions accept developer transaction limits.
 - Sandbox mode has been removed from the product and from these docs.
 - MCP Server documentation consolidated into a single install-and-go page.
 

@@ -87,8 +87,7 @@ See how users connect their accounts through the Kryptos Connect widget:
 Client credentials may also be sent in the JSON body as `client_id` and `client_secret`, which the SDK
 examples use. Either way they belong on your server, never in frontend code.
 
-For the full request and response detail of every session endpoint, see the
-**[Link Token API](./link-token-api)**.
+See [Backend Integration](./backend) for the request and response detail of every session endpoint.
 
 ---
 
@@ -114,23 +113,18 @@ integrations:read tax:read accounting:read reports:read workspace:read users:rea
 
 ### API Scopes
 
-| Resource     | Read Scope          | Write Scope          | Covers                                  |
-| ------------ | ------------------- | -------------------- | --------------------------------------- |
-| Portfolios   | `portfolios:read`   | `portfolios:write`   | Holdings, balances, DeFi, NFTs, dashboard, graphs |
-| Transactions | `transactions:read` | `transactions:write` | Transactions, ledgers, labels, spam     |
-| Integrations | `integrations:read` | `integrations:write` | Connected wallets, exchanges, sync, CSV |
-| Contacts     | `contacts:read`     | `contacts:write`     | Contacts and counterparties             |
-| Tax          | `tax:read`          | `tax:write`          | Tax calculations                        |
-| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger                       |
-| Reports      | `reports:read`      | `reports:write`      | Generated reports                       |
-| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings                      |
-| Users        | `users:read`        | `users:write`        | User profile                            |
-
-There is **no separate `balances`, `defi` or `nft` scope** — all three are covered by `portfolios:read`.
-`contacts:*` is not in the default set above and must be requested explicitly.
-
-A grant can never exceed what the consenting member's role allows, so check the `scope` value returned
-with the access token rather than assuming you received everything you requested.
+| Resource     | Read Scope          | Write Scope          | Description                     |
+| ------------ | ------------------- | -------------------- | ------------------------------- |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings              |
+| Transactions | `transactions:read` | `transactions:write` | Transaction history             |
+| Balances     | `balances:read`     | `balances:write`     | Account balances                |
+| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges |
+| DeFi         | `defi:read`         | `defi:write`         | DeFi protocol positions         |
+| NFT          | `nft:read`          | `nft:write`          | NFT collections                 |
+| Tax          | `tax:read`          | `tax:write`          | Tax calculations                |
+| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger               |
+| Reports      | `reports:read`      | `reports:write`      | Generated reports               |
+| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings              |
 
 ---
 
@@ -165,12 +159,21 @@ Connect produces two kinds of user, and the difference affects what you can do w
 | --- | --- | --- |
 | Created by | Guest login (no email) | Email login with a one-time code |
 | Kryptos account | **None** — the workspace is the identity | Yes |
+| `user_id` | Equals `workspace_id` | A real user id |
 | Can sign in to Kryptos directly | No | Yes |
 | Subject to developer transaction limits | Yes | No |
 
-Both are offered by default; control which with `authMethods` in the SDK. See
-[Guest vs Linked users](./link-token-api#guest-vs-linked-users) for the detail, including why
-`GET /v1/users/me` returns `404` for a Guest.
+Both are offered by default; control which with `authMethods` in the SDK.
+
+A Guest is a workspace, not a person, which has two consequences worth designing around:
+
+- [`GET /v1/users/me`](/docs/api/userinfo) returns `404` — there is no profile to fetch. Detect a Guest
+  from `is_anonymous` at login, or by comparing `user_id` with `workspace_id`.
+- The data belongs to the workspace your grant points at. Revoke the grant and nobody can reach it; a
+  Guest cannot sign in elsewhere to recover it.
+
+Only Guests accept [`PATCH /developer/grants/{grantId}/transaction-limit`](./backend#update-transaction-limit);
+a Linked user returns `400 NOT_ANON_USER`.
 
 ---
 

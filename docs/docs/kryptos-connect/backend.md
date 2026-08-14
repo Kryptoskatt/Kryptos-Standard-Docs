@@ -820,8 +820,6 @@ async function makeApiCallWithCheck(endpoint, accessToken, grantId) {
 
 ## Next Steps
 
-- [Link Token API](./link-token-api) — every session endpoint, including the login and
-  workspace-selection steps the SDK drives for you
 - [Web SDK](./web-sdk) and [Mobile SDK](./mobile-sdk) for frontend integration
 - [Examples](./examples) for complete end-to-end examples
 - [API Overview](/docs/api/overview) — base URL, auth, response shapes and error codes

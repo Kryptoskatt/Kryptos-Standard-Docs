@@ -16,9 +16,10 @@ appear as that name wherever it shows up in transactions.
 | <span className="badge badge--get">GET</span> | `/v1/contacts` | List, paginated |
 | <span className="badge badge--get">GET</span> | `/v1/contacts/{id}` | One contact |
 
-:::caution `contacts:read` is not granted by default
-It is **not** in the default client scope set, so you must request it explicitly at authorization time.
-Without it these endpoints return `403 insufficient_scope`. See
+:::caution `contacts:read` is not in the default client scope set
+Your client has to be **registered** with it — select it in the Developer Portal's scope picker, or ask
+support to add it. Requesting it at authorization time alone is not enough, and without it these
+endpoints return `403 insufficient_scope`. See
 [Scopes](/docs/authentication/oauth#available-scopes).
 :::
 

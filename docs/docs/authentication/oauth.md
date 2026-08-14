@@ -50,10 +50,13 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 | Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings and configuration |
 | Users        | `users:read`        | `users:write`        | User profile and preferences         |
 
-:::caution Not all scopes are granted by default
-`contacts:*`, `invoices:*` and `swaps:*` are **not** in the default client scope set below. They are
-fully supported, but you must request them explicitly in the authorization request — otherwise
-`/v1/contacts` and `/v1/counter-parties` return `403 insufficient_scope`.
+:::caution Not all scopes are in the default client set
+Write scopes, and `contacts`, `invoices` and `swaps` in either direction, are **not** in the default
+client scope set below. Requesting one in the authorization request is not enough — **your client has to
+be registered with it**, via the scope picker in the
+[Developer Portal](https://dashboard.kryptos.io/) when you create the client, or by asking support to
+widen an existing one. Until then `/v1/contacts` and `/v1/counter-parties` return
+`403 insufficient_scope`.
 :::
 
 A grant can never exceed what the consenting member's role allows, so a member with a limited role may

@@ -87,7 +87,8 @@ OAuth flows additionally use the standard OIDC scopes `openid`, `profile`, `emai
 [Available Scopes](/docs/authentication/oauth#available-scopes) — but the endpoints documented here are
 **read-only**, so the five above are all you need to request.
 
-`contacts:read` is **not** in the default client scope set and must be requested explicitly.
+`contacts:read` is **not** in the default client scope set — your client must be registered with it, not
+just request it. See [Scopes](/docs/authentication/oauth#available-scopes).
 
 A token can never hold more than the granting member's role allows — an `editor` consenting to a scope
 their role excludes receives a grant without it. Read the `scope` value returned with the token rather
