@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "dev-docs-kryptos",
+    "site": "docs-kryptos",
     "public": "build",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
