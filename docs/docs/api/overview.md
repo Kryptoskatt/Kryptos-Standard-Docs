@@ -80,6 +80,7 @@ Each endpoint requires one scope, listed on its page as **Required Permission**.
 | `integrations:read` | [Integrations](/docs/api/integrations) |
 | `contacts:read` | [Contacts](/docs/api/contacts), [counterparties](/docs/api/counterparties) |
 | `users:read` | [User profile](/docs/api/userinfo) |
+| `workspace:read` | [Workspace and its ingestion limits](/docs/api/userinfo#one-workspace) |
 | — | [Providers](/docs/api/providers), [assets](/docs/api/assets), [labels](/docs/api/labels) — shared reference data, not workspace-specific |
 
 OAuth flows additionally use the standard OIDC scopes `openid`, `profile`, `email` and

@@ -798,17 +798,11 @@ A non-zero `skipped` means the fan-out was partial — it is reported so that it
 
 #### Reading the resulting cap
 
-To read a workspace's cap later, call `GET https://api-v2.kryptos.io/v1/workspaces/{workspace_id}`
-with the **user's access token** (requires the `workspace:read` scope, which is in the default client
-scope set). Its `limits` block carries:
-
-| Field                       | Type            | Description                                                                                     |
-| --------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
-| `transactionLimit`          | number \| null  | The raw per-workspace override. `null` when unset — the workspace inherits the default          |
-| `enableLimiter`             | boolean \| null | The raw override flag. `null` when unset                                                        |
-| `effectiveTransactionLimit` | number \| null  | **The cap actually enforced** — the only value worth comparing against a count. `null` when uncapped |
-| `currentTransactionCount`   | number          | Saved rows plus the rows a running sync has in flight                                           |
-| `remainingTransactions`     | number \| null  | Headroom before ingestion stops. `null` when uncapped                                           |
+To read a workspace's cap later, call
+[`GET /v1/workspaces/{workspace_id}`](/docs/api/userinfo#one-workspace) with the **user's access
+token** — it requires the `workspace:read` scope, which is in the default client scope set. Its
+`limits` block reports `effectiveTransactionLimit` (the cap actually enforced),
+`currentTransactionCount` and `remainingTransactions`.
 
 `workspace_id` comes from the [token exchange](#step-2-exchange-public-token) response, and is also
 listed per grant by [`GET /token/grants`](#list-connected-grants).
