@@ -20,8 +20,23 @@ your users have granted you access to. The rule is:
 > [Kryptos Connect grant](/docs/kryptos-connect/overview) held by one of your OAuth clients.
 
 So no extra wiring per user is needed — a user completing the Connect flow automatically becomes a source
-of events, and revoking their grant stops them. If several of your clients hold grants on the same
-workspace, the event is delivered once per subscribing developer workspace, not once per client.
+of events, and revoking their grant stops them.
+
+### One delivery per grant
+
+Fan-out is **per grant**, not per workspace. If two of your OAuth clients each hold a live grant on the
+same end user, that user's events are delivered **twice** — once for each grant, each carrying its own
+`grant_id` and its own delivery `id`.
+
+This is what makes a delivery attributable: `grant_id` tells you *which of your customers* the event
+belongs to, which a collapsed per-workspace delivery could not. See
+[Identifying the user](/docs/webhooks/events#identifying-the-user).
+
+:::caution Deduplicate on `X-Webhook-Id`, not on event content
+Retries of one delivery reuse the same `X-Webhook-Id`, so keying on it is the correct way to drop
+duplicates. It will **not** collapse the per-grant fan-out above, and it shouldn't — those are distinct
+deliveries for distinct grants.
+:::
 
 This is the alternative to polling after a
 [resync](/docs/kryptos-connect/backend#resync-integration) or a
@@ -90,6 +105,9 @@ Each webhook request includes the following headers:
 | `X-Webhook-Timestamp`   | ISO 8601 timestamp of the delivery             |
 | `Content-Type`          | `application/json`                             |
 
+There is **no header for `grant_id` or `workspace_id`** — they are envelope fields in the JSON body.
+Parse the body to read them.
+
 ### Signature Verification Examples
 
 <Tabs>
@@ -111,7 +129,7 @@ function verifyWebhookSignature(payload, signature, secret) {
 }
 
 // Express.js example
-app.post('/webhooks/kryptos', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/webhooks/kryptos', express.raw({ type: 'application/json' }), async (req, res) => {
   const signature = req.headers['x-webhook-signature'];
   const event = req.headers['x-webhook-event'];
 
@@ -120,6 +138,10 @@ app.post('/webhooks/kryptos', express.raw({ type: 'application/json' }), (req, r
   }
 
   const payload = JSON.parse(req.body);
+
+  // Which of your customers this belongs to. Store grant_id at connect time and look it up here.
+  const { grant_id: grantId, workspace_id: workspaceId } = payload;
+  const customer = await findCustomerByGrantId(grantId);
 
   switch (event) {
     case 'integration.created':
@@ -178,6 +200,11 @@ def handle_webhook():
 
     payload = request.get_json()
 
+    # Which of your customers this belongs to. Store grant_id at connect time and look it up here.
+    grant_id = payload['grant_id']
+    workspace_id = payload.get('workspace_id')
+    customer = find_customer_by_grant_id(grant_id)
+
     if event == 'integration.created':
         print('New integration:', payload['data'])
     elif event == 'integration.updated':
@@ -221,8 +248,9 @@ From the Developer Portal, you can:
 1. **Always verify signatures** — Check the `X-Webhook-Signature` header on every request to ensure payloads are from Kryptos.
 2. **Respond quickly** — Return a `200` response immediately and process the event asynchronously. Long-running handlers risk timeouts and unnecessary retries.
 3. **Handle duplicates** — Use the `X-Webhook-Id` header to deduplicate events in case of retries.
-4. **Use HTTPS** — Your endpoint must use HTTPS to protect webhook data in transit.
-5. **Monitor failures** — Track failed deliveries and investigate persistent errors.
+4. **Route on `grant_id`** — Store it when a user completes the Connect flow, and use it to attribute every delivery. Don't rely on `walletId`; it is absent from half the event families and arrives after the fact in the other half.
+5. **Use HTTPS** — Your endpoint must use HTTPS to protect webhook data in transit.
+6. **Monitor failures** — Track failed deliveries and investigate persistent errors.
 
 ## Next Steps
 

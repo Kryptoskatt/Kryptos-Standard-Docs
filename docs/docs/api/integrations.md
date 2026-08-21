@@ -74,6 +74,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
           "progressPercent": 100,
           "recordsProcessed": 412,
           "recordsFailed": 0,
+          "limitReached": false,
           "completedAt": "2026-08-13T09:16:02.000Z"
         },
         "txnCounts": { "total": 1284, "byType": { "trade": 900, "deposit": 220 } },
@@ -131,8 +132,17 @@ they are `false` — unverifiable, not verified.
 `latestSync.status` is one of `pending`, `queued`, `in_progress`, `completed`, `partially_synced`,
 `failed`, `cancelled`. The last four are terminal.
 
-`partially_synced` is a **success with losses**, not a failure — read `recordsFailed`. Treating it as a
-failure will make users re-run syncs that already imported most of their data.
+`partially_synced` is a **success with losses**, not a failure — treating it as one will make users
+re-run syncs that already imported most of their data. Two different things produce it, and
+`latestSync.limitReached` tells them apart:
+
+- **`limitReached: true`** — the workspace hit its transaction limit mid-run. Rows before the cut are
+  saved; the rest were never fetched. The wallet's history is incomplete until the cap is raised **and**
+  the integration is re-synced from the start — raising the cap alone backfills nothing.
+- **`limitReached: false`** — one or more provider functions failed while the others succeeded. Read
+  `recordsFailed`.
+
+`limitReached` is the v2 replacement for v1's `limitExceeded`.
 
 ## One integration
 

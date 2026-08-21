@@ -12,6 +12,49 @@ All notable changes to the Kryptos Connect API.
 
 ## August 2026
 
+**Webhooks — deliveries are now attributable**
+
+- **Every delivery carries `grant_id` and `workspace_id`** as top-level envelope fields, next to `id`,
+  `event` and `timestamp`. They are the same two ids returned by token exchange, so a partner can map a
+  delivery to one of their own customers. They are body fields, not headers, and are not inside `data`.
+- **Breaking — fan-out is per grant, not per developer workspace.** If two of your OAuth clients each
+  hold a live grant on the same end user, that user's events are now delivered twice, once per grant,
+  each with its own `grant_id` and delivery `id`. Previously the two collapsed into one delivery.
+  Deduplicating on `X-Webhook-Id` still works for retries and will not collapse these.
+- **`data` contains no `uid`.** It never did in v2 — the docs described a v1 field. Use `grant_id`.
+  `walletId` is not a substitute: `integration.created` arrives before you have stored a wallet id, and
+  the `transfer_detection.*` / `costbasis.*` payloads carry no wallet id at all.
+- **Fixed:** `integration.updated` and `integration.failed` shipped `publicAddress: ""` for every
+  wallet. Address-based integrations now report their real address. Note the field is an empty string,
+  never `null`, for exchanges, OAuth and CSV integrations.
+- Documented: `integration.deleted` reports `status: "DELETED"`, and `isContract` is always `false`
+  (v2 does not perform contract detection).
+
+**Sync — telling a truncated sync from a failed one**
+
+- **New `limitReached` (boolean)** on `GET /v1/sync/{syncId}`, on every entry of `GET /v1/sync`, and on
+  `latestSync` in `GET /v1/integrations`. `true` means the run stopped early because the workspace hit
+  its transaction limit: rows fetched before the cut are saved, the rest were never read. A failed
+  connector function produces the same `partially_synced` status, which is why this is a separate field
+  rather than something to infer from `message`. Raising the cap does not backfill on its own — the
+  integration has to be re-synced with `syncMode: resync_from_start`. This is the v2 replacement for
+  v1's `limitExceeded`.
+- **Fixed:** `GET /v1/sync/{syncId}` returned `summary: undefined` for every sync. It now returns the
+  per-function report.
+
+**Transaction limits**
+
+- `PATCH /developer/grants/{grantId}/transaction-limit` now returns `previous_transaction_limit` and
+  `previous_enable_limiter`, so the response alone tells you what the cap was as well as what it became.
+- **A limit change now re-syncs the user's wallets.** When the call actually changes the cap, every
+  re-syncable integration in the workspace is queued for a full re-fetch from the start — you no longer
+  need to detect the change and request it yourself. The new `resync` field reports
+  `{ triggered, failed, skipped }`, or is `null` when the request changed nothing. Custom wallets,
+  sync-disabled accounts and CSV-fed integrations are counted in `skipped`, along with anything past the
+  100-per-call cap.
+- A workspace's cap can be read back from `GET /v1/workspaces/{workspace_id}`, whose `limits` block
+  carries `effectiveTransactionLimit`, `currentTransactionCount` and `remainingTransactions`.
+
 **Breaking — new API base URL**
 
 The data API has moved to a new backend. The base URL is now **`https://api-v2.kryptos.io`**, and the

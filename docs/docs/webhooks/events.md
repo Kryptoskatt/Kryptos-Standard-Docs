@@ -19,21 +19,38 @@ Kryptos supports **Integration**, **Transfer Detection**, and **Cost Basis** web
   "id": "whd_<unique_id>",
   "event": "<category>.<action>",
   "timestamp": "ISO 8601 timestamp",
-  "data": {
-    "uid": "user_<id>",
-    ...
-  }
+  "grant_id": "cgrant_<id>",
+  "workspace_id": "ws_<id>",
+  "data": { ... }
 }
 ```
 
-| Field       | Type   | Description                                             |
-| ----------- | ------ | ------------------------------------------------------- |
-| `id`        | string | Unique delivery ID (format: `whd_*`)                    |
-| `event`     | string | Event type in `<category>.<action>` format              |
-| `timestamp` | string | ISO 8601 timestamp of when the event occurred           |
-| `data`      | object | Event-specific payload; always includes `uid`           |
+| Field          | Type           | Description                                                                     |
+| -------------- | -------------- | ------------------------------------------------------------------------------- |
+| `id`           | string         | Unique delivery ID (format: `whd_*`). Retries of the same delivery reuse it      |
+| `event`        | string         | Event type in `<category>.<action>` format                                      |
+| `timestamp`    | string         | ISO 8601 timestamp of the delivery                                              |
+| `grant_id`     | string         | The Connect grant this delivery is attributed to — see below                     |
+| `workspace_id` | string \| null | The end user's workspace that the grant is bound to                             |
+| `data`         | object         | Event-specific payload; its fields depend on the event category                 |
 
-The `data` object always contains a `uid` field identifying the user. The remaining fields depend on the event category — see below.
+### Identifying the user
+
+`grant_id` and `workspace_id` are how you map a delivery back to one of your own customers. They are
+the same two ids you received from
+[token exchange](/docs/kryptos-connect/backend#step-2-exchange-public-token), so store the `grant_id` when a
+user connects and key your webhook handler on it.
+
+Both live on the **envelope, not inside `data`** — and they are not sent as headers either. Read them
+off the parsed body alongside `id` and `event`.
+
+:::warning There is no `uid` in `data`
+The `data` object carries no user identifier. `walletId` cannot stand in for one either: the first
+`integration.created` for a new connection arrives *before* you have stored any wallet id, and the
+`transfer_detection.*` / `costbasis.*` payloads carry no wallet id at all. Use `grant_id`.
+:::
+
+`workspace_id` is `null` only for grants issued before the v1 → v2 migration.
 
 ---
 
@@ -56,12 +73,13 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 {
   "id": "whd_abc123def456",
   "event": "integration.created",
-  "timestamp": "2025-02-19T12:00:00.000Z",
+  "timestamp": "2026-02-19T12:00:00.000Z",
+  "grant_id": "cgrant_abc123xyz789",
+  "workspace_id": "ws_12ab",
   "data": {
-    "uid": "user_123",
     "provider": "binance",
     "providerPublicName": "Binance",
-    "publicAddress": null,
+    "publicAddress": "",
     "walletId": "wallet_abc123",
     "logoUrl": "https://storage.googleapis.com/kryptos-public/logos/binance.png",
     "isContract": false,
@@ -78,23 +96,22 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 
 ### Data Fields
 
-| Field                | Type    | Description                                                  |
-| -------------------- | ------- | ------------------------------------------------------------ |
-| `uid`                | string  | The user ID associated with the integration                  |
-| `provider`           | string  | Provider identifier (e.g., `binance`, `ethereum`)            |
-| `providerPublicName` | string  | Human-readable provider name                                 |
-| `publicAddress`      | string  | Wallet address (for blockchain wallets), `null` otherwise    |
-| `walletId`           | string  | Unique wallet/integration identifier                         |
-| `logoUrl`            | string  | Provider logo URL                                            |
-| `isContract`         | boolean | Whether the address is a smart contract                      |
-| `alias`              | string  | User-defined alias for the integration                       |
-| `status`             | string  | Integration status — see below                               |
-| `errorMessage`       | string  | Present on `integration.failed`: why the sync failed         |
-| `addedOn`            | number  | Timestamp when integration was added (ms)                    |
-| `lastSyncedAt`       | number  | Timestamp of last successful sync (ms)                       |
-| `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown`      |
-| `type`               | string  | Integration type: `api` or `csv`                             |
-| `totalTransactions`  | number  | Total number of transactions from this integration           |
+| Field                | Type    | Description                                                                             |
+| -------------------- | ------- | --------------------------------------------------------------------------------------- |
+| `provider`           | string  | Provider identifier (e.g., `binance`, `ethereum`)                                       |
+| `providerPublicName` | string  | Human-readable provider name                                                            |
+| `publicAddress`      | string  | Wallet address, for address-based connections. **Empty string** — never `null` — for exchanges, OAuth and CSV integrations, which have no address |
+| `walletId`           | string  | Unique wallet/integration identifier — the `id` used by the [Integrations API](/docs/api/integrations) |
+| `logoUrl`            | string  | Provider logo URL; `""` if the provider record has none                                 |
+| `isContract`         | boolean | **Always `false`.** v2 does not perform contract detection, so this is reported rather than inferred |
+| `alias`              | string  | User-defined alias for the integration; `""` if unset                                   |
+| `status`             | string  | Integration status — see below                                                          |
+| `errorMessage`       | string  | Why the sync failed. **Omitted entirely** unless `status` is `FAILED` and a message exists — not `null` |
+| `addedOn`            | number  | Timestamp when integration was added (ms); `0` if unknown                               |
+| `lastSyncedAt`       | number  | Timestamp of last successful sync (ms); `0` if never synced                              |
+| `category`           | string  | Category: `exchange`, `wallet`, `blockchain`, `unknown`                                 |
+| `type`               | string  | Integration type: `api` or `csv`                                                        |
+| `totalTransactions`  | number  | Total number of transactions from this integration                                      |
 
 ### Status values
 
@@ -104,16 +121,19 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 | `SYNCING` | no | Sync running |
 | `COMPLETED` | **yes** | Sync finished |
 | `FAILED` | **yes** | Sync failed or was cancelled — read `errorMessage` |
-| `DELETING` | **yes** | Integration is being removed |
+| `DELETING` | no | Removal has started; a `DELETED` or `FAILED` event follows once the wipe settles |
+| `DELETED` | **yes** | Removal finished. Only sent on `integration.deleted` |
 | `INACTIVE` | **yes** | Syncing is disabled or the integration is suspended |
 
-A sync that finished with some rows dropped reports **`COMPLETED`**, not a separate partial state. If you
-need to know that a sync was partial, read `recordsFailed` from
-`GET /v1/sync/{syncId}`, where the underlying
-`partially_synced` status is visible.
+A sync that finished with some rows dropped reports **`COMPLETED`**, not a separate partial state. To
+find out *why* it was partial, read the sync itself with `GET /v1/sync/{syncId}`: it exposes the
+underlying `partially_synced` status, `recordsFailed`, and `limitReached` — the last of which tells you
+the run was cut short by the workspace's transaction limit rather than by a connector failure.
 
-This vocabulary is the webhook's own, and is coarser than the sync status on the API: seven sync states
-fold into these six. Don't compare the two strings directly.
+This vocabulary is the webhook's own and does not line up with the sync status on the API: it folds
+the seven sync states into these tokens (`partially_synced` → `COMPLETED`, `cancelled` → `FAILED`)
+and mixes in account-level states the sync has no equivalent for. Don't compare the two strings
+directly.
 
 ### Integration Categories
 
@@ -152,8 +172,9 @@ Triggered during the transfer detection process. Transfer detection identifies m
   "id": "whd_8cbe199e6ae5fe275320c2b0",
   "event": "transfer_detection.started",
   "timestamp": "2026-02-20T18:09:07.962Z",
+  "grant_id": "cgrant_abc123xyz789",
+  "workspace_id": "ws_12ab",
   "data": {
-    "uid": "8efe14a679fa4fe390b03dfa",
     "action": "DETECT_TRANSFER",
     "status": "started",
     "reason": null,
@@ -166,11 +187,13 @@ Triggered during the transfer detection process. Transfer detection identifies m
 
 | Field       | Type           | Description                                                                 |
 | ----------- | -------------- | --------------------------------------------------------------------------- |
-| `uid`       | string         | The user ID associated with the operation                                   |
 | `action`    | string         | Always `DETECT_TRANSFER` for this event category                            |
 | `status`    | string         | Current status: `started`, `completed`, or `failed`                         |
 | `reason`    | string \| null | Error reason if the status is `failed`, otherwise `null`                    |
 | `timestamp` | number         | Unix timestamp (ms) of when the status changed                              |
+
+These events are workspace-wide, so `data` identifies neither a user nor an integration. Use the
+envelope's `grant_id` to attribute them.
 
 ---
 
@@ -193,8 +216,9 @@ Triggered during the cost basis calculation process. Cost basis (also known as A
   "id": "whd_4e1f0937c274e70d738f65f7",
   "event": "costbasis.started",
   "timestamp": "2026-02-20T18:09:39.628Z",
+  "grant_id": "cgrant_abc123xyz789",
+  "workspace_id": "ws_12ab",
   "data": {
-    "uid": "8efe14a679fa4fe390b03dfa",
     "action": "ACCOUNT_MANAGER",
     "status": "started",
     "reason": null,
@@ -207,11 +231,13 @@ Triggered during the cost basis calculation process. Cost basis (also known as A
 
 | Field       | Type           | Description                                                                 |
 | ----------- | -------------- | --------------------------------------------------------------------------- |
-| `uid`       | string         | The user ID associated with the operation                                   |
 | `action`    | string         | Always `ACCOUNT_MANAGER` for this event category                            |
 | `status`    | string         | Current status: `started`, `completed`, or `failed`                         |
 | `reason`    | string \| null | Error reason if the status is `failed`, otherwise `null`                    |
 | `timestamp` | number         | Unix timestamp (ms) of when the status changed                              |
+
+As with transfer detection, `data` carries no user or integration identity — attribute these with the
+envelope's `grant_id`.
 
 ---
 

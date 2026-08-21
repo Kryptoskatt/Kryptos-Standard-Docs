@@ -751,10 +751,67 @@ await updateTransactionLimit("cgrant_abc123", { enableLimiter: false });
     "grant_id": "cgrant_abc123xyz789",
     "user_id": "anon_user_uid",
     "transaction_limit": 10000,
-    "enable_limiter": true
+    "enable_limiter": true,
+    "previous_transaction_limit": 1000,
+    "previous_enable_limiter": true,
+    "resync": {
+      "triggered": [
+        { "integration_id": "int_8ad611a78678", "sync_id": "sync_1f2e3d4c5b6a" }
+      ],
+      "failed": [],
+      "skipped": 0
+    }
   }
 }
 ```
+
+| Field                        | Type           | Description                                                          |
+| ---------------------------- | -------------- | -------------------------------------------------------------------- |
+| `transaction_limit`          | number \| null | The cap after this call                                              |
+| `enable_limiter`             | boolean \| null | Whether the limiter is active after this call                       |
+| `previous_transaction_limit` | number \| null | The cap **before** this call                                         |
+| `previous_enable_limiter`    | boolean \| null | The flag before this call                                           |
+| `resync`                     | object \| null | Syncs queued by this change; `null` if nothing changed — see below   |
+
+`previous_transaction_limit` and `previous_enable_limiter` mean the response alone tells you both what
+the cap became *and* what it was, with no read-back.
+
+#### A limit change re-syncs the user's wallets
+
+Raising a cap does not backfill anything by itself: an incremental sync resumes from the last
+transaction it wrote, so history a previous sync dropped at the old cap stays missing. So whenever this
+call **actually changes** the cap, every re-syncable integration in the workspace is queued for a full
+re-fetch from the start (`resync_from_start` — prior data is deleted, then the complete range is read
+again). You do not need to detect the change and request a resync yourself.
+
+`resync` is `null` when the request changed nothing — restating the current values is a no-op.
+Otherwise:
+
+| Field       | Description                                                                                                                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `triggered` | One entry per queued sync, as `{ integration_id, sync_id }`. Poll `GET /v1/sync/{sync_id}` for each                                             |
+| `failed`    | Integrations whose sync could not be queued, with the reason                                                                                      |
+| `skipped`   | Count of integrations not re-synced: custom wallets, sync-disabled accounts, CSV-fed ones (nothing to re-fetch), and anything past the 100-per-call cap |
+
+A non-zero `skipped` means the fan-out was partial — it is reported so that it never reads as
+"everything was re-synced".
+
+#### Reading the resulting cap
+
+To read a workspace's cap later, call `GET https://api-v2.kryptos.io/v1/workspaces/{workspace_id}`
+with the **user's access token** (requires the `workspace:read` scope, which is in the default client
+scope set). Its `limits` block carries:
+
+| Field                       | Type            | Description                                                                                     |
+| --------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
+| `transactionLimit`          | number \| null  | The raw per-workspace override. `null` when unset — the workspace inherits the default          |
+| `enableLimiter`             | boolean \| null | The raw override flag. `null` when unset                                                        |
+| `effectiveTransactionLimit` | number \| null  | **The cap actually enforced** — the only value worth comparing against a count. `null` when uncapped |
+| `currentTransactionCount`   | number          | Saved rows plus the rows a running sync has in flight                                           |
+| `remainingTransactions`     | number \| null  | Headroom before ingestion stops. `null` when uncapped                                           |
+
+`workspace_id` comes from the [token exchange](#step-2-exchange-public-token) response, and is also
+listed per grant by [`GET /token/grants`](#list-connected-grants).
 
 **Errors:**
 
