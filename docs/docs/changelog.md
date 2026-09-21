@@ -10,6 +10,51 @@ All notable changes to the Kryptos Connect API.
 
 ---
 
+## September 2026
+
+**Provider catalogue no longer exposes connector internals**
+
+`GET /v1/providers` and `GET /v1/providers/{id}` are a public, unauthenticated catalogue, but each
+`functions[]` entry was carrying the connector's operating configuration with it. Those three fields
+are gone:
+
+- `endpoint` — the upstream URL the function calls
+- `details` — its rate-limit, window and batching parameters
+- `status` — the raw result of the last health probe, including the upstream's error text
+
+Function health is preserved as two derived booleans, `enabled` and `operational` — see
+[Providers](/docs/api/providers#connector-functions). If you built an outage badge on
+`status.on` / `status.status` / `status.error`, `operational` combined with `is_base` is the
+replacement: any base function not operational is a full outage, a non-base one is partial.
+
+`name`, `public_name`, `is_base` and `categories` are unchanged, as is every other provider field.
+
+**User profile no longer returns the Stripe customer id**
+
+`GET /v1/users/me` was returning `stripeCustomerId`, the billing identity behind the account. It was
+never documented and is no longer returned. Every documented profile field is unchanged.
+
+**Documentation corrections**
+
+These describe behaviour that was already the case — the docs were wrong, not the API.
+
+- **API keys reach `/v1/users/*` only.** `GET /v1/holdings` and every other resource endpoint accept a
+  bearer token and reject `x-api-key` with `401`. The overview and API-key pages both showed a holdings
+  example that never worked.
+- **API keys are bound to a workspace.** A key carries its workspace from creation; you do not pass
+  `?wid=`, and passing a different workspace id returns `403`. The previous text said the opposite.
+- **Contacts and counterparties nest their pagination** under `meta` as `{ total, page, limit }`. The
+  overview described it as spread beside `success`.
+- **`credentialValidationStatus` and `importMethod` were never returned** by `GET /v1/integrations`
+  and have been removed from the field table. `credentials` *is* returned by the list, not only the
+  single-integration read.
+- Counterparties, spam and the `fields=summary` integration projection now have response-field tables.
+- Transactions: `explorerLinkSrc`, `isMergedTrx`, `trxsMerged` and `isSplitted` are now documented.
+- Workspace: `customAssetPricesEnabled`, `organizationId`, `lastSyncTime` and
+  `lastAccountingCalculation` are now documented on the single-workspace read.
+
+---
+
 ## August 2026
 
 **Webhooks — deliveries are now attributable**

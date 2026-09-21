@@ -39,7 +39,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `status` | string | — | `pending`, `active`, `inactive`, `suspended`, `error` |
 | `search` | string | — | Match on alias, address and account name |
 | `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's |
-| `fields` | string | — | `summary` returns a lighter payload |
+| `fields` | string | — | `summary` returns a lighter payload, see below |
 | `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
 | `page` | integer | `1` | Page number |
@@ -60,8 +60,6 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
         "alias": "Main exchange",
         "accountStatus": "active",
         "credentialKind": "api_key",
-        "credentialValidationStatus": "valid",
-        "importMethod": "api",
         "syncEnabled": true,
         "isCustomWallet": false,
         "lastSyncId": "sync_7712",
@@ -82,7 +80,11 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
         "baseCurrency": "USD",
         "metadataUpdatedAt": "2026-08-13T09:16:30.000Z",
         "hasMissingBalance": false,
+        "canResync": true,
         "assetLogos": ["https://...", "https://..."],
+        "assetCount": 12,
+        "txnCount": 1284,
+        "credentials": null,
         "createdAt": "2026-01-04T11:02:00.000Z",
         "updatedAt": "2026-08-13T09:16:30.000Z",
         "deletedAt": null
@@ -104,9 +106,9 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `alias` | string \| null | User-facing name |
 | `accountStatus` | string | `pending`, `active`, `inactive`, `suspended`, `deleting`, `deleted`, `error` |
 | `credentialKind` | string | `api_key`, `oauth`, `address`, `account_name`, `wallet_connect`, `csv`, `none` |
-| `credentialValidationStatus` | string \| null | `valid`, `invalid`, `expired`, `pending` |
-| `importMethod` | string \| null | `api`, `csv` or `oauth` |
 | `syncEnabled` | boolean | Automatic syncing is on |
+| `isTokenExpired` | boolean | An OAuth credential needs reconnecting |
+| `lastSyncStatus` | string \| null | Status of the last **finished** sync; `latestSync.status` is the live one |
 | `isCustomWallet` | boolean | A manual wallet with no provider connection |
 | `lastSyncId`, `lastSyncedAt` | string | Most recent sync |
 | `latestSync` | object \| null | Most recent sync of any status; `null` if never synced |
@@ -114,8 +116,15 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `netValue` | number \| null | Holdings value in the workspace base currency |
 | `metadataUpdatedAt` | string \| null | When `txnCounts` and `netValue` were last refreshed |
 | `hasMissingBalance` | boolean | See below |
+| `canResync` | boolean | A credential exists to re-sync against, so "Resync" applies |
 | `assetLogos` | array | Up to 5 asset logos, for list rendering |
+| `assetCount` | number | Distinct assets held in this account |
+| `txnCount` | number | Convenience copy of `txnCounts.total` |
+| `credentials` | object \| null | Connection identifier for `address` / `account_name` kinds, secrets masked; `null` for secret-bearing kinds |
 | `createdAt`, `updatedAt`, `deletedAt` | string | ISO 8601 timestamps |
+
+Read `txnCounts`, `netValue`, `baseCurrency` and `metadataUpdatedAt` as the top-level fields above
+rather than out of the raw metadata bag they are derived from.
 
 `txnCounts` and `netValue` come from cached metadata refreshed by the recompute pipeline, so
 `metadataUpdatedAt` may lag `lastSyncedAt` by a few seconds after a sync. Compare the two before
@@ -126,6 +135,17 @@ internal transfer is counted for both wallets it touches. `netValue` *is* additi
 provider-reported one by more than 0.01. It is evaluated live per request, so it always agrees with the
 `hasMissingBalance` filter. CSV and manual integrations have no provider-reported balance to compare, so
 they are `false` — unverifiable, not verified.
+
+### `fields=summary`
+
+For menus and pickers, where the full row is wasted bytes. Each entry carries only:
+
+`id`, `alias`, `providerId`, `providerName`, `providerPublicName`, `logo`, `transactionCount`,
+`address`.
+
+`pagination` and `providerCounts` are returned as normal. The live per-page lookups the full payload
+runs — `hasMissingBalance`, `canResync`, asset logos and counts — are skipped, which is most of why
+it is cheaper.
 
 ### Sync status values
 
@@ -151,10 +171,13 @@ omits:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `credentials` | object \| null | For `address` and `account_name` kinds only, with secrets masked; `null` for secret-bearing kinds |
+| `connections` | array | Per-chain connection rows for a multi-chain wallet |
 | `csvUploads` | array | Upload history, newest first: `uploadId`, `fileName`, `fileSize`, `fileType`, `status`, `rowCount`, `summary`, `uploadedAt` |
 
-Secrets are never returned for `api_key`, `oauth` or `wallet_connect` credentials.
+It omits the list-only derived fields in exchange — `assetLogos`, `assetCount`, `txnCount`,
+`txnCounts`, `netValue`, `hasMissingBalance` and `metadataUpdatedAt`.
+
+Secrets are never returned for `api_key`, `oauth` or `wallet_connect` credentials, on either route.
 
 ## Per-asset breakdown
 

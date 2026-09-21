@@ -50,12 +50,19 @@ Get an access token by either route:
 Enterprise customers can call the API with a long-lived key instead of an access token:
 
 ```bash
-curl -X GET "https://api-v2.kryptos.io/v1/holdings?wid=WORKSPACE_ID" \
+curl -X GET "https://api-v2.kryptos.io/v1/users/me" \
   -H "x-api-key: kryptos_live_xxxx"
 ```
 
-API keys carry the same scopes as access tokens and are **not** bound to a workspace, so they must
-name one on every request (see below). See [API Key Authentication](/docs/authentication/api-key).
+:::caution API keys reach `/v1/users/*` only
+Every other endpoint documented here accepts a bearer token and **not** `x-api-key` — sending a key
+to `/v1/holdings` returns `401 unauthorized`. Use an [access token](/docs/authentication/oauth) for
+portfolio, transaction and integration data. Wider API-key coverage is on the roadmap; contact
+[support@kryptos.io](mailto:support@kryptos.io) if you need it.
+:::
+
+API keys carry the same scopes as access tokens and are bound to one workspace when created. See
+[API Key Authentication](/docs/authentication/api-key).
 
 ## Workspaces
 
@@ -65,9 +72,10 @@ workspace you mean depends on your credential:
 - **Access tokens issued through Kryptos Connect or OAuth are bound to one workspace.** Omit the
   workspace parameter — it is already in the token. Passing a *different* workspace id is rejected
   with `403 forbidden`.
-- **API keys are not bound to a workspace.** Pass `?wid=WORKSPACE_ID`; the endpoint page names the
-  parameter where it differs. Omitting it returns `400 bad_request`; naming a workspace you are not a
-  member of returns `403 forbidden`.
+- **API keys are bound to one workspace too**, chosen when the key is created. Omit the workspace
+  parameter — it is already on the key. Passing a *different* workspace id is rejected with
+  `403 forbidden`. Keys minted before workspace binding carry none; those resolve the workspace from
+  `?wid=WORKSPACE_ID` instead, and are rejected outright once binding is enforced.
 
 ## Scopes
 
@@ -155,7 +163,8 @@ Transactions and ledgers return no `success` field at all, and nest their errors
 
 | Style | Used by | Request | Response |
 | --- | --- | --- | --- |
-| Page number | Integrations, providers, portfolios, contacts, counterparties | `?page=1&limit=50` (limit 1–100) | `pagination: { page, limit, total, totalPages, hasMore }` |
+| Page number | Integrations, providers, portfolios | `?page=1&limit=50` (limit 1–100) | `pagination: { page, limit, total, totalPages, hasMore }` |
+| Page number, in `meta` | Contacts, counterparties | `?page=1&limit=50` | `meta: { total, page, limit }` — no `totalPages`/`hasMore` |
 | Offset, flattened | Holdings, DeFi, calculated balances | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount`, `offset`, `limit`, `hasMore` |
 | Offset, in `meta` | Transactions, ledgers | `?offset=0&limit=50` (limit 1–200) | `meta: { limit, offset, hasMore, total }` |
 | Totals only | NFTs, NFT collections | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount` only — no `offset`/`limit`/`hasMore` echoed |
@@ -167,9 +176,10 @@ Three details worth hard-coding into a client:
 - The NFT endpoints echo neither `offset`, `limit` nor `hasMore`.
 
 Wherever `hasMore` is absent, compare `offset + data.length` against the total. Note also that
-[contacts](/docs/api/contacts) and [counterparties](/docs/api/counterparties) spread their pagination
-beside `success` rather than nesting it, and that `limit` defaults differ per endpoint — 50 on most, 20
-on contacts and spam.
+[contacts](/docs/api/contacts) and [counterparties](/docs/api/counterparties) return a fourth shape —
+`{ success, data, meta: { total, page, limit } }`, with the collection beside `success` but the
+pagination nested under `meta` — and that `limit` defaults differ per endpoint: 50 on most, 20 on
+contacts and spam.
 
 ## Errors
 

@@ -36,8 +36,18 @@ curl -X GET "https://api-v2.kryptos.io/v1/contacts?search=acme&page=1&limit=20" 
 | `page` | integer | `1` | Page number |
 | `limit` | integer | `20` | Max 100. Note the default differs from other list endpoints |
 
-The response spreads the result beside `success` — `{ success: true, data: [...], ...pagination }` —
-rather than nesting it under `data`.
+The response puts the collection beside `success` and the pagination under `meta`:
+
+```json
+{
+  "success": true,
+  "data": [],
+  "meta": { "total": 84, "page": 1, "limit": 20 }
+}
+```
+
+`meta` carries only `total`, `page` and `limit` — no `totalPages` or `hasMore`. Derive the page count
+from `total` and `limit`.
 
 ## Contact fields
 

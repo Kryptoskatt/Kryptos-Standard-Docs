@@ -153,6 +153,10 @@ Ranges, sorting and paging:
 | `totalCostbasis` | number | Cost basis consumed |
 | `totalGains` | number | Realized gain or loss |
 | `explorerLink` | string \| null | Block-explorer URL; `null` for exchange transactions and unknown chains |
+| `explorerLinkSrc` | string \| null | Which side of a transfer `explorerLink` was built from: `sender` or `receiver` |
+| `isMergedTrx` | boolean | Produced by merging several source transactions |
+| `trxsMerged` | array \| null | The source transactions a merge consumed |
+| `isSplitted` | boolean | Produced by splitting a merged transaction back into legs |
 | `incomingAssets`, `outgoingAssets`, `fee` | array | Ledger legs, see below |
 | `coaJournal`, `coaStatus` | object | Chart-of-accounts state — **enterprise workspaces only**, absent otherwise |
 

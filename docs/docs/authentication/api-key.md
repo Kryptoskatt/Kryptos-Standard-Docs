@@ -14,22 +14,34 @@ API keys authenticate your own application against your own workspaces — serve
 in the loop. To access *another* user's data, use [OAuth 2.0](/docs/authentication/oauth) or
 [Kryptos Connect](/docs/kryptos-connect/overview) instead.
 
+## What a key can reach
+
+:::caution `/v1/users/*` only
+API keys authenticate against the user endpoints — `GET /v1/users/me` and the profile writes.
+**Every other endpoint in this reference accepts a bearer token and rejects `x-api-key` with
+`401 unauthorized`**, including `/v1/holdings`, `/v1/transactions` and `/v1/integrations`.
+
+For portfolio, transaction and integration data use an [access token](/docs/authentication/oauth) or
+[Kryptos Connect](/docs/kryptos-connect/overview). Broader API-key coverage is on the roadmap — talk
+to [support@kryptos.io](mailto:support@kryptos.io) if it blocks you.
+:::
+
 ## Usage
 
-Send the key in the `x-api-key` header, and name the workspace:
+Send the key in the `x-api-key` header:
 
 ```bash
-curl -X GET "https://api-v2.kryptos.io/v1/holdings?wid=WORKSPACE_ID" \
+curl -X GET "https://api-v2.kryptos.io/v1/users/me" \
   -H "x-api-key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
 Two differences from a bearer token:
 
 - **No `Authorization` header.** Send `x-api-key` on its own, not both.
-- **The workspace is required.** Unlike an OAuth access token, a key is not bound to a workspace, so
-  every request must carry `?wid=` (or `?workspaceId=`, or the equivalent body field). Omitting it
-  returns `400 bad_request`. The key's owner must be a member of that workspace, or you get
-  `403 forbidden`.
+- **The workspace comes from the key.** A key is bound to one workspace when it is created, so you do
+  not pass `?wid=`. Passing a *different* workspace id is rejected with `403 forbidden`. Keys issued
+  before workspace binding carry no workspace and resolve it from `?wid=` instead; those are rejected
+  outright once binding is enforced, so reissue them.
 
 ## Creating API Keys
 
@@ -48,16 +60,17 @@ including itself.** That is deliberate: a leaked key cannot be used to create mo
 
 ## Scopes
 
-API keys use the **same scope vocabulary as OAuth tokens**. For the read-only endpoints documented under
-[API Reference](/docs/api/overview), these are the ones that matter:
+API keys use the **same scope vocabulary as OAuth tokens**. Given the surface a key can reach today,
+one pair matters:
 
 | Scope | Grants access to |
 | --- | --- |
-| `portfolios:read` | [Holdings](/docs/api/holdings), [calculated balances](/docs/api/holdings), [DeFi](/docs/api/defi), [NFTs](/docs/api/nfts), [portfolios](/docs/api/portfolios) |
-| `transactions:read` | [Transactions](/docs/api/transactions), [ledgers](/docs/api/ledgers), [spam](/docs/api/spam) |
-| `integrations:read` | [Integrations](/docs/api/integrations) |
-| `contacts:read` | [Contacts](/docs/api/contacts), [counterparties](/docs/api/counterparties) |
-| `users:read` | [User profile](/docs/api/userinfo) |
+| `users:read` | [`GET /v1/users/me`](/docs/api/userinfo) |
+| `users:write` | The profile writes |
+
+The rest of the vocabulary (`portfolios`, `transactions`, `integrations`, `contacts`, …) applies to
+access tokens — see [Available Scopes](/docs/authentication/oauth#available-scopes). A key may carry
+them, but no endpoint currently accepts a key for those resources.
 
 Write scopes and further resources (`tax`, `accounting`, `reports`, `invoices`, `swaps`, `workspace`)
 exist in the same vocabulary — see [Available Scopes](/docs/authentication/oauth#available-scopes).
@@ -83,12 +96,10 @@ their write counterparts.
 const axios = require("axios");
 
 const API_KEY = process.env.KRYPTOS_API_KEY;
-const WORKSPACE_ID = process.env.KRYPTOS_WORKSPACE_ID;
 
-async function getHoldings() {
-  const response = await axios.get("https://api-v2.kryptos.io/v1/holdings", {
+async function getProfile() {
+  const response = await axios.get("https://api-v2.kryptos.io/v1/users/me", {
     headers: { "x-api-key": API_KEY },
-    params: { wid: WORKSPACE_ID },
   });
   return response.data;
 }
