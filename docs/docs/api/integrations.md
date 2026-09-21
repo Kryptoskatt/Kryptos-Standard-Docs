@@ -40,6 +40,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `search` | string | — | Match on alias, address and account name |
 | `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's |
 | `fields` | string | — | `summary` returns a lighter payload, see below |
+| `includeProviderCounts` | boolean | `false` | Also return `providerCounts`, the per-provider tally for the workspace |
 | `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
 | `page` | integer | `1` | Page number |
@@ -62,6 +63,13 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
         "credentialKind": "api_key",
         "syncEnabled": true,
         "isCustomWallet": false,
+        "provider": {
+          "id": "binance",
+          "name": "Binance",
+          "publicName": "Binance",
+          "logo": "https://...",
+          "type": "exchange"
+        },
         "lastSyncId": "sync_7712",
         "lastSyncedAt": "2026-08-13T09:14:22.000Z",
         "latestSync": {
@@ -90,8 +98,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
         "deletedAt": null
       }
     ],
-    "pagination": { "page": 1, "limit": 50, "total": 7, "totalPages": 1, "hasMore": false },
-    "providerCounts": { "binance": 1, "ethereum": 3 }
+    "pagination": { "page": 1, "limit": 50, "total": 7, "totalPages": 1, "hasMore": false }
   }
 }
 ```
@@ -126,6 +133,26 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 Read `txnCounts`, `netValue`, `baseCurrency` and `metadataUpdatedAt` as the top-level fields above
 rather than out of the raw metadata bag they are derived from.
 
+### Provider counts
+
+`providerCounts` — a per-provider tally across the whole workspace — is **off by default**. It is a
+separate aggregate over every integration, not a summary of the page you asked for, so it is opt-in:
+pass `?includeProviderCounts=true` and it appears beside `pagination`.
+
+If the tally is all you need, [`GET /v1/integrations/counts-by-provider`](#helpers) answers it
+directly without paging the list.
+
+### The nested `provider`
+
+On the **list**, `provider` carries only what a row renders — `id`, `name`, `publicName`, `logo` and
+`type`. The full catalogue entry is not repeated per row: a workspace with ten Ethereum wallets would
+otherwise receive the same provider ten times.
+
+`GET /v1/integrations/{id}` returns the **complete** provider, including `importMethods`,
+`credentialFields`, `capabilities`, `walletLimitations`, `integrationInfo`, `metadata` and
+`functions`. For the whole catalogue in one call, use [`GET /v1/providers`](/docs/api/providers) and
+join on `providerId`.
+
 `txnCounts` and `netValue` come from cached metadata refreshed by the recompute pipeline, so
 `metadataUpdatedAt` may lag `lastSyncedAt` by a few seconds after a sync. Compare the two before
 presenting the numbers as current. **`txnCounts.total` is not additive across integrations** — an
@@ -143,7 +170,7 @@ For menus and pickers, where the full row is wasted bytes. Each entry carries on
 `id`, `alias`, `providerId`, `providerName`, `providerPublicName`, `logo`, `transactionCount`,
 `address`.
 
-`pagination` and `providerCounts` are returned as normal. The live per-page lookups the full payload
+`pagination` is returned as normal. The live per-page lookups the full payload
 runs — `hasMissingBalance`, `canResync`, asset logos and counts — are skipped, which is most of why
 it is cheaper.
 
