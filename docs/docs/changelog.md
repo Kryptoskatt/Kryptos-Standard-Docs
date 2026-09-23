@@ -29,6 +29,30 @@ replacement: any base function not operational is a full outage, a non-base one 
 
 `name`, `public_name`, `is_base` and `categories` are unchanged, as is every other provider field.
 
+**Integrations — a lighter list, and an opt-in tally**
+
+`GET /v1/integrations` was returning the **entire** provider catalogue row on every item, which a
+workspace with ten Ethereum wallets received ten times over. On the list, the nested `provider` is now
+just what a row renders:
+
+```json
+{ "id": "binance", "name": "Binance", "publicName": "Binance", "logo": "https://...", "type": "exchange" }
+```
+
+`GET /v1/integrations/{id}` is **unchanged** and still returns the complete provider, including
+`importMethods`, `credentialFields`, `capabilities`, `walletLimitations`, `integrationInfo`,
+`metadata` and `functions`. If you need the full catalogue while paging the list, fetch it once from
+[`GET /v1/providers`](/docs/api/providers) and join on `providerId`.
+
+`providerCounts` is now **opt-in**. It is a workspace-wide tally rather than a summary of the page you
+asked for, and it cost a separate aggregate on every list call — pass `?includeProviderCounts=true`
+to get it back, or read [`GET /v1/integrations/counts-by-provider`](/docs/api/integrations#helpers),
+which answers the same question directly.
+
+Three undocumented fields also stopped being returned: `functionConfig`, and the `createdBy` /
+`updatedBy` identifiers. They were never part of this reference. `deletedAt` and `metadataUpdatedAt`
+are documented and are unaffected.
+
 **User profile no longer returns the Stripe customer id**
 
 `GET /v1/users/me` was returning `stripeCustomerId`, the billing identity behind the account. It was
