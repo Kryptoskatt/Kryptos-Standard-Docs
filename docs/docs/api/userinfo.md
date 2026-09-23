@@ -176,6 +176,10 @@ curl -X GET "https://api-v2.kryptos.io/v1/workspaces/ws_12ab" \
     "costBasisMethod": "FIFO",
     "timezone": "Australia/Sydney",
     "baseCurrencyCode": "AUD",
+    "customAssetPricesEnabled": false,
+    "organizationId": null,
+    "lastSyncTime": "2026-08-13T09:16:02.000Z",
+    "lastAccountingCalculation": "2026-08-13T09:18:40.000Z",
     "createdAt": "2026-01-04T11:02:00.000Z",
     "updatedAt": "2026-08-01T09:30:00.000Z",
     "limits": {
@@ -198,8 +202,16 @@ curl -X GET "https://api-v2.kryptos.io/v1/workspaces/ws_12ab" \
 | `costBasisMethod` | string | e.g. `FIFO` |
 | `timezone` | string | IANA timezone |
 | `baseCurrencyCode` | string | Currency all values are reported in |
+| `customAssetPricesEnabled` | boolean | Manually-set asset prices are in effect for this workspace |
+| `organizationId` | string \| null | Parent organization, for enterprise workspaces |
+| `lastSyncTime` | string \| null | Every integration last settled at this time; `null` if never |
+| `lastAccountingCalculation` | string \| null | Cost-basis calculation last completed; `null` if never |
 | `createdAt`, `updatedAt` | string | ISO 8601 |
 | `limits` | object | Transaction-ingestion cap — see below |
+
+Compare transaction counts against `limits.effectiveTransactionLimit` rather than the raw override it
+resolves. Manually-set asset prices have their own endpoint,
+`GET /v1/workspaces/{wid}/custom-asset-prices`.
 
 ### Ingestion limits
 

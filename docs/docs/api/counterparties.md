@@ -47,7 +47,63 @@ has dismissed yet.
 
 ## Response
 
-The response spreads the result beside `success` — `{ success: true, data: [...], ...pagination }`.
+The collection sits beside `success`, the pagination under `meta`:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "cp_31c9",
+      "address": "0x28C6c06298d514Db089934071355E5743bf21d60",
+      "addressNormalized": "0x28c6c06298d514db089934071355e5743bf21d60",
+      "chainName": "ethereum",
+      "chainPublicName": "Ethereum",
+      "chainLogo": "https://...",
+      "name": "Binance 14",
+      "logo": "https://...",
+      "isExchangeAddress": true,
+      "platformExchangeId": "binance",
+      "isSmartContract": false,
+      "platformSmartContractId": null,
+      "identified": true,
+      "ignored": false,
+      "isLinkedToContact": false,
+      "contactId": null,
+      "transactionCount": 42,
+      "firstSeenAt": "2026-01-04T11:02:00.000Z",
+      "lastSeenAt": "2026-08-13T09:14:22.000Z",
+      "createdAt": "2026-01-04T11:02:00.000Z",
+      "updatedAt": "2026-08-13T09:14:22.000Z"
+    }
+  ],
+  "meta": { "total": 216, "page": 1, "limit": 50 }
+}
+```
+
+`meta` carries only `total`, `page` and `limit` — no `totalPages` or `hasMore`.
+
+### Response Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Counterparty id |
+| `address` | string | The address as seen on-chain |
+| `addressNormalized` | string | Lowercased form — use it to compare addresses |
+| `chainName`, `chainPublicName`, `chainLogo` | string | Chain the address lives on |
+| `name` | string \| null | Display name, when identified or linked to a contact |
+| `logo` | string \| null | Logo of the matched exchange or protocol |
+| `isExchangeAddress` | boolean | Matched to a centralized venue |
+| `platformExchangeId` | string \| null | Which venue, e.g. `binance` |
+| `isSmartContract` | boolean | Matched to a DeFi contract |
+| `platformSmartContractId` | string \| null | Which protocol |
+| `identified` | boolean | Kryptos recognised the address |
+| `ignored` | boolean | Dismissed from the review queue |
+| `isLinkedToContact` | boolean | A contact supplies the name |
+| `contactId` | string \| null | That contact |
+| `transactionCount` | number | Transactions involving this address |
+| `firstSeenAt`, `lastSeenAt` | string | ISO 8601 |
+| `createdAt`, `updatedAt` | string | ISO 8601 |
 
 A **resolved** counterparty is one Kryptos matched to a known exchange or protocol, so it carries a name
 you can display. An **unresolved** one is just an address. `type` distinguishes the two kinds of match:

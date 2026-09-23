@@ -37,7 +37,50 @@ exclusions.
 
 ## Response
 
-Wrapped as `{ success, data }`.
+Wrapped as `{ success, data }`, with the collection and its pagination together inside `data`:
+
+```json
+{
+  "success": true,
+  "data": {
+    "entries": [
+      {
+        "id": "usp_31c9",
+        "workspaceId": "ws_12ab",
+        "assetId": "a3f1c8e0-9d42-4b17-8c55-6e0b2f7a1d34",
+        "symbol": "SCAM",
+        "chainId": "ethereum",
+        "isSpam": true,
+        "name": "Airdropped Token",
+        "logoUrl": "https://...",
+        "contractAddress": "0x...",
+        "createdAt": "2026-08-01T09:30:00.000Z",
+        "updatedAt": "2026-08-01T09:30:00.000Z"
+      }
+    ],
+    "totalCount": 37,
+    "limit": 20,
+    "offset": 0,
+    "hasMore": true,
+    "totalPages": 2
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Entry id |
+| `assetId` | string | The flagged asset |
+| `symbol` | string | Ticker as recorded when flagged |
+| `chainId` | string | Chain the flag applies to, or a sentinel meaning every chain |
+| `isSpam` | boolean | `true` is a spam flag; `false` is an explicit "not spam" override |
+| `name`, `logoUrl` | string \| null | Asset display data, joined from the catalogue |
+| `contractAddress` | string \| null | Contract on `chainId`; `null` when that chain has no matching deployment |
+| `createdAt`, `updatedAt` | string | ISO 8601 |
+
+`chainId` is scoped: an entry flags the asset on that chain, not everywhere. `contractAddress` does
+not fall back across chains — a chain-scoped entry whose chain has no deployment stays `null` rather
+than showing another chain's address.
 
 ## Effect of flagging
 

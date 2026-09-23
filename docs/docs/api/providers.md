@@ -64,7 +64,14 @@ already a sensible default list.
         "capabilities": { "trades": true, "deposits": true, "withdrawals": true, "holdings": true, "staking": true },
         "walletSupportedChains": null,
         "functions": [
-          { "name": "fetchTrades", "public_name": "Trades", "is_base": true }
+          {
+            "name": "fetchTrades",
+            "public_name": "Trades",
+            "is_base": true,
+            "categories": ["trade"],
+            "enabled": true,
+            "operational": true
+          }
         ],
         "integrationInfo": {},
         "walletLimitations": {
@@ -97,7 +104,7 @@ already a sensible default list.
 | `credentialFields` | object | Which credential inputs to render, see below |
 | `capabilities` | object | Data this provider can return |
 | `walletSupportedChains` | array \| null | For wallets: supported chains, each `{ id, onlyManual? }` |
-| `functions` | array \| null | Connector functions available; pass a subset as `config.userFunctions` |
+| `functions` | array \| null | Connector functions available, see below; pass a subset as `config.userFunctions` |
 | `integrationInfo` | object \| null | Setup hints and known API limitations |
 | `walletLimitations` | object \| null | Import options, per-method feature lists, step-by-step instructions |
 | `metadata` | object \| null | Provider-specific extras — DeBank id, WalletConnect id, native token |
@@ -121,6 +128,29 @@ hard-coding per provider:
 
 Possible keys include `apiKey`, `secretKey`, `password`, `accountName`, `address` and `communityId`.
 The map is open-ended, so iterate it rather than checking for known keys.
+
+### Connector functions
+
+Each entry in `functions` describes one thing the connector can fetch:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Identifier — the value to pass in `config.userFunctions` |
+| `public_name` | string | Display name |
+| `is_base` | boolean | A core function; if it is down the provider is effectively unusable |
+| `categories` | array | What the function returns, e.g. `trade`, `deposit` |
+| `enabled` | boolean | Switched on for this provider |
+| `operational` | boolean | Switched on **and** its last health probe was clean |
+
+`enabled && !operational` means Kryptos has the function turned on but its last probe failed — the
+provider is degraded. Combine it with `is_base` for an outage badge: any base function not
+operational is a full outage, a non-base one is partial.
+
+`operational` is `false` for a function that has never been probed. Absence of a failure is not
+evidence of health, so treat it as unknown rather than working.
+
+The connector's internal configuration — the upstream endpoint each function calls, its rate-limit
+and batching parameters, and the raw error text from the last probe — is not part of this response.
 
 ### Capabilities
 
