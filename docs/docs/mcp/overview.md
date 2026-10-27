@@ -6,8 +6,8 @@ sidebar_position: 1
 
 # Kryptos MCP Server
 
-Connect your AI assistant — Claude, Cursor, or any other MCP-compatible tool — directly to your Kryptos
-account. Once connected, you can ask questions about your portfolio, review transactions, and clean up
+Connect your AI assistant — ChatGPT, Claude, Cursor, or any other MCP-compatible tool — directly to your
+Kryptos account. Once connected, you can ask questions about your portfolio, review transactions, and clean up
 your data in plain English, without leaving your AI chat.
 
 > **What is MCP?** Model Context Protocol (MCP) is a standard that lets AI assistants securely talk to
@@ -39,6 +39,11 @@ first time it connects a Kryptos login page opens in your browser. **There is no
 store.**
 
 **Server URL:** `https://mcp.kryptos.io`
+
+### ChatGPT
+
+No config needed: open **Plugins** in ChatGPT, search for **Kryptos** and click **Install plugin**. See
+[Connect Kryptos to ChatGPT](/docs/mcp/chatgpt) for the seven steps and a video walkthrough.
 
 ### Cursor
 

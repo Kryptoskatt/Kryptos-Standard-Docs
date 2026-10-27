@@ -10,6 +10,15 @@ All notable changes to the Kryptos Connect API.
 
 ---
 
+## October 2026
+
+**Documentation**
+
+- New guide: [Connect Kryptos to ChatGPT](/docs/mcp/chatgpt) — install the Kryptos plugin from ChatGPT's
+  Plugins page in seven steps, with a video walkthrough and the permissions it asks for.
+
+---
+
 ## September 2026
 
 **Provider catalogue no longer exposes connector internals**

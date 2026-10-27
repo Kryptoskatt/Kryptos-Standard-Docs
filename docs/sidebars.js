@@ -76,7 +76,7 @@ const sidebars = {
       type: "category",
       label: "MCP Server",
       collapsed: false,
-      items: ["mcp/mcp-overview"],
+      items: ["mcp/mcp-overview", "mcp/chatgpt"],
     },
     {
       type: "category",
