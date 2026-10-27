@@ -1376,7 +1376,7 @@ mark {
 }
 
 .kp-integration-meta {
-  color: var(--kp-text-muted);
+  color: var(--kp-text-secondary);
   font-size: 0.85rem;
 }
 

@@ -14,8 +14,12 @@ All notable changes to the Kryptos Connect API.
 
 **Documentation**
 
-- New guide: [Connect Kryptos to ChatGPT](/docs/mcp/chatgpt) — install the Kryptos plugin from ChatGPT's
-  Plugins page in seven steps, with a video walkthrough and the permissions it asks for.
+- The MCP Server section is now **AI Plugins**, with two pages:
+  - [ChatGPT](/docs/mcp/chatgpt) — new guide to installing the Kryptos plugin from ChatGPT's Plugins
+    page in seven steps, with a video walkthrough and the permissions it asks for. Needs a Pro
+    membership or a paid Enterprise subscription.
+  - [MCP Integration](/docs/mcp/mcp-overview) — the existing setup for Claude, Cursor and other MCP
+    clients, renamed from MCP Server. Its URL is unchanged.
 
 ---
 

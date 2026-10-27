@@ -16,7 +16,7 @@ import YouTubeEmbed from "@site/src/components/YouTubeEmbed";
   <span className="kp-integration-chip"><img src={useBaseUrl("/img/logo.png")} alt="" width="28" height="28" />Kryptos</span>
   <span className="kp-integration-plus" aria-hidden="true">+</span>
   <span className="kp-integration-chip"><span className="kp-logo-chatgpt" aria-hidden="true" />ChatGPT</span>
-  <span className="kp-integration-meta">7 steps · about a minute</span>
+  <span className="kp-integration-meta">7 steps · about a minute · Pro or paid Enterprise plan</span>
 </div>
 
 The Kryptos plugin brings your crypto portfolio, transaction history, tax figures and accounting ledger
@@ -34,7 +34,8 @@ Kryptos never asks for exchange API keys or wallet private keys in the conversat
 
 ## Before you start
 
-- A [Kryptos](https://kryptos.io) account with at least one workspace
+- A [Kryptos](https://kryptos.io) workspace on a paid plan: a **Pro** membership or a paid **Enterprise**
+  subscription. Free accounts, the 14-day Enterprise trial and one-off tax-year reports don't qualify.
 - A ChatGPT account
 
 ## Set it up in 7 steps
@@ -54,8 +55,9 @@ On the Kryptos plugin page, click **Install plugin**. A Kryptos sign-in page ope
 
 ### 4. Choose your workspace
 
-Sign in to Kryptos as you normally would, then pick the **workspace** ChatGPT can use. The plugin only
-sees the workspace you choose here.
+Sign in to Kryptos as you normally would, then pick the **workspace** ChatGPT can use. Choose one on a
+Pro or paid Enterprise plan, because that is the workspace the plan is checked against. The plugin reads
+and changes data only in the workspace you choose here.
 
 ### 5. Review access, then Authorize
 
@@ -85,15 +87,15 @@ Start any message with **@Kryptos** to route it to your Kryptos data:
 - **Transactions** — "Show me every swap I did in January" (search by asset, wallet, label or date)
 - **DeFi and NFTs** — "Where am I staked, and how much am I earning?"
 - **Data quality** — "Which of my transactions are missing prices or purchase history?"
-- **Fixes** — "Recategorise this transaction as a DeFi swap" or "Add the BTC trade that is missing from my export"
-- **Tax** — "Summarise my realised gains and income for last tax year."
-- **Accounting** — "Map my transactions to the chart of accounts and push the journals to Xero"
-  (QuickBooks and Softledger work too)
+- **Fixes** — "Recategorize all my Uniswap swaps as DeFi Swap" or "Add a manual BTC purchase from January 2024"
+- **Tax** — "Summarise my realised gains and income for last tax year"
+- **Accounting** — "Categorize my transactions and push the journals to Xero" (QuickBooks and SoftLedger
+  work too)
 
 ## What ChatGPT can access
 
-On the Authorize screen (step 5) Kryptos lists every permission the plugin asks for. They apply only to
-the workspace you chose in step 4.
+On the Authorize screen (step 5) Kryptos lists every permission the plugin asks for. Apart from your
+email address, they cover only the workspace you chose in step 4.
 
 | Area | View | Change |
 |------|------|--------|
@@ -112,10 +114,10 @@ assets on an exchange or a blockchain.
 
 ## Troubleshooting
 
-**The workspace list stays on "Loading workspaces"**
+**"MCP access requires a Kryptos Pro membership or a paid Enterprise plan"**
 
-- Make sure you can sign in normally at [dashboard.kryptos.io](https://dashboard.kryptos.io/) and that
-  your account has a workspace.
+- The workspace you picked in step 4 isn't on a paid plan. Upgrade it, or remove the plugin and install
+  it again, choosing a workspace on Pro or a paid Enterprise plan.
 
 **Kryptos doesn't answer, or ChatGPT answers without your data**
 
@@ -124,10 +126,10 @@ assets on an exchange or a blockchain.
 
 **A figure looks wrong**
 
-- The plugin reports what is in your workspace, so the same figure shows in the Kryptos dashboard.
+- The plugin reports what is in your workspace, so the same figure shows in the Kryptos app.
   Ask *"@Kryptos Which of my transactions are missing prices or purchase history?"* to find the cause.
 
 ## Using another AI app?
 
 Claude, Cursor and other MCP clients connect to the same Kryptos MCP server. See
-[MCP Server](/docs/mcp/mcp-overview) for their setup.
+[MCP Integration](/docs/mcp/mcp-overview) for their setup.

@@ -1,10 +1,10 @@
 ---
 id: mcp-overview
-title: MCP Server
+title: MCP Integration
 sidebar_position: 1
 ---
 
-# Kryptos MCP Server
+# MCP Integration
 
 Connect your AI assistant — ChatGPT, Claude, Cursor, or any other MCP-compatible tool — directly to your
 Kryptos account. Once connected, you can ask questions about your portfolio, review transactions, and clean up
@@ -34,9 +34,13 @@ available in your session, ask it to *"list my available tools"*.
 
 ## Installation
 
-The Kryptos MCP Server uses OAuth 2.0 login. You paste a short config snippet into your AI tool, and the
-first time it connects a Kryptos login page opens in your browser. **There is no API key to copy or
-store.**
+The Kryptos MCP Server uses OAuth 2.0 login. In ChatGPT you install a plugin; in other AI tools you paste
+a short config snippet. The first time it connects, a Kryptos login page opens in your browser. **There is
+no API key to copy or store.**
+
+**Plan:** MCP access needs a Kryptos **Pro** membership or a paid **Enterprise** subscription on the
+workspace you connect. Free accounts, the 14-day Enterprise trial and one-off tax-year reports don't
+qualify.
 
 **Server URL:** `https://mcp.kryptos.io`
 
@@ -81,7 +85,7 @@ OAuth flow in your browser.
 
 ### After setup
 
-**Restart your AI app.** Fully quit and reopen it so it picks up the new tools — a window reload is often
+**Restart your AI app** (not needed in ChatGPT). Fully quit and reopen it so it picks up the new tools — a window reload is often
 not enough.
 
 Then ask *"list my available tools"*. You should see Kryptos tools in the response.
@@ -99,6 +103,11 @@ Then ask *"list my available tools"*. You should see Kryptos tools in the respon
 - Fully quit and reopen your AI app
 - Validate your config file as JSON — a missing comma or bracket fails silently
 - Check your AI app's logs for MCP errors
+
+**"MCP access requires a Kryptos Pro membership or a paid Enterprise plan"**
+
+- The workspace you connected isn't on a paid plan. Upgrade it, or remove the server and add it again,
+  choosing a workspace on Pro or a paid Enterprise plan.
 
 **Kryptos login fails**
 

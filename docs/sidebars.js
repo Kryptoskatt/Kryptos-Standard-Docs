@@ -9,6 +9,12 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "AI Plugins",
+      collapsed: false,
+      items: ["mcp/chatgpt", "mcp/mcp-overview"],
+    },
+    {
+      type: "category",
       label: "Kryptos Connect",
       collapsed: false,
       items: [
@@ -71,12 +77,6 @@ const sidebars = {
         },
         "api/migrating-from-connect-apis",
       ],
-    },
-    {
-      type: "category",
-      label: "MCP Server",
-      collapsed: false,
-      items: ["mcp/mcp-overview", "mcp/chatgpt"],
     },
     {
       type: "category",

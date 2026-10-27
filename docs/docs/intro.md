@@ -19,6 +19,13 @@ Kryptos Connect APIs provide access to:
 - **Portfolio Insights** -- Net worth, cost basis, allocation, and value over time
 - **Reconciliation** -- Find missing prices, missing purchases, and unconnected accounts
 
+## AI Plugins
+
+Not building an app? Bring your Kryptos data straight into your AI assistant, with no code and no API key. Both need a Pro membership or a paid Enterprise subscription.
+
+- **[ChatGPT](/docs/mcp/chatgpt)** -- Install the Kryptos plugin from ChatGPT's Plugins page in seven steps
+- **[MCP Integration](/docs/mcp/mcp-overview)** -- Connect Claude, Cursor and other MCP clients to the Kryptos MCP server
+
 ## Authentication Options
 
 Kryptos provides two ways to access user portfolio data:
