@@ -1,0 +1,135 @@
+---
+id: chatgpt
+title: Connect Kryptos to ChatGPT
+sidebar_label: ChatGPT
+sidebar_position: 2
+sidebar_class_name: kp-sidebar-chatgpt
+description: Install the Kryptos plugin in ChatGPT and ask about your crypto portfolio, transactions and taxes in plain English. Seven steps, about a minute.
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import YouTubeEmbed from "@site/src/components/YouTubeEmbed";
+
+# Connect Kryptos to ChatGPT
+
+<div className="kp-integration-header">
+  <span className="kp-integration-chip"><img src={useBaseUrl("/img/logo.png")} alt="" width="28" height="28" />Kryptos</span>
+  <span className="kp-integration-plus" aria-hidden="true">+</span>
+  <span className="kp-integration-chip"><span className="kp-logo-chatgpt" aria-hidden="true" />ChatGPT</span>
+  <span className="kp-integration-meta">7 steps · about a minute · Pro or paid Enterprise plan</span>
+</div>
+
+The Kryptos plugin brings your crypto portfolio, transaction history, tax figures and accounting ledger
+into ChatGPT. Install it once, choose the workspace ChatGPT may use, and ask questions in plain English.
+The answers come straight from your Kryptos data.
+
+:::info The plugin never moves funds
+No tool can send, swap, withdraw, deposit or trade any asset. You sign in to Kryptos with OAuth, and
+Kryptos never asks for exchange API keys or wallet private keys in the conversation.
+:::
+
+## Watch the walkthrough
+
+<YouTubeEmbed id="rGdn0tZFNgQ" title="How to Connect Kryptos to ChatGPT in 7 Steps" />
+
+## Before you start
+
+- A [Kryptos](https://kryptos.io) workspace on a paid plan: a **Pro** membership or a paid **Enterprise**
+  subscription. Free accounts, the 14-day Enterprise trial and one-off tax-year reports don't qualify.
+- A ChatGPT account
+
+## Set it up in 7 steps
+
+### 1. Open Plugins
+
+In the ChatGPT sidebar, click **Plugins**.
+
+### 2. Search for Kryptos
+
+Type **Kryptos** into the plugin search and open the result *Kryptos — By Kryptos · Crypto portfolio,
+tax & books*.
+
+### 3. Install the plugin
+
+On the Kryptos plugin page, click **Install plugin**. A Kryptos sign-in page opens.
+
+### 4. Choose your workspace
+
+Sign in to Kryptos as you normally would, then pick the **workspace** ChatGPT can use. Choose one on a
+Pro or paid Enterprise plan, because that is the workspace the plan is checked against. The plugin reads
+and changes data only in the workspace you choose here.
+
+### 5. Review access, then Authorize
+
+Check the requested permissions (see [What ChatGPT can access](#what-chatgpt-can-access)) and click
+**Authorize**.
+
+### 6. Click Try now
+
+Back in ChatGPT you'll see **Plugin installed**. Click **Try now**.
+
+### 7. Ask about your portfolio
+
+ChatGPT starts a new chat with a prompt already tagged **@Kryptos**. Hit send:
+
+```text
+@Kryptos What is my crypto portfolio worth right now?
+```
+
+You're connected. ChatGPT answers with your holdings, cost basis and gains, straight from your Kryptos
+workspace.
+
+## Things to ask
+
+Start any message with **@Kryptos** to route it to your Kryptos data:
+
+- **Portfolio** — "What is my crypto portfolio worth right now?"
+- **Transactions** — "Show me every swap I did in January" (search by asset, wallet, label or date)
+- **DeFi and NFTs** — "Where am I staked, and how much am I earning?"
+- **Data quality** — "Which of my transactions are missing prices or purchase history?"
+- **Fixes** — "Recategorize all my Uniswap swaps as DeFi Swap" or "Add a manual BTC purchase from January 2024"
+- **Tax** — "Summarise my realised gains and income for last tax year"
+- **Accounting** — "Categorize my transactions and push the journals to Xero" (QuickBooks and SoftLedger
+  work too)
+
+## What ChatGPT can access
+
+On the Authorize screen (step 5) Kryptos lists every permission the plugin asks for. Apart from your
+email address, they cover only the workspace you chose in step 4.
+
+| Area | View | Change |
+|------|------|--------|
+| Account | Your verified email address | — |
+| Accounting | Accounting data and ledger entries | Create or modify accounting data and ledger entries |
+| Contacts | Saved contacts and address book | Create, modify or delete contacts |
+| Integrations | Integrations linked to your account | Connect, manage and modify integrations |
+| Portfolios | Portfolios, holdings and balances | Create, modify or delete portfolios, holdings and balances |
+| Reports | Generated reports | Create, modify or delete reports |
+| Tax | Tax calculations and reports | Modify tax calculations and settings |
+| Transactions | Complete transaction history | Create, update or delete transaction history |
+| Workspace | Workspace settings and information | Manage users; modify workspace settings |
+
+"Change" means records inside Kryptos, such as a label, a price or a manual trade. It never means moving
+assets on an exchange or a blockchain.
+
+## Troubleshooting
+
+**"MCP access requires a Kryptos Pro membership or a paid Enterprise plan"**
+
+- The workspace you picked in step 4 isn't on a paid plan. Upgrade it, or remove the plugin and install
+  it again, choosing a workspace on Pro or a paid Enterprise plan.
+
+**Kryptos doesn't answer, or ChatGPT answers without your data**
+
+- Start the message with **@Kryptos** so ChatGPT uses the plugin.
+- Open **Plugins** in ChatGPT and check that Kryptos shows as installed.
+
+**A figure looks wrong**
+
+- The plugin reports what is in your workspace, so the same figure shows in the Kryptos app.
+  Ask *"@Kryptos Which of my transactions are missing prices or purchase history?"* to find the cause.
+
+## Using another AI app?
+
+Claude, Cursor and other MCP clients connect to the same Kryptos MCP server. See
+[MCP Integration](/docs/mcp/mcp-overview) for their setup.
