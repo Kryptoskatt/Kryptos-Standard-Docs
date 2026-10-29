@@ -822,6 +822,98 @@ Transaction limits only apply to **Guest** (anonymous) accounts created through 
 **Resolution order:** per-user override (this endpoint) → workspace default (Developer Portal) → platform default (100,000, limiter on). The first defined value wins. Setting `enableLimiter: false` removes the cap entirely for that user.
 :::
 
+### Delete Integration
+
+Delete one of a Guest (anonymous) user's integrations, together with all of its data: transactions,
+balances, CSV uploads and sync history. Useful for a "Remove wallet" button in your app.
+
+**Endpoint:** `DELETE https://connect-api.kryptos.io/developer/integrations/{walletId}?user_id={userId}`
+
+```javascript
+async function deleteIntegration(walletId, userId) {
+  const response = await axios.delete(
+    `https://connect-api.kryptos.io/developer/integrations/${walletId}`,
+    {
+      params: { user_id: userId },
+      headers: {
+        "X-Client-Id": process.env.KRYPTOS_CLIENT_ID,
+        "X-Client-Secret": process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    },
+  );
+
+  return response.data;
+}
+```
+
+**Path Parameters:**
+
+| Parameter  | Type   | Description                                                                   |
+| ---------- | ------ | ----------------------------------------------------------------------------- |
+| `walletId` | string | The integration ID, as returned by [`GET /v1/integrations`](/docs/api/integrations). |
+
+**Query Parameters:**
+
+| Parameter | Type   | Required | Description                              |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `user_id` | string | Yes      | The user the integration belongs to.     |
+
+`user_id` goes in the query string, not a request body, because some HTTP clients and proxies drop the
+body of a `DELETE`.
+
+**Response (202):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "wallet_id": "int_8ad611a78678",
+    "job_id": "task_3c1f9e2a7b4d",
+    "status": "deleting",
+    "note": "Deletion runs asynchronously. Poll GET /v1/tasks/{job_id}, or wait for the integration.deleted webhook; the integration drops out of GET /v1/integrations once its data is wiped."
+  }
+}
+```
+
+**Errors:**
+
+| Status | Code                    | Description                                                                          |
+| ------ | ----------------------- | ------------------------------------------------------------------------------------ |
+| 400    | `NOT_ANON_USER`         | User is not a Guest account. Linked users remove their own integrations.             |
+| 401    | -                       | Invalid client credentials.                                                          |
+| 403    | `GRANT_NOT_FOUND`       | The user has not granted your client access (or revoked it).                         |
+| 403    | `WORKSPACE_NOT_BOUND`   | The grant predates workspace binding. The user must authorize your app again.        |
+| 404    | `INTEGRATION_NOT_FOUND` | No integration with this `walletId` exists for the user.                             |
+| 409    | `DELETE_IN_PROGRESS`    | A delete for this integration is already queued or running. Treat it as success.     |
+| 503    | `DELETE_NOT_QUEUED`     | The integration was marked for deletion but the job could not be queued. Retry.      |
+
+:::info Asynchronous behavior
+The endpoint returns 202 once the delete is queued, not when it has finished. Until then the
+integration still appears in [`GET /v1/integrations`](/docs/api/integrations) with
+`accountStatus: "deleting"` and can no longer be synced. To know when it is gone:
+
+- Listen for the [`integration.deleted`](/docs/webhooks/events#integration-events) webhook, sent with
+  `status: "DELETED"` once the data has been removed. If removal fails you get `integration.failed`
+  instead, and the integration stays `deleting`.
+- Or poll `GET /v1/integrations` until the integration is no longer listed.
+- Or poll `GET /v1/tasks/{job_id}` with the user's access token until `status` is `completed`
+  (or `failed`).
+
+Balances and reports for the user are recalculated without the integration afterwards.
+:::
+
+:::tip Safe to retry
+Calling this again for the same integration never starts a second delete. While one is still queued or
+running you get `409 DELETE_IN_PROGRESS`. If the earlier attempt failed (`integration.failed`, or a
+`503`), calling again queues it again, and that is how you finish a delete that got stuck.
+:::
+
+:::info Guest accounts only
+Like transaction limits, this endpoint only acts on **Guest** (anonymous) accounts created through your
+Connect flow. A Linked user's workspace belongs to them, so you can't delete their integrations with
+client credentials.
+:::
+
 ---
 
 ## Error Handling

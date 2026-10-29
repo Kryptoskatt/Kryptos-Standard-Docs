@@ -12,6 +12,16 @@ All notable changes to the Kryptos Connect API.
 
 ## October 2026
 
+**New — delete a Guest user's integration from your backend**
+
+- [`DELETE /developer/integrations/{walletId}?user_id=…`](/docs/kryptos-connect/backend#delete-integration)
+  removes one of a Guest user's integrations and all of its data. It uses your client credentials, the
+  same as resync and the transaction limit. It returns `202` with a `job_id` and runs in the
+  background, finishing with the `integration.deleted` webhook.
+- It is safe to retry: a delete that is still running returns `409 DELETE_IN_PROGRESS`, and one that
+  failed is queued again.
+- Guest accounts only. A Linked user returns `400 NOT_ANON_USER`.
+
 **Documentation**
 
 - The MCP Server section is now **AI Plugins**, with two pages:
