@@ -172,8 +172,9 @@ A Guest is a workspace, not a person, which has two consequences worth designing
 - The data belongs to the workspace your grant points at. Revoke the grant and nobody can reach it; a
   Guest cannot sign in elsewhere to recover it.
 
-Only Guests accept [`PATCH /developer/grants/{grantId}/transaction-limit`](./backend#update-transaction-limit);
-a Linked user returns `400 NOT_ANON_USER`.
+Only Guests accept [`PATCH /developer/grants/{grantId}/transaction-limit`](./backend#update-transaction-limit)
+and [`DELETE /developer/integrations/{walletId}`](./backend#delete-integration); a Linked user returns
+`400 NOT_ANON_USER`.
 
 ---
 
