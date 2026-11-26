@@ -1,0 +1,69 @@
+---
+id: delete-multiple-integrations-in-one-request
+title: "Delete multiple integrations in one request"
+description: "Soft-deletes (marks `deleting`) each integration and publishes a cleanup task to the delete-worker. If publishing fails for an integration, it is reported in `failed` (not `deleted`) — the account is marked deleting but cleanup was not queued."
+sidebar_label: "Delete multiple integrations in one request"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVk2P2zYQ/SsDnhJAtjdpc6hum6QojBRokE3TAobRHZNjizFFKuTIHzEM9Ef0F/aXFEPJa3l3E7TooYfqYlEePg7nvXnkQTGukipnauqZVhHZBp/UvFCGko62kbEq1U1Y8siQI6YET2qM6wS3eWz96vYpEOoK7BkC0Bto2oWzqaIECNoR+rYBxrQGDsAVQYc32oa4pjiG6fI0w/oVLNG6BMsQAf0QuQDLYBNEakJkMmA93EowmVt44gP3eZG5fQp//v5HXgm1Dq3P8yR3MnDKHRYt3yW3xQSC8KmllsxYFSrSp5YSvwxmr8pDHtpIRpUcWyqUDp7Js/yFTeOszilOPiYp2kElXVGN8sb7hlSpwuIjae5xO6CZkv2nBjVNjSrUYKtTk5loYmgosqUkSMPoM3DiaP1KFaq2/kfyK65U+axQtMO6cRKwTb99s/wOn2t1fLDGGQZjxH2HMmWqUwapcdcPXlwVynav91c+HnPgS2Rd3djPNIjIq1HsYG3d1ifU7l1ADS2xdXwaDJX3rmOgo1yqJ5Qv4XILQDtNZBJwZRMk+5nG6pgfKXVqgk9d9Z5fXcnP5RI56V6NEClJJv+C20u+Uqs1pWHFFiGI3oQIg/w3IHo9P8LTfTK+AHBRrEe4KxQ6i4+yKhXsuuu/WL5QFGOIX0qMA6N7RGnH44n8bx/j+wM6azqb6rZWQIiwyCo4CelCy4K0G63jvuGQRjqSIc8WXbpo3xGHNXlVqIAtV9K5tGPyKTtqOTuoNe1V+QWgQm3QtfRVwOO8UDVxFYwqVRNSrjRKq6vJoMZpkrfS27UqVKK4odjl0EanSlUxN6mcTLCxo83zcZ/Q2IbJ5pm634FvYzCtzgPJIJFuo+V9hlsQRorXkl45mw//vpH+6PgfBt1xJSlIbjlMuiIHPVj8fUVwVxDIBYFI3EZPBhZ7ePvTzXuYGNqQE8lN7mLTWOSjnSXPF6rDxr6hrF7BrwhNXtZjTuPX0as8ZTQ15/k3pCPxP8fo54l8xDbenQ+T70/GfM/QBz790KZnJ/XP73vti6vs6suQc7ScLf9Nxypcv52KvCimrqTPxlePlvmXyjKNHC7IwQL1mrwpQUdCHlDQHcn70EbQbeJQU0ywtVz13/LGYfo6XwBS3n8hR7AHHbwnzTKwEbboHHHKYbTTFfoVdaNIaPogjugTZumlAqrgjPWrLqoOkbp1+aFCxvBDaw2VcNK5CToNVS7ji5YZYWMnYUNxY2krxEt71Zidvmf1dXc+1K1j2zgankBJLiHBy+GRGb5f3sP5MPnf3qT6zmHa8aRxaPP5l93o0JvYbCh4ccQLG5sXqhLLK2fqcFhgop+jOx7l86eWorjRXDw0WlyI+mfzY3FqzLP3vupoGL2XZO4s9+H5fixOM661poa/Gjt0ZbEjyby/L9bByJyIW7nz4VaVSuy86XYoF0r5dlAO/arFlcR2mPL8BSpoFSM=
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete multiple integrations in one request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/integrations/batch-delete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Soft-deletes (marks `deleting`) each integration and publishes a cleanup task to the delete-worker. If publishing fails for an integration, it is reported in `failed` (not `deleted`) — the account is marked deleting but cleanup was not queued.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./delete-multiple-integrations-in-one-request.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./delete-multiple-integrations-in-one-request.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

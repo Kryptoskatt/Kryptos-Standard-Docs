@@ -84,11 +84,15 @@ app.post("/api/kryptos/exchange-token", async (req, res) => {
       { headers: clientHeaders },
     );
 
-    const { access_token, grant_id, workspace_id, scope } = response.data.data;
+    const { access_token, refresh_token, expires_in, grant_id, workspace_id, scope } =
+      response.data.data;
 
-    // Store the grant_id — it is the only handle for revoking access later.
+    // Store the grant_id — it is the only handle for revoking access later. Refresh the access token
+    // with refresh_token at https://oauth.kryptos.io/oidc/token (see the Backend guide, Step 3).
     await saveUserTokens(req.user.id, {
       access_token,
+      refresh_token,
+      access_token_expires_at: Date.now() + expires_in * 1000,
       grant_id,
       workspace_id,
       scope,
@@ -100,20 +104,38 @@ app.post("/api/kryptos/exchange-token", async (req, res) => {
   }
 });
 
-// Step 3: Fetch holdings
+// Step 3: Fetch holdings. On a 401, refresh once at the OAuth token endpoint; if the refresh
+// fails with invalid_grant, the user has to reconnect. (Same pattern as callKryptos() in the
+// Backend guide.)
+async function refreshAccessToken(userId) {
+  const { refresh_token } = await loadUserTokens(userId);
+  const { data } = await axios.post(
+    "https://oauth.kryptos.io/oidc/token",
+    new URLSearchParams({ grant_type: "refresh_token", refresh_token }),
+    { auth: { username: process.env.KRYPTOS_CLIENT_ID, password: process.env.KRYPTOS_CLIENT_SECRET } },
+  );
+  // Always store the refresh token you get back: it can be a new one.
+  await saveUserTokens(userId, { access_token: data.access_token, refresh_token: data.refresh_token });
+  return data.access_token;
+}
+
 app.get("/api/kryptos/holdings", async (req, res) => {
+  // The workspace is in the token, so no workspace parameter is needed.
+  const getHoldings = (token) =>
+    axios.get(`${API_URL}/v1/holdings`, { headers: { Authorization: `Bearer ${token}` } });
+
   try {
-    const accessToken = await getUserAccessToken(req.user.id);
-
-    // The workspace is in the token, so no workspace parameter is needed.
-    const response = await axios.get(`${API_URL}/v1/holdings`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
+    let response;
+    try {
+      response = await getHoldings(await getUserAccessToken(req.user.id));
+    } catch (error) {
+      if (error.response?.status !== 401) throw error;
+      response = await getHoldings(await refreshAccessToken(req.user.id));
+    }
     res.json(response.data);
   } catch (error) {
-    if (error.response?.status === 401) {
-      res.status(401).json({ error: "Access revoked. Please reconnect." });
+    if (error.response?.data?.error === "invalid_grant") {
+      res.status(401).json({ error: "Access revoked. Please reconnect.", requiresReconnect: true });
     } else {
       res.status(500).json({ error: "Failed to fetch holdings" });
     }
@@ -281,8 +303,8 @@ export async function POST(request: Request) {
 
   const data = await response.json();
 
-  // Store access_token and grant_id against your user
-  // await db.user.update({ kryptosToken: data.data.access_token, kryptosGrantId: data.data.grant_id });
+  // Store access_token, refresh_token and grant_id against your user (encrypted)
+  // await db.user.update({ kryptosToken: data.data.access_token, kryptosRefreshToken: data.data.refresh_token, kryptosGrantId: data.data.grant_id });
 
   return NextResponse.json({ success: true });
 }
@@ -310,6 +332,7 @@ export default function Home() {
           });
         }
       }}
+      onConnectError={(error) => console.error("Connection failed:", error)}
     >
       Connect Wallet
     </KryptosConnectButton>
@@ -326,7 +349,7 @@ Dedicated buttons for specific exchanges and wallets, skipping the picker.
 ```tsx
 import { KryptosConnectButton } from "@kryptos_connect/web-sdk";
 
-function IntegrationButtons({ generateLinkToken, onConnectSuccess }) {
+function IntegrationButtons({ generateLinkToken, onConnectSuccess, onConnectError }) {
   const integrations = [
     { id: "binance", label: "Connect Binance" },
     { id: "coinbase", label: "Connect Coinbase" },
@@ -342,6 +365,7 @@ function IntegrationButtons({ generateLinkToken, onConnectSuccess }) {
           generateLinkToken={generateLinkToken}
           integrationName={id}
           onConnectSuccess={onConnectSuccess}
+          onConnectError={onConnectError}
         >
           {label}
         </KryptosConnectButton>
@@ -468,7 +492,7 @@ async function exchangeToken(publicToken) {
     { public_token: publicToken },
     { headers },
   );
-  return response.data.data; // { access_token, grant_id, workspace_id, scope }
+  return response.data.data; // { access_token, refresh_token, expires_in, grant_id, workspace_id, scope }
 }
 
 // Revoke access
@@ -500,39 +524,42 @@ function kryptosErrorHandler(error, req, res, next) {
 
   const { status, data } = error.response;
 
-  // Connect session errors carry `code`; data-API errors carry `error` /
-  // `error_description`. Handle both.
-  switch (data?.code) {
-    case "INVALID_CLIENT":
-      console.error("Bad client credentials — check KRYPTOS_CLIENT_ID and KRYPTOS_CLIENT_SECRET");
-      return res.status(500).json({ error: "Configuration error" });
+  // Bad client credentials on connect-api: 401 with no code.
+  if (status === 401 && !data?.code && typeof data?.error === "string" && /client/i.test(data.error)) {
+    console.error(`Client problem: ${data.error}. Check KRYPTOS_CLIENT_ID / KRYPTOS_CLIENT_SECRET.`);
+    return res.status(500).json({ error: "Configuration error" });
+  }
 
-    case "INVALID_TOKEN":
+  // Connect session errors carry `code`; data-API and OAuth errors carry `error` /
+  // `error_description`. See the Backend guide's Error Handling for every code.
+  switch (data?.code) {
     case "TOKEN_EXPIRED":
-    case "INVALID_GRANT":
+    case "TOKEN_NOT_FOUND":
+    case "TOKEN_USED":
+    case "TOKEN_REVOKED":
+      // Link or public token: restart the widget flow.
+      return res.status(400).json({ error: "Session expired. Please try again." });
+
+    case "GRANT_INACTIVE":
+    case "TOKEN_PAYLOAD_MISMATCH":
+    case "WORKSPACE_NOT_BOUND":
       return res.status(401).json({
         error: "Access expired. Please reconnect your account.",
         requiresReconnect: true,
       });
-
-    case "TOKEN_ALREADY_USED":
-      // Public tokens are single-use. Restart the widget flow.
-      return res.status(400).json({ error: "Token already used. Please try again." });
-
-    case "INVALID_SCOPE":
-      return res.status(403).json({ error: "Insufficient permissions" });
-
-    case "OTP_NOT_REQUESTED":
-    case "EMAIL_MISMATCH":
-    case "INVALID_OTP":
-      return res.status(400).json({ error: "Verification failed. Request a new code." });
 
     case "NOT_ANON_USER":
       // Transaction limits apply only to Guest users.
       return res.status(400).json({ error: "This user is not a Guest account." });
   }
 
-  // Data-API errors
+  // Data-API and OAuth token endpoint errors
+  if (data?.error === "invalid_grant") {
+    return res.status(401).json({
+      error: "Access expired. Please reconnect your account.",
+      requiresReconnect: true,
+    });
+  }
   if (data?.error === "insufficient_scope") {
     return res.status(403).json({
       error: `Missing permission: ${data.error_description}`,
@@ -546,8 +573,9 @@ function kryptosErrorHandler(error, req, res, next) {
 // Usage: app.use(kryptosErrorHandler);
 ```
 
-`insufficient_scope` means the grant is valid but too narrow — the user must re-authorize with the extra
-scope, so treat it like a reconnect rather than a hard failure.
+`insufficient_scope` means the grant is valid but too narrow. For a Connect token every write call fails
+this way, because Connect tokens are read-only; reconnecting won't change that. For an OAuth token, the
+user has to re-authorize with the extra scope.
 
 ---
 

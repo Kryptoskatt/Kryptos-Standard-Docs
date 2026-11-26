@@ -1,0 +1,1 @@
+{"parameters":[{"name":"type","in":"query","schema":{"type":"string","enum":["deposit","withdrawal","trade","transfer","payment"]},"description":"Restrict to labels applicable to this transaction type (common labels Ignore/Failed/Unknown/Spam appear under every type). Omit for all labels."}]}

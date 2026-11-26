@@ -28,36 +28,37 @@ function AnimatedSection({ children, className = "" }) {
   );
 }
 
-const startCards = [
+const icon = (paths) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    {paths}
+  </svg>
+);
+
+/** One card per use case; each opens its guide. */
+const useCaseCards = [
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
-      </svg>
-    ),
-    title: "Quickstart",
-    desc: "Create your account, set up a workspace, and make your first API call.",
-    to: "/docs/developer-portal",
+    icon: icon(<><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></>),
+    title: "White-label backend",
+    desc: "Kryptos as your product's backend: your customers' wallets, transactions, balances and tax, under your brand. Or just the data, with Integrations only.",
+    to: "/docs/integrations-api/overview",
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-      </svg>
-    ),
-    title: "Authentication",
-    desc: "Set up OAuth 2.0 or API key auth to access user portfolio data securely.",
+    icon: icon(<><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><path d="M8 21h8M12 17v4" /></>),
+    title: "Kryptos Connect",
+    desc: "Drop-in widget for Web & Mobile: users share their Kryptos data with your app.",
+    to: "/docs/kryptos-connect/overview",
+  },
+  {
+    icon: icon(<><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></>),
+    title: "Sign in with Kryptos",
+    desc: "OAuth 2.0 with PKCE for apps that act inside a user's Kryptos account.",
     to: "/docs/authentication/oauth",
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><path d="M8 21h8M12 17v4"/>
-      </svg>
-    ),
-    title: "Kryptos Connect",
-    desc: "Drop-in widget for Web & Mobile that handles the complete auth flow.",
-    to: "/docs/kryptos-connect/overview",
+    icon: icon(<><circle cx="8" cy="15" r="4" /><path d="M10.8 12.2L19 4M16 7l2 2M14 9l2 2" /></>),
+    title: "API keys",
+    desc: "Automate one of your own workspaces, server to server. One key, one workspace.",
+    to: "/docs/authentication/api-key",
   },
 ];
 
@@ -70,8 +71,8 @@ const apiCards = [
     to: "/docs/api/holdings",
   },
   {
-    method: "POST",
-    color: "blue",
+    method: "GET",
+    color: "green",
     title: "Transactions",
     desc: "Complete transaction records with filtering and categorization.",
     to: "/docs/api/transactions",
@@ -158,6 +159,15 @@ function ResourceCard({ title, desc, to }) {
 export default function HomepageCards() {
   return (
     <div className="kp-home">
+      {/* Guides by use case */}
+      <AnimatedSection>
+        <h2 className="kp-section__title">Guides by use case</h2>
+        <p className="kp-section__subtitle">Pick what you're building. Most use cases start with the <Link to="/docs/developer-portal">Developer Portal</Link>.</p>
+        <div className="kp-grid kp-grid--start kp-grid--usecases">
+          {useCaseCards.map((c) => <StartCard key={c.title} {...c} />)}
+        </div>
+      </AnimatedSection>
+
       {/* Connect Demo */}
       <AnimatedSection>
         <h2 className="kp-section__title">How Kryptos Connect works</h2>
@@ -165,14 +175,6 @@ export default function HomepageCards() {
         <ConnectShowcase />
       </AnimatedSection>
 
-      {/* Getting Started */}
-      <AnimatedSection>
-        <h2 className="kp-section__title">Start building</h2>
-        <p className="kp-section__subtitle">Everything you need to integrate Kryptos into your application.</p>
-        <div className="kp-grid kp-grid--start">
-          {startCards.map((c) => <StartCard key={c.title} {...c} />)}
-        </div>
-      </AnimatedSection>
 
       {/* API Endpoints */}
       <AnimatedSection>

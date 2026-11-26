@@ -1,0 +1,69 @@
+---
+id: upload-one-or-more-csv-tsv-xlsx-files-or-zi-ps-storage-only-does-not-start-processing
+title: "Upload one or more CSV/TSV/XLSX files or ZIPs (storage only — does NOT start processing)"
+description: "Stores the uploaded file(s) and records each as `uploaded`. Processing/ingestion is NOT triggered here — call `POST /csv/sync` with the returned uploadIds to start it. Files are stored independently, so one bad file is reported in `failures` without sinking the rest of the batch."
+sidebar_label: "Upload one or more CSV/TSV/XLSX files or ZIPs (storage only — does NOT start processing)"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Upload one or more CSV/TSV/XLSX files or ZIPs (storage only — does NOT start processing)"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/csv/upload"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Stores the uploaded file(s) and records each as `uploaded`. Processing/ingestion is NOT triggered here — call `POST /csv/sync` with the returned uploadIds to start it. Files are stored independently, so one bad file is reported in `failures` without sinking the rest of the batch.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./upload-one-or-more-csv-tsv-xlsx-files-or-zi-ps-storage-only-does-not-start-processing.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./upload-one-or-more-csv-tsv-xlsx-files-or-zi-ps-storage-only-does-not-start-processing.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -6,6 +6,8 @@ sidebar_position: 17
 
 # Assets
 
+**Available to:** Workspace token (search) · OAuth · Connect. See [Access by credential](/docs/api/access-matrix).
+
 Search the Kryptos asset catalogue to resolve a symbol or contract address into the `assetId` that the
 rest of the API uses.
 
@@ -31,11 +33,12 @@ Every parameter is optional.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `q` | string | Free-text query, 1–100 characters. Enables fuzzy matching |
+| `ids` | string | Comma-separated asset ids: exact batch lookup. Returns `{ success, data }` with those assets and ignores the other parameters |
 | `contractAddress` | string | Exact contract address, 1–255 characters |
 | `type` | string | `crypto`, `fiat`, `nft` or `stablecoin` |
 | `category` | string | Asset category, 1–100 characters |
 | `chainId` | string | Chain to restrict to, 1–100 characters |
-| `limit` | integer | 1–100 |
+| `limit` | integer | 1–100 (default 25); larger values return 400 |
 | `offset` | integer | Rows to skip |
 
 **Omitting `q` is valid** and returns the top assets by market-cap rank — a good default list for a

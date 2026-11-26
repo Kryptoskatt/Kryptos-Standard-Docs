@@ -1,0 +1,1 @@
+{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}},{"name":"workspaceId","in":"query","required":true,"schema":{"type":"string"},"description":"Your `workspace_id`: the workspace your token belongs to (returned when you created it). Any other value is refused with 403."}]}

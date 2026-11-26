@@ -1,0 +1,69 @@
+---
+id: issue-a-fresh-workspace-token
+title: "Issue a fresh workspace token"
+description: "A new 24-hour access token for one of your white-label workspaces. Earlier tokens keep working until they expire; `revoke_existing: true` ends them now (a suspected leak). Any workspace your client did not create, or has revoked, returns 404."
+sidebar_label: "Issue a fresh workspace token"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlV9uO2zYQ/RWCTwkgX9Y12qz65Gy2xSJpNtjdIAUWhjMmxxZjmVRIyl7DENCv6Yf1S4ohJVv23hKg6EPrB9ui5saZOYfDLZfohFWFV0bzlI+YxjUbDDuZKS0DIdA55s0CNZsZy4xGZmZsQy/XmfLYyWGKOVsbu3AFCHRddg42V2ijlmMLxCK8V3rOSu1VznyGG4Z3hbL4M/tscWUWOME75bzS85R5W+Jnhlo6klwybdbsBTBXugKFR8lyhMXLLhvpzd5xjEnkCrVnUkmmjWfCInhMmLEsA8eiJ5kwi7602rFhf9jlCS/AwhI9WsfT2y3XsESe8p3piZI84YrSU4DPeMItfi2VRclTijXhTmS4BJ5uud8UpOu8VXrOE453sCzyYM5Nfpidwon4CQdTXlXjaAadf23khnT3VmeQO0y4MNqj9vQOiiJXAqhKvS+OSrW979VMv6DwtCFrCrReoYt2DxLcUpgakyPodpy166OuyJ2hgjBcod0w4zO0LFcrrFvDzJjPlGtVQ5t1l1fhQ/t0hdEuRjPon9DPcdvNLLosmuP/2M5dGRr46R1TCauES/DfYPGgKb6n3gmfW9D+WbUo9UoOcDg9gVNBmhGGk5icJ7UF+MkpnMi//viTHxfxNYJtYBnAfFiyLnsHzjs2GDLCvuuS5yA8if6e8httk0aEtZuodqRKe5yjbau8+nHY71cEHfOc8aBtQwe41CJIdrCytsojK4z1M5MrU4t4C9qBaCkdrEQlYbRG4VMoFA99GvghJto9HX//OL2XARQ16aGWKNl0w46wF5I6Q/ClRfd8t00hBy3w2xoYhDDEr9+E8Gr3SfiwP7yPyPfGM3iY43dwj2z7L8M1hp9wtNbYpxuHUFBRdPKZDvt0efX2+sPo7Hzy/vJm8svlx/dvduQ1HJzez87lCi07GfSbeod0LJUuPf4H0nE1ujmfvLv47eLmvMkDcQHM6Xzkn3Z9sAQNc1zSVscJd2hXzRFa2pynPPO+cGmvV8OsA4XqLuym8MZ1lblHUGdRjJEhJZBXwagorfKbYDX224Xk6e04qZ+uUVj0tELid53afkdYlKi9gjwEHYUPVse0ZY/aESEE+wvc8PQRGwlfQV7iY7bI+RJ9ZiRNCcaFatKwkPKexBXmVNjefkzqbdsnSdVrDr5mv9fUIzUJBG4dlWRsVzVKLa8Hj9AZkYCPU3qTYQu3kfrj8BPp6cPl9Q17MMDAVPuE7xxDod7ippmHMgQZ3NYz0++ds5icC7nXb0r0vTZqPeo9gs7Vflo6b1r1geGmAYTSMxN8Kh+a+m0sKht9uKBionUxRSfd/oNp+9SivimIBWqZ1gNla9wNB2kcPUvnzRKtY2vls4Nx9OINAy2ZC/tJaKjVzdFDD8qyNeQ5ehfE8E5koOcYn+LRFYTaB1jCMpNLpedRamksRr/+fsW77NdSSUxZg0dphGsBMTz32mcqIbVnVoRDXFMhqaOXENirrtKFcyUyqOe2I4/HCd3uKfH/ecOoG9/jne8VOShNSQ0kua1p4pbvUMiT/ZhJxJMe3URiiscJz4hn0lu+3U7B4UebVxUtfy3RbiJHrsAqmFL/3265VI7+y4eH/HaNXlzVV5GX7LHgGyjrzZ4aOU9qDj2IuBpXSYPyPc2eRW+dGzK0N3HvwKySRmMkBBb+Sdk2CxO38YRP69vVMhx73MKaLnCwjuGasPt4TaK1Lc9Bz0uYk2y0SfwDh+wLhVoEAqv/0K4eTEibD5vc0Ddt6kGF7TaSY1Xt5OOrRzV29BmlqTrjqqr+BnGDi8E=
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Issue a fresh workspace token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/developer/workspaces/{workspace_id}/token"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+A new 24-hour access token for one of your white-label workspaces. Earlier tokens keep working until they expire; `revoke_existing: true` ends them now (a suspected leak). Any workspace your client did not create, or has revoked, returns 404.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./issue-a-fresh-workspace-token.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./issue-a-fresh-workspace-token.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./issue-a-fresh-workspace-token.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,69 @@
+---
+id: trigger-processing-of-already-uploaded-csv-files
+title: "Trigger processing of already-uploaded CSV files"
+description: "Starts parsing/ingestion for the given uploadIds as a single `csv`-kind sync. Creates one sync row that groups the batch (poll via `GET /sync/{syncId}`) and links every upload to it. Only files in `uploaded` status are accepted — re-triggering already-processed files is rejected to avoid duplicate ingestion. Files handed to `POST /csv/ai-convert` are refused (400 `UPLOAD_NOT_CONVERTED`) until that conversion completes."
+sidebar_label: "Trigger processing of already-uploaded CSV files"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV9tuGzkS/ZUCnxKgW7IdTzDT8+R1vIGQrB3ETmYAw7Cq2SWJEUV2SLZkjSBgPmK+cL5kt8iWW7IUI9m3BVYPdl+KdT2nqnolAo69KG7F+fVncZeJirx0qg7KGlGI64AueKjReWXGfWXG5PkVjKyDMCEYqzkZaGptsRpUHtADAstqgqH082E+VaYCvzSyB+eOMJAHayg+AWcXECYYYOxsU/uoscQgJ/CitlrDXCEM317cQJ/F+yv+O6jWw5eApgKtzNQDzcktWw8gWFChB1dGL2GkNHlQBobpJVVD8AFD4wEdAUpJdaAK/v7zL3CUB6fGY3LKjAG1I6yWee2sJO+p2ujy4OgLST4VLODcqgqqptZKYiB4zE4P/hnlJ2iqJDr8cHV9A33p531UubRmTi4Mox+ORg2beHF6dATDTx/eX529ub+8urk/v7r8fPHx5uLN8CU0JiidUpUOey6CtLNaUyDfE5lw9LUhH/5hq6UoVvFWOapEEVxDmZDWBDKBX2GdPFbW9L94rvNKeDmhGfJVWNYkCmFLDrTVmxTdioV1U1+jpEElMqFMoLGLeuL9IwoYR7WzNbmgyLPS7YOdDR843SITM2XekxmHiSiOn0Lwt81RsAvD1WGQJFMxbnpAzoIoxMLfvxr9gidSrJ8694M2z68/w5aCbZNQkrbshd01/nN5PHotTyg/rV5hfkrHZf6LPMH8eHRCr6pT+VP5GtmvLkmdT+gcLpNLg0AzHz1S6ep5x9dPPf+UeDB44+GFo9A48x+El0vo8JcceMmobPHdg381PkBJYKzJaVaH5a+AWsOsfXyIQzvR34qmvj/Gk/KVjDi4P61+otcjcbfORFAz+sMaOhTKru9X8QI1DM4uz2BzDuycnFMVQcRt4lPXKEoaWUebUJQZ9+DShm3ZxN2Wc0+z0bGxYKXKdXYX6CHglAxg2PQXbjtJrIqdLDaS1C3g0835LiQuGuZA/701lTViHX/MJ19b4xMvTo6O+d8++mJ7lLFfJqtfG2qIWfbdREatr0aiuH2e0r6RnLh9ym5edGUrrdWEZjtG7i2MQQy4H8fHNlKoccnZE+sIhxCTM+jodZ0sXZg5aVuTWGf7Lu/6trH3vFSaFvu4W2ciYfgQJLvytRln6aWR75Q52EY6eennHcEP0fspo7/h9qZDHHScwXyJswNs+sGo2t9dAuXp0dF+/T6jVlVqgCNUuh2VjZkauzD9mYp062Z/9tgijQ0He0a201Rnys+YwhlYl/A+5imaTIno1OlBUNnGSYpGRrYxP8SJ72FCJsg56/5LRoxQe6ZE0nGoSjPyHseHKrhFjws+3jEiVekhn7plHazPpaOKTFCo/c5czoOdEvtjsQkTDoEeAhneFnxsBVNaiuIbijIxR93QswrXdxxAmNhKFKK2PsIXeRaJ2E+5jiITnhwvKdFk47QoxCSE2hf9PtYqn5/0Wvs9Zfvz471J8MHZqpHxhg16ko1TYRnVlYSO3Bl7U9zebb++5jKnUm0LPaaZXWDfohhXLwrtGb+ZEDzGDzF+2B+lFaXauP6jrO9xeaVWZMIOfbFW7yh2ANY/IayiWRN5LH7Pz+ORfFB1569JOgo/rqM9x2hh9H/slsKLDUKfbGNba9Pe1vR9W83OUvPNVWB7E3g6GtnwyMZoW/y/S/iAsw8DxmVaeEUhjntHBwv220QFyjWWpKFEOSVTFe387Irp42fL0jYOZOODnZHzsFBh0j6LKYTBmzhwfcxkxuOeN21jSIZ29i9Qawo+itGDnCAv/vGON4HNHuHQeIwg9hlMrK6UGSepGW8s0W7Yx1oP3jaqogI2jKms9Nt84fv+VqF8jrXq85Y0V7TgZDIvZxhbX4uPm/Rxs7UmgR09fuds+jTw5hHXpac5XnUt9v/fhP8734Rt7wj0EPq1RhWpFvvxqu3at3FtSSsOc3TCLb24FatViZ4+Ob1e8+OvDTluv3c8I5zCMm79vN63naibLecJKPkN234cKftzmbe8dOIsZv1Z2e2pw2kTmSjbD92ZrfiMwwXPc1yIQvC4isCNsyA+WwmNZtzEuSuSTv79G1vI8aU=
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Trigger processing of already-uploaded CSV files"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/csv/sync"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Starts parsing/ingestion for the given uploadIds as a single `csv`-kind sync. Creates one sync row that groups the batch (poll via `GET /sync/{syncId}`) and links every upload to it. Only files in `uploaded` status are accepted — re-triggering already-processed files is rejected to avoid duplicate ingestion. Files handed to `POST /csv/ai-convert` are refused (400 `UPLOAD_NOT_CONVERTED`) until that conversion completes.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./trigger-processing-of-already-uploaded-csv-files.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./trigger-processing-of-already-uploaded-csv-files.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -6,19 +6,25 @@ sidebar_position: 3
 
 # Holdings
 
+**Available to:** Workspace token (read) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 Token balances across every connected account, with cost basis, live valuation and per-wallet
 allocation.
 
 **Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `portfolios:read`
 
-| | Endpoint |
-| --- | --- |
-| <span className="badge badge--get">GET</span> | `/v1/holdings` |
-| <span className="badge badge--get">GET</span> | `/v1/holdings/{assetId}` |
-| <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}` |
-| <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}/holdings/{assetId}` |
-| <span className="badge badge--get">GET</span> | `/v1/calculated-balances` |
-| <span className="badge badge--get">GET</span> | `/v1/calculated-balances/portfolio/{portfolioId}` |
+| | Endpoint | Workspace token |
+| --- | --- | --- |
+| <span className="badge badge--get">GET</span> | `/v1/holdings` | ✓ |
+| <span className="badge badge--get">GET</span> | `/v1/holdings/{assetId}` | ✓ |
+| <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}` | — |
+| <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}/holdings/{assetId}` | — |
+| <span className="badge badge--get">GET</span> | `/v1/calculated-balances` | With [Balances](/docs/integrations-api/white-label) switched on |
+| <span className="badge badge--get">GET</span> | `/v1/calculated-balances/portfolio/{portfolioId}` | — |
+
+Cost basis and profit fields (`costBasis`, `costPerUnit`, `unrealizedPnL`, `roiPercentage`) need the
+accounting calculation: for white-label workspaces they stay empty (`0` or `null`) unless Accounting is
+switched on.
 
 ## Request
 
@@ -46,25 +52,28 @@ endpoints.
 | `offset` | integer | `0` | Rows to skip. |
 | `limit` | integer | `50` | Rows to return, 1–1000. |
 | `rates` | string | `true` | `false` skips the live price fetch — much faster, and omits every market field. See below. |
-| `calculatedBalances` | boolean | `false` | Return ledger-derived balances instead of provider-reported ones. |
 | `excludeCalculatedBalances` | boolean | `false` | Return only provider-reported balances, dropping ledger-derived rows. |
+| `calculatedBalances` | boolean | — | **Ignored** by `/v1/holdings` (still accepted). Use `/v1/calculated-balances`. |
 
 ### Provider-reported vs. calculated balances
 
-Two kinds of balance exist side by side, and three parameters select between them:
+Two kinds of balance exist side by side:
 
 - A **provider-reported** balance is what the exchange API or the chain says you hold right now.
 - A **calculated** balance is reconstructed by replaying the transaction ledger. Accounts fed only by
-  CSV, and custom wallets, have no provider to ask — so their balances are always calculated.
+  CSV, and custom wallets, have no provider to ask, so `/v1/holdings` shows their calculated balance.
+  That needs the balance calculation: not computed for white-label workspaces unless Balances is
+  switched on (without it, such accounts have no holdings).
 
-By default `/v1/holdings` returns both, which is the number a user expects to see. Then:
+By default `/v1/holdings` returns the provider-reported balance for every account that has one, and the
+calculated balance only for those that don't — the number a user expects to see. Then:
 
 | You want | Use |
 | --- | --- |
 | Only what providers report | `?excludeCalculatedBalances=true` |
-| Only ledger-derived balances, for every account | `?calculatedBalances=true`, or `/v1/calculated-balances` |
+| Only ledger-derived balances, for every account | `/v1/calculated-balances` |
 
-`/v1/calculated-balances` is the dedicated form and returns two extra fields per row —
+`/v1/calculated-balances` returns two extra fields per row —
 `isMissingTransactionHistory` and `lastLedgerTimestamp` — which is what makes it useful for
 reconciliation. A `true` on the first means the running balance went negative, so acquisition history is
 missing: the ledger records a disposal with no matching purchase, which overstates gains. The
@@ -190,7 +199,7 @@ whose basis is simply unknown.
 
 ### Calculated balances — extra fields
 
-`/v1/calculated-balances` and `?calculatedBalances=true` add:
+`/v1/calculated-balances` adds:
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -199,8 +208,9 @@ whose basis is simply unknown.
 
 ## Portfolio totals
 
-`totalValue` is the summed value of the **whole filtered set**, not just the returned page — so it stays
-correct as you page, and you should not add up `marketValue` yourself.
+`totalValue` is the summed value of **every holding**, not just the returned page, and it ignores
+`search` and `minValue` — so it stays correct as you page or search, and allocation percentages are
+relative to it. Don't add up `marketValue` yourself.
 
 It covers token holdings only. NFT and DeFi value are separate: see [NFTs](/docs/api/nfts) for
 `totalEstimatedValueUsd` and [DeFi](/docs/api/defi) for `/v1/defi/totals`.

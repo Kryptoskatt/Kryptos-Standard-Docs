@@ -1,0 +1,69 @@
+---
+id: sells-with-no-prior-buy-negative-running-balance-grouped-by-asset-wallet
+title: "Sells with no prior buy (negative running balance), grouped by asset + wallet"
+description: "transactions.isMissingTransaction=true (set by the balance-calculator's negative-balance detection), attributed to ONE debit (outgoing or fee) leg per transaction and grouped by (asset, walletId). The leg is: the one that set the flag (ledger isMissingPurchase), else a debit leg with a negative afterBalance, else outgoing before fee. A deficit caused only by a fee leg is listed under the fee asset."
+sidebar_label: "Sells with no prior buy (negative running balance), grouped by asset + wallet"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV91v2zYQ/1cOfFmCyXbaYS8C9pA1RRcUbYMlwwYEQXomzxIbilTJkxPD0P8+kJS/4iRNOgzYw55sSse7333+TkvBWAVRXorfSTortdHI2llxVQhFQXrdpmMp2KMNKOMpjHX4oEPQtrrYPP2FfUdwEIhhugCuCaZo0EoaSTSyM8jO/xDAUoWs5zQa3oIipqTgsABk9nraMSlgB58+vgVFU81w4DqunLYVOA8zokMwVEFLHrZgAVoFlXddSypCOMAQiAu4RWOIT9XhGC5qSjd1KBNCZwm4RoaIOj6YGazgwJCqyMPay7POyxoDHRZAJhDgACuqutVcA67dApwx+V+zb4P4GvyUZs5TdGAMx6BopqVmkNgFUuCsWUTYGN8PKMHoEIPRWRV9rdNdSH6NRSECyc5rXojycimmhJ78cce1KC+v+qtCtOixISYfkoDFhkQpbrUShdAxp1878gtRCE9fO+1JiXKGJlAhgqypQVEuBS/aeCmw17YS/f2q+OgYLJEilQN66/xNaFESSNdQgJl3DSxc54HdDdkxnM7iEQJZBZoL0AxNFximlMU+rzVca/V5LPpiDdzoRvN96HtItWWqyItCNNrqpmtE+aoQDd7l/6+PjvotnW42C/RdSnfUBOf5k1dJ4mlNQyALQTZquRQYpMhRFVd74T13nkFpnxsEZm6n4K+l6yyP4YRm2BkOsWfi/bGI2fcUWmcDhWj99dFR/NnVfqJD6wKakIvYOmi9dh5Qfu100MnkwbqwfWdtKuJc24fFdq+lkkwNmLtNFEI6y2Q5msW2NVqmwTL5EqLt5X5k3PQLyXix9a4lzzojD52UFMKW4NQ5Q2hjDO+waQ2JMo6eGDzkbY3oPcYkaKYmfNtS8uFaq4eyZTtjcLplKiyaqTMPJnYFSry9+C12TNabK+Vbmneuc02eumajw7jKXXf+QbN7CHMiHvRn8xaNxvAyWB9Q21WW+xTDuY6V/yIltOXbSsM/DNFazYuitNdOD3b92uJPfd/3hWiIn1G6eWA9qe/no75YDaEnBaMcO0bz5pkg+4z0bnTjFy27MJKeFFnWaBLfr+fsKE3m3LA2u+EwskghsNWjG1rEZYDumGyI5J+4JD4tH1FeiDmajl5sJA6thrh2SpSiSjOkxchmYuJ3lpNJk2l51A68HBIX+vmK6VLyRc3chnIyiQbmr8cD1LF2k/krcX/SnnmnulQGaXiumPU8TqmczW1+XUc/2liN+TSbktCe9osdakyxAE/ceZvH59mn8wuYKJqTiQU0WcuGyIBCGk2WT7c7GVv9nhYruqkJM/kMfPTX6E26MjpVm/vnJP1OmT1Tx3AvVpO2M5cUaE799z7HFI7PTmPayYfs76vx0YMx+LPWTCODUzIwRXlDVpUgPSFvxScknkvbgOwCu4b8wFD5WUIFpyeJbkICV8Tlw8JQXPGg/TCjQhKjO1mjrSifPKEahLbX2gJqZ5S2VZZq4q6W7PJ++sbwrtOKSlhVmXIybNdYPE9Sc/pUtGGErZ64Ofm5pts0sFzgBhMZDiE/J7NHxtNu8TIS/nFDwTsJWG4Y+f9l/j+4zA9NyXTHk9agtrFGBhrLc/BS7M7BtI7en4RXhahd4Ci9XE4x0B/e9H18nHfSOB+VDpEEN/v+o4Xyr+/3j/id+SV/qgxsItK3wB70LLn6NniO7Hrnf1r40Zh871L+pKvbXxAbXFfx4HXeWC7j98EwpTccfCwltdve7C3bO7z67u1F5NxdFluz1vAnal9xhF1s6V4us8RFTHbfixX6zO79Vd/3fwMCq7Re
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Sells with no prior buy (negative running balance), grouped by asset + wallet"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/reconciliation/missing-purchases"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+transactions.isMissingTransaction=true (set by the balance-calculator's negative-balance detection), attributed to ONE debit (outgoing or fee) leg per transaction and grouped by (asset, walletId). The leg is: the one that set the flag (ledger isMissingPurchase), else a debit leg with a negative afterBalance, else outgoing before fee. A deficit caused only by a fee leg is listed under the fee asset.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./sells-with-no-prior-buy-negative-running-balance-grouped-by-asset-wallet.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./sells-with-no-prior-buy-negative-running-balance-grouped-by-asset-wallet.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./sells-with-no-prior-buy-negative-running-balance-grouped-by-asset-wallet.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

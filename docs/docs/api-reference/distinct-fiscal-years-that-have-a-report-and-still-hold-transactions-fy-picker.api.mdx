@@ -1,0 +1,69 @@
+---
+id: distinct-fiscal-years-that-have-a-report-and-still-hold-transactions-fy-picker
+title: "Distinct fiscal years that have a report and still hold transactions (FY picker)"
+description: "Returns every fiscal year with a computed report that still has at least one transaction, including years with no disposals (e.g. only incoming transfers, buys or income). Excludes years whose report row exists but whose transactions were all deleted (e.g. a year fully drained by an integration deletion)."
+sidebar_label: "Distinct fiscal years that have a report and still hold transactions (FY picker)"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV81uGzcQfpUBL7XRleQYyUU3I7EDI21jNC7awjCa0XKkZUyRG86spIUgoA/RJ+yTFCRX0so/QRygp1YHS9wdDmfmG37feK0EZ6zGN+qsLH3jxLiZui2UJi6DqcV4p8bqZ5ImOAZaUGhharhECy1hgKWRChBKP68bIQ2Bah8EpEIBFmMtVMiAApaQBbwjkICOsYyuCzCutI02bpbccfbnPGjDtWe0DEc0nA3BO9tGYz+PtsnFlAIXMGlaBh/yOzoewvkqeiTeOqw80zas4JdAK8PCMGmke9eLh2FJgQCtBU2WYkL5eMzZThtrW9ABjSMNkxbQgXFCs4Bxe95kvDseqkIxlU0w0qrxzVpNCAOFs0YqNb653dwWqsaAcxIKnAwczkmN1dJoVSgTi/65odCqQgX63JhAWo2naJkKxWVFc1TjtZK2jptYQoRtcx+2n7yAI9KkxyAVwdKHO66xpIgXMUyDn0PrmwDi78gN4XIal8DkNBgpwAjMGxaYUDb7uPPwh9Efh2pT7AKfk1T+QexPhVqoOa5+IDeL9Xh18iDy155lMEE2DNkxHGmaYmOFQfxhMt/x8VDFigbi2jsmjuednpzEr0O3F/vO5W3rdq1x5GhJLDA1geUYvk9ndGc3TDGz0jshJ9Et1rU1ZQJ99Imj73UvV7T2/TSh2mXtJ5+olAMsbxQ3ZUnM8bbVwdcUxOTQty/2VZt4bwmdKhStcF5bUmMJDcWyoeDDPK+wtR41/P3nX8AV1gSaanKawbuUGDlde+Mk9sycmHFGj/TTplBiJJ6mPuSYzt2CrK8pIX8/ucMstpF92SpB0TPDEDA2jhGa95+nW0ahX4HTk9OXmxR/6rxHemxnqi4uL96rTfzcxj+Fenny4mHZfjTMkV4SnSzQGg3YSJVvx3Ma4GtgLxSF4MM3wp+oYLP18RgVfBWs53H7HtRUmleP3ZxLJxQcWmAKCwqQz/1vlGRTqNXgLrS1eB6UgTQ5MWiTau5YaNBrEpdT9LF5VKGwNoM7amNatBJyHJUm0UN8On7CeaEWaBt69iGRCbdXQs0oXTmMNKtGuJP4UWY9HuX7F8UqwpqjaoJVY1WJ1DwejaLjxemwC3Fo/GjxQt3n66vgdZMkNDHxVvo+RPgzhH0B3JU/nrFViYRqMnrg/fpAu1INIKSRJKvw1fsP1zDSlDELo50tR4lSpTXk5LJPEVibd9Ru1aoi1OnYTst+G7xOWwaXer//A5WB5Pk+un2xi4yb+uSga7V3uaZwdnUZ4abAOd8Xw5NHa/BrZYQGFidkYYLlHTk9hjIQSq8+DFMfslyXDYuf01br8rMUFVy+AXQaOAVXRE1w0DVVXJgAS7SWhJMZrcoK3YzyKhDqzqg/OxVQeRtHuWw194HyufIQviG8bYymMWy7TPuS+z0W16PeaMUDrM3ILygsDC0jKrVnmWNima7kbwyLcaX0B1TOo2iFC9prfco8D6fe6sMB8Ojid6hNeUfh+D4G6z3b/T8Rf8tE3F0coZWMaovGRRwT26w7jrpRe45KIpFYShXdnHBbqMqzRLv1eoJMvwS72cTHeeCM7KUN48T2xuUnMfzXx+MnMs6snyf9juNVGqi+PvRnz8dfDGU3u++juY2LYGI46R+WYktwe9k6K0uqpbfrwQBwIEVvz6+jTB0KwI7wux+9mRld2/O9XmeL64jEZqO2oWdBTFPdP6shMJU=
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Distinct fiscal years that have a report and still hold transactions (FY picker)"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/accounting/reports/years"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Returns every fiscal year with a computed report that still has at least one transaction, including years with no disposals (e.g. only incoming transfers, buys or income). Excludes years whose report row exists but whose transactions were all deleted (e.g. a year fully drained by an integration deletion).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./distinct-fiscal-years-that-have-a-report-and-still-hold-transactions-fy-picker.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./distinct-fiscal-years-that-have-a-report-and-still-hold-transactions-fy-picker.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./distinct-fiscal-years-that-have-a-report-and-still-hold-transactions-fy-picker.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

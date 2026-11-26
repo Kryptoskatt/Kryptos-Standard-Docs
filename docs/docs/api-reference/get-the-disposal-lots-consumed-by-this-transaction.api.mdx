@@ -1,0 +1,69 @@
+---
+id: get-the-disposal-lots-consumed-by-this-transaction
+title: "Get the disposal lots consumed by this transaction"
+description: "Cost-basis lots matched against this transaction's disposal leg (FIFO/LIFO/HIFO/ACB, per the workspace method). Defaults to the workspace's configured method; pass `method` to view under another."
+sidebar_label: "Get the disposal lots consumed by this transaction"
+hide_title: true
+hide_table_of_contents: true
+api: eJzdVs1u20YQfpXBXmwDlJTkyKAHx2lSI0ET1Apa1BDiFXckbkzu0jtD24LAa5+gT9gnKWaXkilLLpwCvVQHSUvOzM7v981asV6Syi/VRzRLDKRmmTJIRbANW+9Urs488WiuyRJUnglqzUWJBvRSW0cMXFoCDtqRLkTliMBYajzpCipcwvG783efJh/l6yf5Oj17k0GDAbhEuPPhmhpdINTIpTcnY3iLC91WTMB+V+SIoPBuYZdtQNPLv4ZGE8FVOl2Jzq3FO2idwQDaeS4xjFWmCIs2WF6p/HKt5qgDhtOWS5VfzrpZphoddI0sCRABp2tUubJGZcpKEhrNpcpUwJvWBjQq59BipqgosdYqXyteNaJBHKxbqq7LtkbuHqzctBhWO2YWuqJ/svO4GD97Bodo0OSP8lf4GgkWwdew8m0A9tfoxnC+kCMQOgOWM7AMdUsMc0xiV1sLX625GquB4ymnj31/OuSZBEaNd4Qk71+9eCE/uwFMSxy0h/TT4/6RIlNbo4HjwounsfWSMym+3cAJma1bErSuwmEvWIrNgeZEZarwjtGxOKSbprKFlrsm30i8Wu9H5effsGCVqSb4BgPbFJPRPJTSIWhJimWs6ZD2bvCfHIIublpLVp789cefw1SkyYJjkwYArq0zPxxtJI5OxnveWLNfh0wtfKg1q1y1rTXSQmLokCC6tpbR31yhMhXrsMAgZhBVpuIAfZVR30eGX/xddPJ1rMjGCgE603jrGAJyGxw9jmQc+7o/Jdw5f14kg+Q9Xy9Trq0qPa8wjW2XqRsBgq2ea+s5BrEvDfdG+u3g2yb4AtEceHngiib4heVnicaoAprpMyzvtVSwS+t0NewrOP7i7D3UdPIaRBsWPoCGxvsKqLIFwgRqS2TdEpo2FKUmHNTkKUd2L+6viHqWfsfghSgGenPvK9Qulo0I+V+WKuperOq5rw7pP84O3uu6kaN6Mz0THFZsOZ7fbhrOs+r6T6buR9dh1bCnURHQoGOrq8iHW4AZRSRNEOLSVHvdRjrQjR1d40omA+8ZHVnvEoHI0/wJ45m61VWL332JAGyPyblaYgQnoaVcTQbwSZO1Nd1EoDXSXrjdkFobKpWrkrmhfDIRs7evxr2DY+snty/3ivw5eNNGs0pu35DohaBlgqAhlW6rI3dsqCK2QhTasz7dwfGYgR4y0MB8BZ8/XUxhYvAWK0G9yVY2dV1RWXS7baUb+wFXG8oqUZs0QonQfhudRZXRuXnQv8AiIH+/jV5Pesi6hY8G+k77kHIKp5/PpdgYKMX7cvziYA5+LS3jqNJzrGCui2t0JocioOZBfihOceTsoiX2NQaCO8tl/yx6BedvQTsDFJ3LBJcjn0pLycEGuNNVhUxRDO+LUrslplNAbXqhYT9lUPrKRIYVqdoHTPfyfvnG8L61BnPYdJnxBQ17TM4T6xiXIRIwjXRjJ/4Wg6xtEWQ9ca0jKfcpf4+8QzBpbdhuCfPV3grxOMvrB/r/n6yzfa8y3vOkqYSduywN+LoHhUs1LKLKVB7xNeLCLFNlBOtLtV7PNeGXUHWdPE5bnqCFsSS4+rCjPpnR/3wnfSLchLFpve4RVcX9dc/1JLndZx+EZ3IINhHIdwV9/Eu/w5/AU/5t8MSthnduvJGFZtZlG4B5II3TosCGByp7++oOEbz/cSoksQvAW8Dt/4j1g+6s10liKpXpuq13iY66Wdd1fwONXuxF
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get the disposal lots consumed by this transaction"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/transactions/{id}/lots"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Cost-basis lots matched against this transaction's disposal leg (FIFO/LIFO/HIFO/ACB, per the workspace method). Defaults to the workspace's configured method; pass `method` to view under another.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./get-the-disposal-lots-consumed-by-this-transaction.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-the-disposal-lots-consumed-by-this-transaction.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-the-disposal-lots-consumed-by-this-transaction.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

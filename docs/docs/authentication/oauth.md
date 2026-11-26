@@ -11,16 +11,27 @@ import TabItem from '@theme/TabItem';
 
 Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data with their consent.
 
+:::tip When to use OAuth ("Sign in with Kryptos")
+Use OAuth when your app acts **for a Kryptos user inside their own account**: a marketplace app, an AI
+assistant, an automation. The user signs in with Kryptos and approves your scopes. Your token can read
+and write, within those scopes and what the user's role allows, but never manage the account (see
+[What an OAuth token can't do](#what-an-oauth-token-cant-do)).
+
+Only reading data users share with you? [Kryptos Connect](/docs/kryptos-connect/overview) is simpler.
+Serving your own customers without Kryptos accounts? Use the
+[White-label backend](/docs/integrations-api/overview).
+:::
+
 ## Endpoints
 
 | Endpoint          | URL                                                              |
 | ----------------- | ---------------------------------------------------------------- |
 | **Authorization** | `https://oauth.kryptos.io/oidc/auth`                             |
 | **Token**         | `https://oauth.kryptos.io/oidc/token`                            |
-| **UserInfo**      | `https://oauth.kryptos.io/oidc/userinfo`                         |
+| **UserInfo**      | `https://oauth.kryptos.io/oidc/me`                               |
 | **Revocation**    | `https://oauth.kryptos.io/oidc/token/revocation`                 |
 | **Introspection** | `https://oauth.kryptos.io/oidc/token/introspection`              |
-| **Discovery**     | `https://oauth.kryptos.io/oidc/.well-known/openid_configuration` |
+| **Discovery**     | `https://oauth.kryptos.io/oidc/.well-known/openid-configuration` |
 | **JWKS**          | `https://oauth.kryptos.io/oidc/jwks`                             |
 
 ## Available Scopes
@@ -30,9 +41,9 @@ Use OAuth 2.0 authorization code flow with PKCE to access user portfolio data wi
 | Scope            | Description                                  |
 | ---------------- | -------------------------------------------- |
 | `openid`         | Basic OpenID Connect access (required)       |
-| `profile`        | User profile (name, preferred_username, language, transaction_limit) |
+| `profile`        | User profile (name, picture, updated_at)     |
 | `email`          | Email address and verified status            |
-| `offline_access` | Allow refresh tokens for offline data access |
+| `offline_access` | Refresh tokens. Issued when your client is registered with this scope |
 
 ### Data Scopes (Granular Read/Write)
 
@@ -63,6 +74,17 @@ A grant can never exceed what the consenting member's role allows, so a member w
 produce a narrower grant than you requested. **Read the `scope` value returned with the token** and
 degrade gracefully rather than assuming you received everything you asked for.
 
+### What an OAuth token can't do
+
+An OAuth token works on the user's workspace data, within its scopes and the user's role. Account
+management is not available to it, whatever scopes it carries: inviting people, changing members or
+roles, organizations, creating, deleting or resetting workspaces, notifications, and billing.
+
+- **Today:** writes your token has no scope for fail with `403 insufficient_scope`, and billing refuses
+  OAuth tokens.
+- **Rolling out:** the other account endpoints are being restricted service by service and will return
+  `403 MACHINE_ROUTE_NOT_ALLOWED`. Don't build on them.
+
 ## Authorization Flow
 
 ### Step 1: Register Your Client
@@ -80,9 +102,8 @@ openid profile offline_access email portfolios:read transactions:read
 integrations:read tax:read accounting:read reports:read workspace:read users:read
 ```
 
-:::info
-More granular scope controls will be added in the future. For custom scope requirements, contact [support@kryptos.io](mailto:support@kryptos.io)
-:::
+You can change your client's scopes in the Developer Portal. For scopes it doesn't offer, contact
+[support@kryptos.io](mailto:support@kryptos.io).
 
 ### Step 2: Generate PKCE Parameters
 
@@ -91,27 +112,83 @@ PKCE (Proof Key for Code Exchange) adds security to the authorization flow, prot
 <Tabs>
 <TabItem value="js" label="JavaScript" default>
 
+The browser starts the sign-in; **your server** exchanges the code, because that needs the client secret.
+
 ```javascript
-// Generate code verifier (random string 43-128 chars)
-function generateCodeVerifier() {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return base64UrlEncode(array);
-}
-
-// Generate code challenge (SHA-256 hash of verifier)
-async function generateCodeChallenge(verifier) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return base64UrlEncode(new Uint8Array(hash));
-}
-
-function base64UrlEncode(buffer) {
-  return btoa(String.fromCharCode(...buffer))
+// Browser: build the authorization URL and remember the PKCE verifier.
+function base64Url(bytes) {
+  return btoa(String.fromCharCode(...bytes))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
+}
+
+async function signInWithKryptos() {
+  const verifier = base64Url(crypto.getRandomValues(new Uint8Array(32)));
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  const state = base64Url(crypto.getRandomValues(new Uint8Array(16)));
+  sessionStorage.setItem("kryptos_pkce", JSON.stringify({ verifier, state }));
+
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: "YOUR_CLIENT_ID", // public; the secret never reaches the browser
+    redirect_uri: "https://yourapp.com/callback",
+    scope: "openid profile email portfolios:read transactions:read integrations:read offline_access",
+    state,
+    code_challenge: base64Url(new Uint8Array(hash)),
+    code_challenge_method: "S256",
+  });
+  window.location.href = `https://oauth.kryptos.io/oidc/auth?${params}`;
+}
+
+// Browser, on https://yourapp.com/callback: check state, hand code + verifier to your server.
+async function handleCallback() {
+  const url = new URLSearchParams(window.location.search);
+  const { verifier, state } = JSON.parse(sessionStorage.getItem("kryptos_pkce"));
+  sessionStorage.removeItem("kryptos_pkce");
+  if (url.get("state") !== state) throw new Error("State mismatch");
+
+  await fetch("/api/kryptos/callback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: url.get("code"), code_verifier: verifier }),
+  });
+}
+```
+
+```javascript
+// Server (Node + Express): exchange the code and keep the tokens server-side.
+app.post("/api/kryptos/callback", async (req, res) => {
+  const response = await fetch("https://oauth.kryptos.io/oidc/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code: req.body.code,
+      code_verifier: req.body.code_verifier,
+      redirect_uri: "https://yourapp.com/callback",
+      client_id: process.env.KRYPTOS_CLIENT_ID,
+      client_secret: process.env.KRYPTOS_CLIENT_SECRET,
+    }),
+  });
+  if (!response.ok) return res.status(400).json({ error: "Sign-in failed" });
+
+  const tokens = await response.json();
+  await saveKryptosTokens(req.user.id, {
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    expires_at: Date.now() + tokens.expires_in * 1000,
+  });
+  res.json({ success: true });
+});
+
+// Server: call the API with the stored token.
+async function getHoldings(userId) {
+  const { access_token } = await loadKryptosTokens(userId);
+  const response = await fetch("https://api-v2.kryptos.io/v1/holdings", {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return response.json();
 }
 ```
 
@@ -203,7 +280,7 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
 
 ```json
 {
-  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "access_token": "Xk3vQ9pL2mN8rT5wY1zA4bC7dE0fG6hJ...",
   "token_type": "Bearer",
   "expires_in": 86400,
   "refresh_token": "def50200...",
@@ -215,9 +292,10 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
 :::info Token Lifetimes
 
 - **Access Token:** 24 hours
-- **Refresh Token:** 30 days
+- **Refresh Token:** 30 days, replaced once it is past 70% of its life (see [Token Refresh](#token-refresh))
 - **ID Token:** 24 hours
-- **Authorization Code:** 10 minutes
+- **Authorization Code:** 10 minutes, single use. Redeeming a code twice fails and revokes the grant.
+- **Grant:** 1 year. The user has to authorize your app again at least once a year.
   :::
 
 ### Step 5: Call APIs
@@ -727,9 +805,24 @@ curl -X POST https://oauth.kryptos.io/oidc/token \
   -d "refresh_token=YOUR_REFRESH_TOKEN"
 ```
 
+HTTP Basic (`-u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET"`) works too. The same endpoint refreshes
+[Kryptos Connect](/docs/kryptos-connect/backend#step-3-refresh-the-access-token) tokens.
+
+The response has a new `access_token` and a `refresh_token`:
+
+- **Always store the `refresh_token` from the response.** It stays the same until it is past 70% of its
+  30-day life; then a new one replaces it and the old one stops working.
+- **A refresh token that was already replaced, or revoked, fails with `400 invalid_grant` and revokes the
+  whole grant**: every token from it stops, and the user has to sign in again. This is how a stolen refresh
+  token is caught, so refresh one at a time per user rather than in parallel.
+- If Kryptos switches your client off, refreshing fails (`invalid_client`) and every access token your
+  client holds stops working on its next request.
+
 ## Token Revocation
 
-Revoke tokens when user logs out:
+Revoke tokens when user logs out. Revoking a **refresh token** revokes the whole grant (every access and
+refresh token from it); revoking an **access token** stops just that token. Either takes effect on the
+Kryptos API immediately.
 
 ```bash
 curl -X POST https://oauth.kryptos.io/oidc/token/revocation \
@@ -744,7 +837,7 @@ curl -X POST https://oauth.kryptos.io/oidc/token/revocation \
 Get user information using access token:
 
 ```bash
-curl -X GET https://oauth.kryptos.io/oidc/userinfo \
+curl -X GET https://oauth.kryptos.io/oidc/me \
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
@@ -801,32 +894,45 @@ Because the workspace is in the token, data calls omit the workspace parameter e
 
 ### Error Handling Example
 
+Refresh once on a `401`; if the refresh fails with `invalid_grant`, the user has to sign in again.
+
 ```javascript
-async function makeApiCall(endpoint, accessToken, refreshToken) {
-  const response = await fetch(endpoint, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+async function callKryptos(userId, endpoint) {
+  let { access_token } = await loadKryptosTokens(userId);
+  let response = await fetch(endpoint, { headers: { Authorization: `Bearer ${access_token}` } });
 
   if (response.status === 401) {
-    // Token expired - try refresh
-    const newTokens = await refreshAccessToken(refreshToken);
-    return makeApiCall(
-      endpoint,
-      newTokens.access_token,
-      newTokens.refresh_token
-    );
+    const refreshed = await fetch("https://oauth.kryptos.io/oidc/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: (await loadKryptosTokens(userId)).refresh_token,
+        client_id: process.env.KRYPTOS_CLIENT_ID,
+        client_secret: process.env.KRYPTOS_CLIENT_SECRET,
+      }),
+    });
+    const tokens = await refreshed.json();
+    if (tokens.error === "invalid_grant") {
+      await markKryptosDisconnected(userId); // ask the user to sign in again
+      throw new Error("Kryptos access revoked or expired. Please reconnect.");
+    }
+    if (!refreshed.ok) throw new Error(`Refresh failed: ${tokens.error}`);
+
+    // Store the refresh token you get back: it can be a new one.
+    await saveKryptosTokens(userId, {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_at: Date.now() + tokens.expires_in * 1000,
+    });
+    response = await fetch(endpoint, { headers: { Authorization: `Bearer ${tokens.access_token}` } });
   }
 
   if (response.status === 403) {
-    // Insufficient scope
-    throw new Error("Insufficient permissions for this resource");
-  }
-
-  if (!response.ok) {
     const error = await response.json();
-    throw new Error(`API Error: ${error.error} - ${error.error_description}`);
+    throw new Error(`Not allowed: ${error.error_description ?? error.error}`); // missing scope or endpoint
   }
-
+  if (!response.ok) throw new Error(`API error ${response.status}`);
   return response.json();
 }
 ```
@@ -837,26 +943,16 @@ async function makeApiCall(endpoint, accessToken, refreshToken) {
 2. **Store secrets securely** - Never expose client secrets in frontend code
 3. **Use HTTPS** - Always use secure connections
 4. **Validate state parameter** - Prevent CSRF attacks
-5. **Handle token expiration** - Implement refresh token logic
+5. **Handle token expiration** - Implement refresh token logic, store the refresh token each refresh returns, and refresh one at a time per user
 6. **Request minimal scopes** - Only request necessary permissions
 
 ## Token Response
 
 | Field           | Description                               |
 | --------------- | ----------------------------------------- |
-| `access_token`  | JWT token for API authentication          |
+| `access_token`  | Opaque bearer token for API authentication |
 | `id_token`      | OIDC ID token with user claims            |
 | `token_type`    | Always `Bearer`                           |
 | `expires_in`    | Token validity in seconds (86400 = 24hrs) |
 | `refresh_token` | Token for obtaining new access tokens     |
 | `scope`         | Granted scopes                            |
-
-## Rate Limits
-
-| Endpoint Type     | Limit         | Window     |
-| ----------------- | ------------- | ---------- |
-| Token Endpoint    | 100 requests  | per minute |
-| UserInfo Endpoint | 1000 requests | per hour   |
-| Other OIDC        | 200 requests  | per hour   |
-
-Rate limits are per client ID. Exceeding limits returns HTTP 429 with `retry_after` header.

@@ -1,0 +1,69 @@
+---
+id: workspace-wide-value-graph
+title: "Workspace-wide value graph"
+description: "Portfolio value graph across every wallet in the workspace, including wallets not assigned to any portfolio. Point spacing adapts to the range: 1D/1W return hourly points, 1M returns 4-hourly, and 3M/1Y/ALL return daily. Read `granularity` from the response rather than inferring it — a short range falls back to daily when hourly history does not reach that far back."
+sidebar_label: "Workspace-wide value graph"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVttu20YQ/ZXBvvSFkiw7aVC+OXERGLFbI3bqBoZRj7gjc2Nyl90dyhYEAv2IfmG/pJhdUhc7NpACRV+qB0lLzuXsXM7MSjHeBpVfqTPnee4q49R1pjSFwpuGjbMq37yCBVYtwa3HpgQsvAsBaEF+CfdYVcRgLHBJcO/8XWiwoAyMLapWG3vbiwSwjgFDMLeWNLADtEtoBg9jOHPGMoi2KKHGhoOIiV2P9pZymB5NppfgiVtvoXStr8SCsRwymJ72LwK8GqV3GaDVcHA6mX6eHJ6cDIoaTbUcw0dCDTe3Hm1boTe8vIG5d3XyR6FxNohjLskDl2jB2Dl5L+AMw19//AkIoXSeEzqYY1UFmGFxJ6ijE7gvaQ20NIGdX4J2lGLhCYtSTDPM0UfNscpUoKIVOCq/WqkZoSd/2HKp8qvr7jpTDXqsicmHKGCxJpWre6NVpowk7feW/FJlytPvrfGkVT7HKlCmQlFSjSpfKV42ohRYbqO6x2n/yTFYIk06380qFK6mkMK0dK0Hdndkx3A8lyMEshoMZxKfug0MM0piN2sLvxl9M1ZdtgYeY/cY+nNIM0W2raVop0cqU9NL+TpVmTqQr+lnlanDk5NUx3NsK1a5vO8kbkNKg5jd39uTn91rv4/VrZGxLyqVqcJZJssijE1TmQJFePIliMbqKVA3+0IF70T/SoW2KCiIOTEuL/tLbxWf+Gq9J1ssBX/jXUOeTYI7GNj4mTlXEVqJyAPWTUUqZ99S17vYCKL3KMYNUx2+BnTXE5uaAmPdbIkay3RLXj0uk7dtcUcM5xeHHy/A2MBoOQNqXFFCHeDTxbtteNM3rw/evHqzvyefLlPsGKtfhFa2XNm2nkVPG7X9g1evx9+/6SQXgd9iMOFFhR/29vbG0/2u67oh0P+4jrrdFL1kpxRF/ZRCDwtusVrTmpv3/CJMRLovtDGc4lK6pXDow8A3a+KDxtOcfHiZTgq3iJoE96WrelXptU1hfeUCu2gvtrv9O2GzQDCoR9txEARAT6DJutpYZNJgdkpRfTo/UhJ/NhzPsbU+9h2oupSch9GdXzbswqjwpMmywSpOpDWCUeSX1IY2latD4cJMYWNGdxR7hR6YbDDOJkaUp/kzxjO1SBX3jU6EQGri0mmVq1uKfYPCyWoSZ2KIvO0XAyu3vlK5KpmbkE8mYmaxP+4BjY2bLKZPQn/mnW6LeBBvwxQ4F4ZJvbk9C9aJFB8DY0ZiiEIvJzbR9qYIZ0s4+/n8AiaaFlQJHUzWsiFVUGXI8rHeJpbGfKDlwNwloY5ue1r/dfQuqoyO9Ub/nApP/O02ej2pGWPnLvFUKqwPKaZweHYsySUf0n2n472vxuCyNEyjCmdUxYFLVudQeELeik+AufNpchVtYFfH3jNc9s8iKjg+iutFiOAyaQ4LfQnJwfj14iNi9FCU0pDp5GX3SELs0QaMiQ8ZlK6SnSlJ1c5T8stP0zeG963RlMNQZdoVYbvG5DyJ3O3j0AojbMxESGJh6F6y0rjANcZB1of8ct0U90bT9tb3OJqrzWj8f038L9bEvoWYHnjSVGisZDTyzqrnpivVc9N1pkoXWJ6sVkLpn3zVdfI4LVzCWNoEnFVb2+Kz2f7Xt8Nn7pZ4PS26PYuruEk+gZ4khyVrI3stB29EOG7T2UA5m7FxWBTU8JbWk61vZxS8//FCxsQuJa8puP8j1gfCs8st26tVkriQOHWdGpCngdRdd133N0XquN0=
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Workspace-wide value graph"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/graphs"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Portfolio value graph across every wallet in the workspace, including wallets not assigned to any portfolio. Point spacing adapts to the range: 1D/1W return hourly points, 1M returns 4-hourly, and 3M/1Y/ALL return daily. Read `granularity` from the response rather than inferring it — a short range falls back to daily when hourly history does not reach that far back.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./workspace-wide-value-graph.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./workspace-wide-value-graph.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./workspace-wide-value-graph.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

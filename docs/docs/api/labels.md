@@ -6,6 +6,8 @@ sidebar_position: 9
 
 # Labels
 
+**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect. See [Access by credential](/docs/api/access-matrix).
+
 The canonical transaction labels, each with its transaction type and tax treatment. Fetch this rather
 than hard-coding a label list — the set grows over time.
 
@@ -14,6 +16,11 @@ than hard-coding a label list — the set grows over time.
 | | Endpoint |
 | --- | --- |
 | <span className="badge badge--get">GET</span> | `/v1/labels` |
+| <span className="badge badge--get">GET</span> | `/v1/labels/types` |
+
+`/v1/labels/types` returns `{ success, data: [{ type, labels }] }`: every canonical transaction type
+(`deposit`, `withdrawal`, `trade`, …) with the labels that map to it — what `transactions.type` is
+derived from.
 
 Shared reference data, not workspace-specific — it needs a valid token, but no workspace parameter.
 

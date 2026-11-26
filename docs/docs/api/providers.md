@@ -6,6 +6,8 @@ sidebar_position: 14
 
 # Providers
 
+**Available to:** Public: no credential needed. See [Access by credential](/docs/api/access-matrix).
+
 The catalogue of supported exchanges, wallets, blockchains and services — what you can connect, which
 credentials each one needs, and what data it can return.
 
@@ -34,7 +36,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/providers?type=exchange&featured=true"
 | `isWorking` | boolean | — | Only providers currently operational |
 | `search` | string | — | Match on name, public name and slug |
 | `page` | integer | `1` | Page number |
-| `limit` | integer | `50` | 1–100, silently clamped |
+| `limit` | integer | `50` | 1–100; larger values return 400 |
 
 Results are ordered featured first, then working, then alphabetically — so an unfiltered first page is
 already a sensible default list.

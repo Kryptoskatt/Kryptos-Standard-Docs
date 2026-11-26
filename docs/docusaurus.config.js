@@ -1,5 +1,21 @@
 // @ts-check
 import { themes as prismThemes } from "prism-react-renderer";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+
+/**
+ * The OpenAPI theme's code samples (postman-code-generators) import Node's `path`, which webpack 5
+ * no longer polyfills for the browser.
+ */
+function nodePathFallback() {
+  return {
+    name: "node-path-fallback",
+    configureWebpack() {
+      return { resolve: { fallback: { path: require.resolve("path-browserify") } } };
+    },
+  };
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -80,6 +96,7 @@ const config = {
   },
 
   themes: [
+    "docusaurus-theme-openapi-docs",
     [
       "@easyops-cn/docusaurus-search-local",
       {
@@ -93,12 +110,47 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      // Free, MIT-licensed: generates one page per endpoint into docs/api-reference.
+      // Regenerate after updating the spec: npm run gen-api
+      "docusaurus-plugin-openapi-docs",
+      {
+        id: "api",
+        docsPluginId: "classic",
+        config: {
+          kryptos: {
+            // Generated from the backend specs by
+            // backend-v2/apps/swagger-service/scripts/export-public-spec.ts
+            specPath: "static/openapi/kryptos-public.json",
+            outputDir: "docs/api-reference",
+            downloadUrl: "/openapi/kryptos-public.json",
+            hideSendButton: false,
+            showSchemas: false,
+            sidebarOptions: {
+              groupPathsBy: "tagGroup",
+              categoryLinkSource: "tag",
+              sidebarCollapsed: true,
+            },
+          },
+        },
+      },
+    ],
+    "docusaurus-plugin-sass",
+    nodePathFallback,
+  ],
+
   presets: [
     [
       "classic",
       {
         docs: {
           sidebarPath: "./sidebars.js",
+          docItemComponent: "@theme/ApiItem",
+          // Generated tag pages replaced by the hand-written resource pages (TAG_PAGES in sidebars.js).
+          exclude: [
+            "api-reference/{assets,contacts,counterparties,holdings,integrations,labels-types,ledgers,portfolios,providers,spam,transactions,users}.tag.mdx",
+          ],
         },
         blog: false,
         theme: {
@@ -134,11 +186,12 @@ const config = {
         {
           type: "docSidebar",
           sidebarId: "docs",
-          label: "Docs",
+          label: "Guides",
           position: "left",
         },
         {
-          to: "/docs/api/overview",
+          type: "docSidebar",
+          sidebarId: "apiReference",
           label: "API Reference",
           position: "left",
         },
@@ -167,7 +220,7 @@ const config = {
           items: [
             { label: "Getting Started", to: "/docs/intro" },
             { label: "Authentication", to: "/docs/authentication/oauth" },
-            { label: "API Reference", to: "/docs/api/overview" },
+            { label: "API Reference", to: "/docs/api-reference/kryptos-api" },
           ],
         },
         {
@@ -191,6 +244,15 @@ const config = {
       ],
       copyright: `\u00A9 ${new Date().getFullYear()} Kryptos. All rights reserved.`,
     },
+    // Code samples on the generated API pages, in this order (curl first).
+    languageTabs: [
+      { highlight: "bash", language: "curl", logoClass: "curl" },
+      { highlight: "javascript", language: "nodejs", logoClass: "nodejs", variant: "axios" },
+      { highlight: "python", language: "python", logoClass: "python", variant: "requests" },
+      { highlight: "go", language: "go", logoClass: "go" },
+      { highlight: "php", language: "php", logoClass: "php" },
+      { highlight: "java", language: "java", logoClass: "java", variant: "unirest" },
+    ],
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
@@ -201,6 +263,7 @@ const config = {
         "python",
         "php",
         "go",
+        "java",
       ],
     },
   },

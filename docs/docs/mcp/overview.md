@@ -38,9 +38,10 @@ The Kryptos MCP Server uses OAuth 2.0 login. In ChatGPT you install a plugin; in
 a short config snippet. The first time it connects, a Kryptos login page opens in your browser. **There is
 no API key to copy or store.**
 
-**Plan:** MCP access needs a Kryptos **Pro** membership or a paid **Enterprise** subscription on the
-workspace you connect. Free accounts, the 14-day Enterprise trial and one-off tax-year reports don't
-qualify.
+**Plan:** you can connect any workspace. Without a Kryptos **Pro** membership or a paid **Enterprise**
+subscription, only adding a wallet works (`add_wallet`, plus the two lookups it needs:
+`get_integration_metadata` and `list_portfolios`); every other tool answers with what a plan unlocks.
+Free accounts, the 14-day Enterprise trial and one-off tax-year reports don't count as a plan.
 
 **Server URL:** `https://mcp.kryptos.io`
 
@@ -95,8 +96,8 @@ Then ask *"list my available tools"*. You should see Kryptos tools in the respon
 **It won't connect**
 
 - Check your internet, and that your firewall isn't blocking `mcp.kryptos.io`
-- Test the server directly: open `https://mcp.kryptos.io/health` in a browser — you should get a small
-  "ok" response
+- Test the server directly: open `https://mcp.kryptos.io/health` in a browser. You should get JSON with
+  `"status": "healthy"` (`"degraded"` means it is up but can't reach Kryptos's login server)
 
 **Tools don't show up**
 
@@ -104,10 +105,11 @@ Then ask *"list my available tools"*. You should see Kryptos tools in the respon
 - Validate your config file as JSON — a missing comma or bracket fails silently
 - Check your AI app's logs for MCP errors
 
-**"MCP access requires a Kryptos Pro membership or a paid Enterprise plan"**
+**"… unlocks this and every other Kryptos tool"** (code `PLAN_REQUIRED`)
 
-- The workspace you connected isn't on a paid plan. Upgrade it, or remove the server and add it again,
-  choosing a workspace on Pro or a paid Enterprise plan.
+- The workspace you connected isn't on a paid plan, so only adding a wallet works. Upgrade it (the answer
+  includes an upgrade link), or remove the server and add it again, choosing a workspace on Pro or a paid
+  Enterprise plan.
 
 **Kryptos login fails**
 
@@ -124,18 +126,13 @@ Then ask *"list my available tools"*. You should see Kryptos tools in the respon
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/health` | Health check |
-| `POST` | `/mcp` | HTTP transport (OIDC auth) |
+| `GET` | `/health` | Health check: `{ "status": "healthy" \| "degraded", ... }` |
+| `POST` | `/` | Streamable HTTP transport (bearer token from the OAuth login) |
+| `DELETE` | `/` | Ends an MCP session (`mcp-session-id` header) |
+| `GET` | `/` | Not supported (`405`): the server sends no unprompted messages |
 
-Success:
-```json
-{ "success": true, "data": { ... } }
-```
-
-Error:
-```json
-{ "success": false, "error": "ERROR_CODE", "message": "..." }
-```
+Requests and responses are MCP JSON-RPC. A tool's result is text content holding JSON; a tool that needs
+a plan returns `{ "success": false, "code": "PLAN_REQUIRED", "message": "…", "upgradeUrl": "…" }`.
 
 The MCP server calls the same API documented under [API Reference](/docs/api/overview) with the
 workspace bound to your OAuth grant, so anything it reports is reproducible with a direct API call.

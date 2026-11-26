@@ -6,25 +6,22 @@ sidebar_position: 7
 
 # DeFi Positions
 
+**Available to:** Workspace token (read) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 Lending, borrowing, staking, farming, derivatives and reward positions across protocols and chains.
 
 **Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `portfolios:read`
 
 | | Endpoint | Returns |
 | --- | --- | --- |
-| <span className="badge badge--get">GET</span> | `/v1/defi` | All positions |
+| <span className="badge badge--get">GET</span> | `/v1/defi` | All positions; filter with `?category=` |
 | <span className="badge badge--get">GET</span> | `/v1/defi/totals` | Headline DeFi numbers |
-| <span className="badge badge--get">GET</span> | `/v1/defi/networks` | Distinct networks, for a filter dropdown |
-| <span className="badge badge--get">GET</span> | `/v1/defi/staking` | Positions in the `staking` category |
-| <span className="badge badge--get">GET</span> | `/v1/defi/lending` | Positions in the `lending` category |
-| <span className="badge badge--get">GET</span> | `/v1/defi/farming` | Positions in the `farming` category |
 
-Each of the six has a portfolio-scoped twin: `/v1/defi/portfolio/{portfolioId}`,
-`/v1/defi/portfolio/{portfolioId}/totals`, `/staking`, `/lending`, `/farming`. (There is no
-portfolio-scoped `/networks`.)
-
-`/staking`, `/lending` and `/farming` are shorthand for `/v1/defi?category=…` and take the same
-parameters.
+Portfolio-scoped forms: `/v1/defi/portfolio/{portfolioId}`, `/v1/defi/portfolio/{portfolioId}/totals`,
+and the category shortcuts `/v1/defi/portfolio/{portfolioId}/staking`, `/lending` and `/farming`
+(shorthand for `?category=…`). They exist only per portfolio; workspace-wide, use
+`/v1/defi?category=staking`. Workspace tokens ([White-label](/docs/integrations-api/overview)) can call
+the three workspace-wide endpoints only.
 
 ## Request
 
@@ -35,21 +32,20 @@ curl -X GET "https://api-v2.kryptos.io/v1/defi?category=lending&limit=50" \
 
 ## Query Parameters
 
-For `/v1/defi` and the category shortcuts:
+For `/v1/defi` and the portfolio-scoped list and category shortcuts:
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `category` | string | — | One of the 18 categories listed below |
 | `detailType` | string | — | Protocol-specific position subtype |
 | `integrationId` | string | — | Scope to one connected account |
-| `networkId` | string | — | Chain, by provider id — e.g. `ethereum`, `base`. Values come from `/v1/defi/networks` |
+| `networkId` | string | — | Chain, by provider id — e.g. `ethereum`, `base` (the `providerId` of an integration) |
 | `search` | string | — | Free-text match on protocol name |
 | `includeSpam` | boolean | `false` | Include positions in assets flagged as spam |
 | `offset` | integer | `0` | Rows to skip |
 | `limit` | integer | `50` | Rows to return, 1–1000 |
 
-`/v1/defi/totals` accepts only `includeSpam`. `/v1/defi/networks` accepts `includeSpam` and
-`integrationId`.
+`/v1/defi/totals` accepts only `includeSpam`.
 
 ### Categories
 
@@ -151,23 +147,10 @@ protocol. Don't assume a fixed schema.
 | `connectedProtocols` | number | Distinct protocols with an open position |
 | `baseCurrency` | string | Currency of the values |
 
-## Response — `/v1/defi/networks`
-
-```json
-{
-  "success": true,
-  "data": [
-    { "providerId": "ethereum", "name": "Ethereum", "logoUrl": "https://...", "walletCount": 2 }
-  ]
-}
-```
-
-Use `providerId` as the `networkId` filter value.
-
 ## Protocol metadata
 
 Protocol reference data — TVL, chains, tags, portfolio support — is a separate, workspace-independent
-resource requiring only authentication:
+resource for OAuth, Connect and signed-in sessions (not workspace tokens):
 
 | | Endpoint |
 | --- | --- |

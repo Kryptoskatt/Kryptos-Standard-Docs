@@ -10,6 +10,17 @@ import ConnectShowcase from '@site/src/components/ConnectShowcase';
 
 Kryptos Connect enables users to securely share their crypto portfolio data with third-party applications through a single, easy-to-integrate widget.
 
+:::tip When to use Connect
+Use Connect when **your users** connect their wallets and exchanges, or their existing Kryptos account,
+and agree to share that data with you. The workspace belongs to the user; your backend gets a
+**read-only** access token for it. Users without a Kryptos account are created as guests on the fly.
+
+Building on your own customers' data without them having Kryptos accounts? Use the
+[White-label backend](/docs/integrations-api/overview). Need to act inside a Kryptos user's account? Use
+[OAuth 2.0](/docs/authentication/oauth). Compare them in
+[Pick your use case](/docs/intro#pick-your-use-case).
+:::
+
 ## Overview
 
 Kryptos Connect provides a seamless way for users to:
@@ -18,7 +29,7 @@ Kryptos Connect provides a seamless way for users to:
 - **Share data securely** using industry-standard OAuth 2.0
 - **Manage integrations** by connecting wallets and exchanges
 - **Control permissions** with granular scope-based access
-- **Long-lived access** with 15-year access tokens (no refresh tokens needed)
+- **Standard token refresh**: an access token plus a refresh token you redeem at the OAuth token endpoint
 - **Native mobile support** for iOS and Android applications
 
 ### Base URL
@@ -80,7 +91,7 @@ See how users connect their accounts through the Kryptos Connect widget:
 
 | Method             | Header                                    | Used For                                   |
 | ------------------ | ----------------------------------------- | ------------------------------------------ |
-| Client Credentials | `X-Client-Id` + `X-Client-Secret`         | Creating link tokens, exchanging and revoking tokens — **backend only** |
+| Client Credentials | `X-Client-Id` + `X-Client-Secret`         | Creating link tokens, checking sessions, exchanging, listing and revoking grants, and the `/developer/*` endpoints — **backend only** |
 | Link Token         | `x-link-token`                            | Widget operations, and adding integrations from the browser |
 | Bearer Token       | `Authorization: Bearer {access_token}`    | Data API calls from your backend           |
 
@@ -109,40 +120,84 @@ integrations:read tax:read accounting:read reports:read workspace:read users:rea
 | `openid`         | Required for OpenID Connect |
 | `profile`        | User profile information    |
 | `email`          | User email address          |
-| `offline_access` | Enable long-lived tokens    |
+| `offline_access` | Refresh tokens (OAuth); Connect always returns one |
 
 ### API Scopes
 
-| Resource     | Read Scope          | Write Scope          | Description                     |
-| ------------ | ------------------- | -------------------- | ------------------------------- |
-| Portfolios   | `portfolios:read`   | `portfolios:write`   | Portfolio holdings              |
-| Transactions | `transactions:read` | `transactions:write` | Transaction history             |
-| Balances     | `balances:read`     | `balances:write`     | Account balances                |
-| Integrations | `integrations:read` | `integrations:write` | Connected wallets and exchanges |
-| DeFi         | `defi:read`         | `defi:write`         | DeFi protocol positions         |
-| NFT          | `nft:read`          | `nft:write`          | NFT collections                 |
-| Tax          | `tax:read`          | `tax:write`          | Tax calculations                |
-| Accounting   | `accounting:read`   | `accounting:write`   | Accounting ledger               |
-| Reports      | `reports:read`      | `reports:write`      | Generated reports               |
-| Workspace    | `workspace:read`    | `workspace:write`    | Workspace settings              |
+| Resource     | Read Scope          | Write Scope          |
+| ------------ | ------------------- | -------------------- |
+| Portfolios   | `portfolios:read`   | `portfolios:write`   |
+| Transactions | `transactions:read` | `transactions:write` |
+| Integrations | `integrations:read` | `integrations:write` |
+| Tax          | `tax:read`          | `tax:write`          |
+| Accounting   | `accounting:read`   | `accounting:write`   |
+| Reports      | `reports:read`      | `reports:write`      |
+| Invoices     | `invoices:read`     | `invoices:write`     |
+| Workspace    | `workspace:read`    | `workspace:write`    |
+| Users        | `users:read`        | `users:write`        |
+| Contacts     | `contacts:read`     | `contacts:write`     |
+| Swaps        | `swaps:read`        | `swaps:write`        |
+
+These are the only scopes Kryptos accepts. Each endpoint's required scope is on its page in the
+[API Reference](/docs/api-reference/kryptos-api); [OAuth scopes](/docs/authentication/oauth#available-scopes)
+has the same list.
+
+:::info Connect access tokens are read-only
+The access token your backend receives from a Connect session carries your client's scopes **minus every
+`:write` scope**. Write scopes on your client apply to [OAuth](/docs/authentication/oauth) apps only.
+
+The widget still lets the user add and manage integrations: those calls are made by the widget's own
+session, not with your access token. Access tokens issued before this rule keep the scopes they were
+granted.
+:::
 
 ---
 
 ## Token Types & Lifetimes
 
-| Token Type   | Prefix    | Lifetime   | Description                           |
-| ------------ | --------- | ---------- | ------------------------------------- |
-| Link Token   | `link_`   | 30 minutes | Initialize Connect widget             |
-| Public Token | `public_` | 30 minutes | Exchange for access token (one-time)  |
-| Access Token | `cat_`    | 15 years   | API authentication (long-lived)       |
-| Grant Token  | `cgrant_` | 15 years   | Authorization record (for revocation) |
+| Token         | Prefix    | Lifetime                      | Description                                                                   |
+| ------------- | --------- | ----------------------------- | ----------------------------------------------------------------------------- |
+| Link Token    | `link_`   | 2 hours                       | Starts a Connect widget session                                               |
+| Public Token  | `public_` | 30 minutes                    | Exchanged once for an access token and a refresh token                        |
+| Access Token  | `cat_` (from the exchange; treat as opaque) | `expires_in` of the exchange  | Calls the Kryptos API. Refreshed tokens have no prefix and last 24 hours |
+| Refresh Token | `crt_`    | 30 days                       | Gets a new access token at the OAuth token endpoint (see below)               |
+| Grant         | `cgrant_` | Until revoked                 | The user's consent. Keep its id to revoke access                              |
+
+### Refreshing the access token
+
+Connect uses the standard OAuth 2.0 refresh flow, at the same endpoint as
+[Sign in with Kryptos](/docs/authentication/oauth). There is no Connect-specific refresh endpoint.
+
+```bash
+curl -X POST https://oauth.kryptos.io/oidc/token \
+  -u "$KRYPTOS_CLIENT_ID:$KRYPTOS_CLIENT_SECRET" \
+  -d grant_type=refresh_token \
+  -d refresh_token=crt_...
+```
+
+- The response has a new `access_token` (24 hours) and a `refresh_token`. **Always store the refresh token
+  it returns**: it is the same one until it is past 70% of its life, then a new one replaces it.
+- Refresh from your backend only: it needs your client secret.
+- A refresh token that was replaced or revoked fails with `400 invalid_grant` and **revokes the grant**, so
+  the user has to reconnect. Don't run two refreshes with the same token at once.
+- It works for Guest sessions too.
+
+Access tokens from `/token/exchange` currently last 15 years, so apps that never refresh keep working. That
+will change to 24 hours on an announced date: build against `expires_in` and refresh now.
+
+### When access stops
+
+- **The user or you revoke the grant** (`POST /token/revoke`): every access and refresh token of that grant
+  stops at once.
+- **Kryptos switches your client off**: every access token your client holds (Connect and OAuth) stops on
+  its next request, and refreshing fails.
 
 ---
 
 ## Security Best Practices
 
 1. **Never expose secrets in frontend code** - Keep client_secret on your backend only
-2. **Store tokens securely** - Use encrypted storage for access tokens and grant IDs
+2. **Store tokens securely** - Encrypt access tokens, refresh tokens and grant IDs at rest; refresh from your backend only
 3. **Use HTTPS** - Always use secure connections in production
 4. **Validate state parameters** - Prevent CSRF attacks
 5. **Monitor for suspicious activity** - Log and monitor authentication events

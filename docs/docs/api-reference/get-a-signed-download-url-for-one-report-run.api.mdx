@@ -1,0 +1,69 @@
+---
+id: get-a-signed-download-url-for-one-report-run
+title: "Get a signed download URL for one report run"
+description: "The single download endpoint. `id` is a run id from `/reports/catalog` (`runId`) or `/reports/history`. Returns a ~1h signed URL when the run is COMPLETED; 409 while PENDING/PROCESSING, 410 when it FAILED, 404 when the id does not exist in this workspace, 400 for a non-uuid id. Same plan-entitlement gate as `/reports/generate`, evaluated for the run’s own tax year."
+sidebar_label: "Get a signed download URL for one report run"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWEtvGzkM/iuETi0wfqRND52egsQbGE0Tw3axBYIgpke0R40sTSWNHzC86I/Yy/69/pKFpPErdopmgcUesjkkmRmSIj9SfC2Zw7Fl6S3rUqGNs+wuYZxsZkThhFYsZf2cwAo1lgRcz5TUyIEUL7RQrg4DwQcgLCCYUoHgMDJ6AoOGieIaGTqUejyAVwNTqjYfvAZtdr7nwjptFoM6dMmVRnlJf5zkYMVYEYfP3SuY5aTA5RRPsHB+86lz1eq3Lj7AafM9zHIhCTqt64v29WWj0705b/V67evLBE5PmpFZOPjtrH3VukjgtHm6FSg4cE0WlHZAc2EdCP9BWJhp82ALzMhzNGGkDSAorWplKTgIXoceTggKiapGygknaULKwRgdAdodA8ekyKCjQQI0RVmiIx7kVRb9+P6XBT1T4HAOC0JTZwmzlJVGuAVLb5dsSGjInJUuZ+nt3eouYQUanJAjYwOBwgmxlAnOEia8ywp0OUuYoW+lMMRZ6kxJCbNZThNk6ZK5ReE5rDNCjVnCRtpM0LGUefPYapVshM62Ur+VZBZ7Ykco7U/krh6H0rV2oIg48TSYv0EZMj0hG2NnoUsDTj+QqkN75B/BkuIgXOIdOSmtgyFFssFGwr3ggzrz4BiyhVaWrFfoTbPp/+yr0YuxtYnmz90rD3qmlSPlPD0WhRQZevrGV+uZljtWopQ3o4B8Za8efqXM7UFzy2yZZWTDhSqMLsg4EXVaf9jiNdRaEiqWMJrjpJAUPebxQ4eHBnRwERT/8f1PsDkWBJwKUtyCjoG9vp/eBROyFsd0xD2rhIXI9ZBEnVpqSlIXxHwEPDZu34q1Zj+nKo38ebwZwVb+587/StjpMX+11RSl4BCvlL99z/HWr/goYWSMNv/QV+EarNYyjl2DX/JBy7NvPVDhcXKIxydhfUL2iVRU0GDp8nhpXhA0b4/cDIkKdhPy2qSDlLtOtx/AEh3L13DafLvhGmSa0wB8Aif7ksLv9BDjLlldmoxC2RzpUvEXhMe7Qzz6e5UsRwtj4wt6gb6hcDZ0CTHmDCqLmecDlFLPUGUEr0JwpdC5Oru+73fPrntn5/32zfX9VftTu3/f+nLeal20LgavX1LcvT8Sd6UC64SU62bPJ8Btv/eC0Dk5UiQ9OrHJfTlAvDveLTgyCiVYMlMyEM99GZCsEjavPZhF4bStZYa4L4Uow4C3SVG1nT5BRRO17x9YwrAQtQdaeLNo7khZoVWcMfzb9AnhCQt18dmH+G59Qi7XnKVsTKF79JNLyjbVeCn4qiGFeghDkfdnVCf0lSx3rrBpo+ElTt/UK93qQjemJ+zx8NExmpch94YxYT1i9bzfo+92B60N7v4MVs04wZ2B6ED6fhEIxoMJEy1xGC6gc9PrQ4NTdJZpbGht3fs7k4KUa/Odg7EQH2mxHr5yQh6OreayL7XzwFJr8y1/jzJD7vkyKj4fPkKNdBBQxdjHiCmcddrez2RstPek3jyKwe+5cFSTOCQJQ8weSPEUMkN+Lt7aHPqqMMFlpXV6QsbCTLi8ehe0gvYFoOJgg3KJb8MUVNHkH4SBGUpJzgYymmc5qjHFJ0PIK6KdomsTyLXkQo0j1UQbiue6Q/fV4bIUvi6vo4zrzO7GmH9uCOVobEIqsTUsRENPyUwFzbxXCm3dBEN6qSC/JAe4Xm7sDqABEa1oPeSYUj3Gd7lNYf8vZf6DpUx1pxzNXaOQKJR3cTXgxrx1y6oDWMLSsDgJqesuYbm2zn9fLodo6bORq5V/HVcqPqFxYXEod5YqT7r+X1+iPGFprABxH1TlexYy6RSN8Lo/045X3aquvoanjlxnMbXYPXOtit9U3a2SdVrbVqmzLKPC7bAc1Pu9ynPZ6vuqtJ/2N2m++mdn27OvznIZKfoe7NVqo12sf2Gv8Tdj+2oF
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get a signed download URL for one report run"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/reports/{id}/link"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+The single download endpoint. `id` is a run id from `/reports/catalog` (`runId`) or `/reports/history`. Returns a ~1h signed URL when the run is COMPLETED; 409 while PENDING/PROCESSING, 410 when it FAILED, 404 when the id does not exist in this workspace, 400 for a non-uuid id. Same plan-entitlement gate as `/reports/generate`, evaluated for the run’s own tax year.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./get-a-signed-download-url-for-one-report-run.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-a-signed-download-url-for-one-report-run.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-a-signed-download-url-for-one-report-run.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

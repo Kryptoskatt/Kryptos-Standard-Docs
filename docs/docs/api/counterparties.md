@@ -6,6 +6,8 @@ sidebar_position: 16
 
 # Counterparties
 
+**Available to:** OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 Addresses your workspace has transacted with, automatically classified where Kryptos recognises them —
 as an exchange or a DeFi protocol.
 

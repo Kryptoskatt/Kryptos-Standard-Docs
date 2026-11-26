@@ -1,6 +1,7 @@
 ---
 id: css-theming
 title: Theming & Customization
+sidebar_position: 5
 ---
 
 Kryptos Connect exposes `--kc-*` CSS custom properties that control every visual aspect of the connect UI. Pass them via the `cssVars` option in `KryptosConnect.init`.

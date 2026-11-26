@@ -1,0 +1,73 @@
+---
+id: get-a-signed-download-url-for-the-latest-run-of-a-report
+title: "Get a signed download URL for the latest run of a report"
+description: "Deprecated: use `GET /reports/{id}/link` with the run id. Returns a ~1h signed URL when the latest run is COMPLETED. 409 while PENDING/PROCESSING, 410 when generation FAILED, 404 when no such report exists."
+sidebar_label: "Get a signed download URL for the latest run of a report"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get a signed download URL for the latest run of a report"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/reports/{year}/{reportKey}/link"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+:::caution deprecated
+
+This endpoint has been deprecated and may be replaced or removed in future versions of the API.
+
+:::
+
+Deprecated: use `GET /reports/{id}/link` with the run id. Returns a ~1h signed URL when the latest run is COMPLETED. 409 while PENDING/PROCESSING, 410 when generation FAILED, 404 when no such report exists.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./get-a-signed-download-url-for-the-latest-run-of-a-report.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-a-signed-download-url-for-the-latest-run-of-a-report.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-a-signed-download-url-for-the-latest-run-of-a-report.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

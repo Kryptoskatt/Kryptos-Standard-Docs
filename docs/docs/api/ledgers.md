@@ -6,6 +6,8 @@ sidebar_position: 8
 
 # Ledgers
 
+**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 A ledger is one leg of a transaction — a single asset moving in, out, or paid as a fee. This endpoint
 queries them directly, across transactions, which is what you want for balance reconciliation and
 accounting exports.
@@ -21,7 +23,16 @@ To read the legs of one known transaction,
 [`GET /v1/transactions/{id}/ledgers`](/docs/api/transactions#its-ledger-legs) is cheaper.
 
 Like [transactions](/docs/api/transactions), this domain returns `{ data, meta }` with **no `success`
-field**, and nests errors as `{ error: { code, message } }`.
+field**, and nests handler errors as `{ error: { code, message } }`. Leg writes (`PATCH`/`DELETE` on a
+transaction's legs) are in the [API Reference](/docs/api-reference/kryptos-api).
+
+:::info Computed fields
+`costbasis`, `proceeds` and `profit` are **`null` for API callers** (OAuth, Connect, API keys, white-label
+workspace tokens), except a white-label workspace token whose workspace has
+[Accounting](/docs/integrations-api/white-label) switched on. `beforeBalance`/`afterBalance` and the
+`ltAfterBalance`/`gtAfterBalance` filters need the balance calculation: not computed for white-label
+workspaces unless Balances is switched on.
+:::
 
 ## Request
 
@@ -37,7 +48,10 @@ Comma-separated lists:
 | Parameter | Description |
 | --- | --- |
 | `transactionIds` | Restrict to specific transactions |
+| `walletIds` | Connected account ids |
 | `assetIds` | Kryptos asset ids |
+| `labels`, `notLabels` | Leg labels to include or exclude |
+| `unresolvedSymbols` | Raw symbols of legs whose asset is unresolved |
 | `types` | `incoming`, `outgoing`, `fee` |
 | `providers` | Provider ids, e.g. `binance` |
 
@@ -52,7 +66,7 @@ Filters and paging:
 | `gtAfterBalance` | string | — | Running balance strictly **greater than** this |
 | `sortBy` | string | `timestamp` | `timestamp` or `createdAt` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
-| `limit` | integer | `50` | 1–200 |
+| `limit` | integer | `50` | 1–200; larger values return 400 |
 | `offset` | integer | `0` | Rows to skip |
 
 `ltAfterBalance` and `gtAfterBalance` are **decimal strings, not numbers** — `"0"`, `"-0.000001"`,
@@ -122,7 +136,7 @@ purchase history.
 | `label`, `description`, `internalLabel` | string | Annotations |
 | `isEdited` | boolean | A user manually edited this leg |
 | `beforeBalance`, `afterBalance` | **string** \| null | Running asset balance around this leg |
-| `costbasis`, `proceeds`, `profit` | **string** \| null | Accounting figures; `null` until tax processing has run |
+| `costbasis`, `proceeds`, `profit` | **string** \| null | Accounting figures; `null` for API callers (see above) and until accounting has run |
 | `debitCoaCode`, `creditCoaCode` | string \| null | GL codes posted to — **enterprise only** |
 | `isDebitCoaEdited`, `isCreditCoaEdited` | boolean | The code was set manually, so a COA re-run skips it — enterprise only |
 
@@ -139,7 +153,9 @@ pipeline has run for that period.
 
 ## Errors
 
-| Status | Code | Meaning |
+| Status | Shape | Meaning |
 | --- | --- | --- |
-| 404 | `NOT_FOUND` | No such ledger in this workspace |
-| 500 | `INTERNAL_ERROR` | Unexpected server error |
+| 400 | `{ success: false, error: "Validation failed", details }` | A query parameter is invalid |
+| 403 | `{ error: "insufficient_scope" }` · `{ error: "forbidden", code: "MACHINE_ROUTE_NOT_ALLOWED" }` | Your credential can't call this; see [Errors](/docs/reference/errors) |
+| 404 | `{ error: { code: "NOT_FOUND", message } }` | No such ledger in this workspace |
+| 500 | `{ error: { code: "INTERNAL_ERROR", message } }` | Unexpected server error |

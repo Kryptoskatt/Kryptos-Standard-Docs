@@ -6,6 +6,8 @@ sidebar_position: 8
 
 # NFTs
 
+**Available to:** Workspace token (read) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 NFT holdings across chains, individually or grouped by collection.
 
 **Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `portfolios:read`
@@ -17,6 +19,9 @@ NFT holdings across chains, individually or grouped by collection.
 | <span className="badge badge--get">GET</span> | `/v1/nfts/{contractAddress}/{tokenId}` | One NFT |
 | <span className="badge badge--get">GET</span> | `/v1/nfts/portfolio/{portfolioId}` | Individual NFTs, one portfolio |
 | <span className="badge badge--get">GET</span> | `/v1/nfts/portfolio/{portfolioId}/{contractAddress}/{tokenId}` | One NFT, one portfolio |
+
+Workspace tokens ([White-label](/docs/integrations-api/overview)) use the three workspace-wide endpoints;
+the portfolio forms aren't needed there.
 
 ## Request
 
@@ -117,6 +122,9 @@ keys vary by chain and marketplace; probe rather than assume.
 
 `totalCount` is the number of distinct **collections**; `totalEstimatedValueUsd` is the whole
 workspace's (or portfolio's) NFT value, not just this page.
+
+Despite the `Usd` suffix, `totalEstimatedValueUsd` and `totalValueUsd` are plain sums of each NFT's
+`price.price` with no currency conversion: read the currency from the items' `price.baseCurrency`.
 
 ## Response — single NFT
 

@@ -1,0 +1,1 @@
+{"parameters":[{"name":"wid","in":"query","required":false,"schema":{"type":"string"},"description":"Not needed: the workspace comes from your token. If you send it, it must be your `workspace_id`."},{"name":"includeSpam","in":"query","schema":{"type":"boolean","default":false}}]}
