@@ -46,7 +46,7 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
 | 403 | `insufficient_scope` | Valid credential, but it lacks the endpoint's scope |
 | 403 | `forbidden` | The request names a workspace other than the one your token or key is bound to |
 | 403 | `forbidden` with `"code": "MACHINE_ROUTE_NOT_ALLOWED"` | This endpoint is not available to this kind of token (OAuth, Connect or white-label workspace token) |
-| 403 | `forbidden` with `"code": "FEATURE_NOT_ENABLED"` | White-label workspace token: the endpoint needs Balances or Accounting, which is off for this workspace |
+| 403 | `forbidden` with `"code": "FEATURE_NOT_ENABLED"` | White-label workspace token: the endpoint needs Balances or Accounting, which this workspace doesn't have |
 | 400 | `bad_request` | Workspace id required but not supplied |
 | 500 | `server_error` | Failure while authenticating |
 
@@ -70,8 +70,8 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
   Connect tokens, account management (invites, members, workspaces) and billing are being closed off: see
   [OAuth](/docs/authentication/oauth#what-an-oauth-token-cant-do) and
   [Connect](/docs/kryptos-connect/backend#step-4-make-api-calls).
-- `FEATURE_NOT_ENABLED` — [switch the feature on](/docs/integrations-api/quickstart#switch-balances-and-accounting)
-  for the workspace, if Kryptos has enabled it for your client.
+- `FEATURE_NOT_ENABLED` — Kryptos hasn't enabled the feature for your client, or the workspace was created
+  before it was. Contact [support@kryptos.io](mailto:support@kryptos.io).
 - Errors from creating and managing white-label workspaces are listed in the
   [White-label quickstart](/docs/integrations-api/quickstart#errors-when-creating-a-workspace).
 

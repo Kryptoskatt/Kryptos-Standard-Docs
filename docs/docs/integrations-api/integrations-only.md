@@ -11,10 +11,9 @@ tokens and API, with [Balances and accounting](/docs/integrations-api/white-labe
 connects and syncs your customers' wallets and exchanges and gives you their transactions; what you do
 with them (display, analysis, your own calculations) is up to your product.
 
-Choose it when you only need the data, for example to feed your own ledger or tax engine. It's the
-default: a workspace created without `features` is Integrations only. You can
-[switch Balances and Accounting on](/docs/integrations-api/quickstart#switch-balances-and-accounting) for
-any workspace later, and mix both setups under one client.
+Choose it when you only need the data, for example to feed your own ledger or tax engine. It's what
+your workspaces get when Kryptos hasn't enabled Balances or Accounting for your client. To add them,
+contact [support@kryptos.io](mailto:support@kryptos.io).
 
 ## What you get
 

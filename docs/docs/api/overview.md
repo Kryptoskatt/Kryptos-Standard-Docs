@@ -38,7 +38,7 @@ Client credentials remain the credential where they belong: the calls on `connec
 that authenticate your application rather than a user. That's Kryptos Connect's
 [link-token and token-exchange endpoints](/docs/kryptos-connect/backend), session checks and grant
 management, and the [white-label](/docs/integrations-api/quickstart) workspace endpoints
-(`/developer/workspaces`, `/developer/workspaces/{id}/token`, `/developer/workspaces/{id}/features`,
+(`/developer/workspaces`, `/developer/workspaces/{id}/token`,
 `/token/grants`, `/token/revoke`, `/developer/grants/{id}/transaction-limit`). Keep them server-side.
 
 Get an access token by one of these routes:

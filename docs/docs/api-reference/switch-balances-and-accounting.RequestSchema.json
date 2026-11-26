@@ -1,1 +1,0 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"balances":{"type":"boolean","example":true},"accounting":{"type":"boolean","example":true}},"required":[]}}}}}

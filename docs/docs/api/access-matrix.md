@@ -18,10 +18,10 @@ is also limited by the user's role.
 | [Transactions](/docs/api/transactions), [ledgers](/docs/api/ledgers) | Read, write | Read | Read, write | Read, write |
 | [Labels](/docs/api/labels), [asset search](/docs/api/assets) | Read | Read | Read | — |
 | [Holdings](/docs/api/holdings), liabilities, [DeFi](/docs/api/defi), [NFTs](/docs/api/nfts) (as reported by the exchange or chain) | Read | Read | Read | Read |
-| Calculated balances, dashboard, graphs, reconciliation (computed from transaction and price history) | Read, with [Balances](/docs/integrations-api/white-label) switched on | Read | Read | Read |
+| Calculated balances, dashboard, graphs, reconciliation (computed from transaction and price history) | Read, with [Balances](/docs/integrations-api/white-label) enabled | Read | Read | Read |
 | [Spam](/docs/api/spam), [counterparties](/docs/api/counterparties) | — | Read | Read, write | Read, write |
 | [Contacts](/docs/api/contacts) | — | Read | Read, write | — |
-| Accounting, reports | Read and generate reports, with [Accounting](/docs/integrations-api/white-label) switched on | Read | Read, write (incl. generating reports) | Read, write (not generating reports) |
+| Accounting, reports | Read and generate reports, with [Accounting](/docs/integrations-api/white-label) enabled | Read | Read, write (incl. generating reports) | Read, write (not generating reports) |
 | Chart of accounts, recalculation | — | — | Read, write | Read, write |
 | The workspace and its tax settings | — | Read | Read; write tax settings | Read, write |
 | List the user's workspaces | — | — | Read | — |

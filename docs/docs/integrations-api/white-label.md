@@ -6,9 +6,9 @@ sidebar_position: 3
 
 # Balances and accounting
 
-The computing half of the [White-label backend](/docs/integrations-api/overview): Kryptos's accounting
-engine runs on the workspaces you switch it on for, and you read the results with the same workspace
-token.
+The computing half of the [White-label backend](/docs/integrations-api/overview): when Kryptos enables
+it for your client, Kryptos's accounting engine runs on your workspaces, and you read the results with the
+same workspace token.
 
 ## What you get
 
@@ -24,18 +24,16 @@ with Kryptos covers them.
 
 ## How it works
 
-1. **Kryptos enables the features for your client**: Balances, or Balances and Accounting. The
+1. **Kryptos enables the features for your client**: Balances, or Balances and Accounting. Ask
+   [support@kryptos.io](mailto:support@kryptos.io); the
    [Developer Portal](/docs/developer-portal#white-label-workspaces) shows what you have.
-2. **You switch them on per workspace**: with `features` when you
-   [create the workspace](/docs/integrations-api/quickstart#1-create-a-workspace), or any time later with
-   [`PATCH /developer/workspaces/{workspace_id}/features`](/docs/integrations-api/quickstart#switch-balances-and-accounting).
-3. **Kryptos computes.** Switching a feature on runs a calculation over the workspace's whole history
-   (you get a task id to poll), then keeps it up to date after every sync.
-4. **Read the results** with the same workspace token.
+2. **Every workspace you create gets them.** The create response's `features` shows which.
+3. **Kryptos computes** after every sync, and you read the results with the same workspace token.
 
-**Switching a feature off** stops computing, and its endpoints return `403 FEATURE_NOT_ENABLED` from the
-next request. Cost basis and gains on transactions go back to `null`. Switching it on again recomputes.
-If Kryptos stops enabling a feature for your client, every workspace loses it at once.
+You don't switch features yourself. If Kryptos stops enabling a feature for your client, its endpoints
+return `403 FEATURE_NOT_ENABLED` for every workspace from the next request, and cost basis and gains on
+transactions go back to `null`. A feature enabled later applies to workspaces you create after that:
+ask Kryptos about existing ones.
 
 ## Tax settings
 

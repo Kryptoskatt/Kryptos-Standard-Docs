@@ -25,18 +25,18 @@ the workspaces belong to your app.
 | **Connections** | 5,000+ sources: wallet addresses on 100+ chains, exchange API keys, CSV uploads. First sync on connect, then kept up to date. | [Integrations](/docs/api/integrations) |
 | **Transactions** | One normalised model for every source: incoming and outgoing assets, fees, a label (trade, deposit, staking reward…), priced per leg in the workspace's currency. Read and write. | [Transactions](/docs/api/transactions), [Ledgers](/docs/api/ledgers) |
 | **Holdings** | Balances, DeFi positions, NFTs and liabilities as each exchange or chain reports them. | [Holdings](/docs/api/holdings) |
-| **Balances** | Calculated balances per wallet and asset, portfolio value over time, reconciliation (missing prices, missing purchases, balance gaps). Switched on per workspace. | [Balances and accounting](/docs/integrations-api/white-label) |
-| **Accounting and tax** | Cost basis and lots, realised and unrealised gains, disposals per tax year, tax reports. Switched on per workspace. | [Balances and accounting](/docs/integrations-api/white-label) |
+| **Balances** | Calculated balances per wallet and asset, portfolio value over time, reconciliation (missing prices, missing purchases, balance gaps). Enabled by Kryptos for your client. | [Balances and accounting](/docs/integrations-api/white-label) |
+| **Accounting and tax** | Cost basis and lots, realised and unrealised gains, disposals per tax year, tax reports. Enabled by Kryptos for your client. | [Balances and accounting](/docs/integrations-api/white-label) |
 
-You choose per workspace. Switch Balances and Accounting on for customers who need them; leave them off
-for customers who need only the data, to run your own calculations: that's the
-**[Integrations only](/docs/integrations-api/integrations-only)** setup. Same workspaces, same token,
-same API.
+Kryptos enables Balances and Accounting for your client, and every workspace you create gets them. If
+you need only the data, to run your own calculations, that's the
+**[Integrations only](/docs/integrations-api/integrations-only)** setup: same workspaces, same token, same
+API.
 
 ## How it works
 
-1. **Create a workspace** for your customer: `POST /developer/workspaces` with your client ID and secret,
-   and the `features` you want switched on. You get back a `workspace_id` and a 24-hour `access_token`.
+1. **Create a workspace** for your customer: `POST /developer/workspaces` with your client ID and secret.
+   You get back a `workspace_id` and a 24-hour `access_token`.
 2. **Connect a wallet or exchange:** `POST /v1/integrations` with the workspace token. The first sync
    starts on its own.
 3. **Wait for the sync:** poll `GET /v1/integrations/{id}` until `lastSyncStatus` is `completed`, or listen
@@ -73,7 +73,6 @@ Kryptos sets these when it enables your developer workspace; the
 | Transactions per workspace | 100,000 (you can lower it per workspace, not raise it) |
 | Workspace creates per client | 30 per minute |
 | Token issues per client | 120 per minute |
-| Feature changes per client | 30 per minute |
 
 ## White-label, Connect or OAuth?
 

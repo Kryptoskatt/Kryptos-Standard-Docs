@@ -28,19 +28,17 @@ curl -X POST "https://connect-api.kryptos.io/developer/workspaces" \
     "name": "Customer 42",
     "country_code": "US",
     "base_currency_code": "USD",
-    "timezone": "UTC",
-    "features": { "balances": true, "accounting": true }
+    "timezone": "UTC"
   }'
 ```
 
-Every body field is optional (defaults: `"API Workspace"`, `US`, `USD`, `UTC`, no features):
+Every body field is optional (defaults: `"API Workspace"`, `US`, `USD`, `UTC`). `country_code` is ISO
+3166-1 alpha-2 in capitals, `base_currency_code` is ISO 4217, `timezone` is an IANA name. The base currency
+and time zone decide how transactions are priced and dated. Unknown fields return `400`.
 
-- `country_code` is ISO 3166-1 alpha-2 in capitals, `base_currency_code` is ISO 4217, `timezone` is an
-  IANA name. The base currency and time zone decide how transactions are priced and dated. Unknown fields
-  return `400`.
-- `features` switches on [Balances and Accounting](/docs/integrations-api/white-label) from the start.
-  Leave it out for [Integrations only](/docs/integrations-api/integrations-only); you can
-  [switch them later](#switch-balances-and-accounting).
+The workspace gets the [Balances and Accounting](/docs/integrations-api/white-label) features Kryptos
+enabled for your client, shown as `features` in the response. Without them it is
+[Integrations only](/docs/integrations-api/integrations-only).
 
 **Response `201`:**
 
@@ -183,29 +181,6 @@ curl -X POST "https://connect-api.kryptos.io/developer/workspaces/WORKSPACE_ID/t
   `{ "revoke_existing": true }`: every other token of that workspace stops at once, and the data stays.
 - At most 120 tokens per client per minute (`429 RATE_LIMITED`).
 
-### Switch Balances and Accounting
-
-```bash
-curl -X PATCH "https://connect-api.kryptos.io/developer/workspaces/WORKSPACE_ID/features" \
-  -H "X-Client-Id: YOUR_CLIENT_ID" \
-  -H "X-Client-Secret: YOUR_CLIENT_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{ "balances": true, "accounting": true }'
-```
-
-```json
-{ "success": true, "data": { "workspace_id": "ws_3e21…", "features": { "balances": true, "accounting": true }, "recompute_task_id": "4e1d…" } }
-```
-
-- Each feature must be enabled for your client by Kryptos (`403 FEATURE_NOT_GRANTED` otherwise), and
-  Accounting needs Balances (`400 INVALID_FEATURES`).
-- Switching **on** computes over the workspace's whole history: poll
-  `GET /v1/tasks/{recompute_task_id}` with the workspace token. After that, Kryptos keeps it up to date
-  after every sync.
-- Switching **off** stops computing; the feature's endpoints return `403 FEATURE_NOT_ENABLED` from the
-  next request.
-- At most 30 changes per client per minute.
-
 ### Revoke a workspace
 
 ```bash
@@ -251,8 +226,6 @@ their workspace ids. It also lists your Connect users' grants: white-label works
 | `403` | `API_WORKSPACES_NOT_ENABLED` | Request access for your developer workspace. |
 | `403` | `WORKSPACE_LIMIT_REACHED` | Revoke workspaces you no longer need, or ask for a higher limit. |
 | `409` | `CREATE_IN_PROGRESS` | Another create for this client is running. Retry after `Retry-After`. |
-| `400` | `INVALID_FEATURES` | `features.accounting` without `features.balances`. |
-| `403` | `FEATURE_NOT_GRANTED` | A requested feature isn't enabled for your client. |
 | `429` | `RATE_LIMITED` | Over 30 creates this minute. Retry after `Retry-After`. |
 | `503` | `TEMPORARILY_UNAVAILABLE` | Retry. |
 

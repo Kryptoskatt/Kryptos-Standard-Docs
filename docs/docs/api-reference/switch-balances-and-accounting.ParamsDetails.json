@@ -1,1 +1,0 @@
-{"parameters":[{"name":"workspace_id","in":"path","required":true,"schema":{"type":"string","example":"ws_3f9a1c7e2b"}}]}

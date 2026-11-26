@@ -27,11 +27,9 @@ All notable changes to the Kryptos API.
   default portfolio.
 - [White-label](/docs/integrations-api/white-label) (early access): Kryptos computes balances, cost
   basis, gains and tax reports for the workspaces your app creates.
-- **Balances and Accounting per workspace:** switch them on with `features` when you create a
-  workspace, or later with
-  [`PATCH /developer/workspaces/{workspace_id}/features`](/docs/integrations-api/quickstart#switch-balances-and-accounting).
-  With Accounting on, the workspace token gets real cost basis and gains and generates tax reports;
-  without a feature, its endpoints return `403 FEATURE_NOT_ENABLED`.
+- **Balances and Accounting:** Kryptos enables them for your client, and every workspace you create gets
+  them (`features` in the create response). With Accounting, the workspace token gets real cost basis and
+  gains and generates tax reports; without a feature, its endpoints return `403 FEATURE_NOT_ENABLED`.
 - Workspace tokens now last **24 hours**. Get a fresh one any time with
   [`POST /developer/workspaces/{workspace_id}/token`](/docs/integrations-api/quickstart#get-a-fresh-token);
   `revoke_existing: true` ends the others at once. Tokens issued earlier keep working.

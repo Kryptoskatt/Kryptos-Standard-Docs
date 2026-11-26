@@ -29,9 +29,9 @@ transaction's legs) are in the [API Reference](/docs/api-reference/kryptos-api).
 :::info Computed fields
 `costbasis`, `proceeds` and `profit` are **`null` for API callers** (OAuth, Connect, API keys, white-label
 workspace tokens), except a white-label workspace token whose workspace has
-[Accounting](/docs/integrations-api/white-label) switched on. `beforeBalance`/`afterBalance` and the
+[Accounting](/docs/integrations-api/white-label) enabled. `beforeBalance`/`afterBalance` and the
 `ltAfterBalance`/`gtAfterBalance` filters need the balance calculation: not computed for white-label
-workspaces unless Balances is switched on.
+workspaces unless Balances is enabled.
 :::
 
 ## Request

@@ -47,7 +47,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `status`, `excludeStatus` | string | — | Comma-separated: `pending`, `active`, `inactive`, `suspended`, `error` |
 | `syncStatus` | string | — | Latest sync state: `completed`, `partially_synced`, `in_progress`, `failed`, `cancelled`, `deletion_queued`, `delete_in_progress`, `deletion_stranded` |
 | `search` | string | — | Match on alias, address and account name |
-| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's. Not computed for white-label workspaces unless Balances is switched on |
+| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's. Not computed for white-label workspaces unless Balances is enabled |
 | `fields` | string | — | `summary` returns a lighter payload, see below |
 | `includeProviderCounts` | boolean | `false` | Also return `providerCounts`, the per-provider tally for the workspace |
 | `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |

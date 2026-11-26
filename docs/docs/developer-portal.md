@@ -128,9 +128,8 @@ on the **Connected Accounts** page shows where you stand:
   and the endpoints a workspace token can call.
 
 Workspaces your app creates appear in the accounts list with a **White-label** badge. From there you
-can switch [Balances and Accounting](/docs/integrations-api/white-label) on or off for the workspace
-(only the features Kryptos enabled), lower its transaction limit, or revoke it. You can also switch
-features through the API. The limit can't go above the one Kryptos set,
+can see its [Balances and Accounting](/docs/integrations-api/white-label) (set by Kryptos), lower its
+transaction limit, or revoke it. The limit can't go above the one Kryptos set,
 and the limiter can't be switched off.
 
 ## Next Steps

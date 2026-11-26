@@ -35,12 +35,6 @@ const sidebar: SidebarsConfig = {
             },
             {
               type: "doc",
-              id: "api-reference/switch-balances-and-accounting",
-              label: "Switch Balances and Accounting",
-              className: "api-method patch",
-            },
-            {
-              type: "doc",
               id: "api-reference/update-a-grants-transaction-limit",
               label: "Update a grant's transaction limit",
               className: "api-method patch",

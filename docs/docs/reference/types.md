@@ -102,7 +102,7 @@ interface Transaction {
   fee: LedgerLeg[];
   netValue?: { fiatValue: number | null; currency: string };
   // null for API callers (OAuth, Connect, API keys, white-label workspace tokens) unless the
-  // white-label workspace has Accounting switched on; also null until accounting has run.
+  // white-label workspace has Accounting enabled; also null until accounting has run.
   totalCostbasis?: number | null;
   totalGains?: number | null;
   explorerLink?: string | null;

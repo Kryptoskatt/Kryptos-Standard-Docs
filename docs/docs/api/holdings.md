@@ -19,12 +19,12 @@ allocation.
 | <span className="badge badge--get">GET</span> | `/v1/holdings/{assetId}` | ✓ |
 | <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}` | — |
 | <span className="badge badge--get">GET</span> | `/v1/holdings/portfolio/{portfolioId}/holdings/{assetId}` | — |
-| <span className="badge badge--get">GET</span> | `/v1/calculated-balances` | With [Balances](/docs/integrations-api/white-label) switched on |
+| <span className="badge badge--get">GET</span> | `/v1/calculated-balances` | With [Balances](/docs/integrations-api/white-label) enabled |
 | <span className="badge badge--get">GET</span> | `/v1/calculated-balances/portfolio/{portfolioId}` | — |
 
 Cost basis and profit fields (`costBasis`, `costPerUnit`, `unrealizedPnL`, `roiPercentage`) need the
 accounting calculation: for white-label workspaces they stay empty (`0` or `null`) unless Accounting is
-switched on.
+enabled.
 
 ## Request
 
@@ -63,7 +63,7 @@ Two kinds of balance exist side by side:
 - A **calculated** balance is reconstructed by replaying the transaction ledger. Accounts fed only by
   CSV, and custom wallets, have no provider to ask, so `/v1/holdings` shows their calculated balance.
   That needs the balance calculation: not computed for white-label workspaces unless Balances is
-  switched on (without it, such accounts have no holdings).
+  enabled (without it, such accounts have no holdings).
 
 By default `/v1/holdings` returns the provider-reported balance for every account that has one, and the
 calculated balance only for those that don't — the number a user expects to see. Then:
