@@ -45,17 +45,16 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
 | 401 | `invalid_client` (`Client is inactive`) | Kryptos switched off the OAuth client this token was issued to |
 | 403 | `insufficient_scope` | Valid credential, but it lacks the endpoint's scope |
 | 403 | `forbidden` | The request names a workspace other than the one your token or key is bound to |
-| 403 | `forbidden` with `"code": "MACHINE_ROUTE_NOT_ALLOWED"` | This endpoint is not available to this kind of token (OAuth, Connect or white-label workspace token) |
-| 403 | `forbidden` with `"code": "FEATURE_NOT_ENABLED"` | White-label workspace token: the endpoint needs Balances or Accounting, which this workspace doesn't have |
+| 403 | `forbidden` with `"code": "MACHINE_ROUTE_NOT_ALLOWED"` | This endpoint is not available to this kind of token (OAuth, Connect or Integrations API workspace token) |
 | 400 | `bad_request` | Workspace id required but not supplied |
 | 500 | `server_error` | Failure while authenticating |
 
 **Solutions**
 
 - `unauthorized` — send `Authorization: Bearer …` or `x-api-key`, not both. Check the token hasn't
-  expired: OAuth access tokens, Connect tokens from a refresh, and white-label workspace tokens last 24
+  expired: OAuth access tokens, Connect tokens from a refresh, and Integrations API workspace tokens last 24
   hours.
-  Refresh it (or, for a white-label workspace, [get a fresh one](/docs/integrations-api/quickstart#get-a-fresh-token)).
+  Refresh it (or, for a Integrations API workspace, [get a fresh one](/docs/integrations-api/quickstart#get-a-fresh-token)).
 - `invalid_client` — every token of the client stops when Kryptos switches it off. Contact
   [support@kryptos.io](mailto:support@kryptos.io).
 - `insufficient_scope` — `error_description` names the missing scope. Request it at authorization time,
@@ -65,15 +64,13 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
   the same workspace is fine. See [Workspaces](/docs/api/overview#workspaces).
 - `bad_request` — a signed-in app session (or a legacy unbound API key) must pass `?wid=`. Tokens and
   bound keys don't need it.
-- `MACHINE_ROUTE_NOT_ALLOWED` — not a scope problem, so adding scopes won't help. White-label workspace
+- `MACHINE_ROUTE_NOT_ALLOWED` — not a scope problem, so adding scopes won't help. Integrations API workspace
   tokens reach only the endpoints in the [API Reference](/docs/api-reference/kryptos-api). For OAuth and
   Connect tokens, account management (invites, members, workspaces) and billing are being closed off: see
   [OAuth](/docs/authentication/oauth#what-an-oauth-token-cant-do) and
   [Connect](/docs/kryptos-connect/backend#step-4-make-api-calls).
-- `FEATURE_NOT_ENABLED` — Kryptos hasn't enabled the feature for your client, or the workspace was created
-  before it was. Contact [support@kryptos.io](mailto:support@kryptos.io).
-- Errors from creating and managing white-label workspaces are listed in the
-  [White-label quickstart](/docs/integrations-api/quickstart#errors-when-creating-a-workspace).
+- Errors from creating and managing Integrations API workspaces are listed in the
+  [Integrations API quickstart](/docs/integrations-api/quickstart#errors-when-creating-a-workspace).
 
 ### The OAuth token endpoint
 

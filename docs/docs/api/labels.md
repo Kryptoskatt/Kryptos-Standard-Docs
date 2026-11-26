@@ -6,7 +6,7 @@ sidebar_position: 9
 
 # Labels
 
-**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect. See [Access by credential](/docs/api/access-matrix).
+**Available to:** Workspace token ([Integrations API](/docs/integrations-api/overview)) · OAuth · Connect. See [Access by credential](/docs/api/access-matrix).
 
 The canonical transaction labels, each with its transaction type and tax treatment. Fetch this rather
 than hard-coding a label list — the set grows over time.

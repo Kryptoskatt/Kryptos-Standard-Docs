@@ -38,8 +38,8 @@ const icon = (paths) => (
 const useCaseCards = [
   {
     icon: icon(<><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></>),
-    title: "White-label backend",
-    desc: "Kryptos as your product's backend: your customers' wallets, transactions, balances and tax, under your brand. Or just the data, with Integrations only.",
+    title: "Integrations API",
+    desc: "Your customers' wallets and exchanges, synced and normalised into transactions and holdings, through one API.",
     to: "/docs/integrations-api/overview",
   },
   {

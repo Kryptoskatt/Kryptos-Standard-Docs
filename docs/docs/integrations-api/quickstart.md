@@ -4,12 +4,12 @@ title: Quickstart
 sidebar_position: 2
 ---
 
-# White-label quickstart
+# Integrations API quickstart
 
 Create a workspace for a customer, connect a wallet, and read its transactions. Four requests.
 
 **Before you start:** a **production** client from the [Developer Portal](/docs/developer-portal), with
-white-label workspaces [enabled](/docs/developer-portal#white-label-workspaces). Call everything below
+Integrations API workspaces [enabled](/docs/developer-portal#integrations-api-workspaces). Call everything below
 from your **server**: the client secret and the workspace tokens must never reach a browser or app.
 
 | Base URL | Used for |
@@ -36,10 +36,6 @@ Every body field is optional (defaults: `"API Workspace"`, `US`, `USD`, `UTC`). 
 3166-1 alpha-2 in capitals, `base_currency_code` is ISO 4217, `timezone` is an IANA name. The base currency
 and time zone decide how transactions are priced and dated. Unknown fields return `400`.
 
-The workspace gets the [Balances and Accounting](/docs/integrations-api/white-label) features Kryptos
-enabled for your client, shown as `features` in the response. Without them it is
-[Integrations only](/docs/integrations-api/integrations-only).
-
 **Response `201`:**
 
 ```json
@@ -52,8 +48,7 @@ enabled for your client, shown as `features` in the response. Without them it is
     "token_type": "Bearer",
     "expires_in": 86400,
     "scope": "integrations:read integrations:write portfolios:read transactions:read transactions:write connect:api",
-    "transaction_limit": 100000,
-    "features": { "balances": true, "accounting": true }
+    "transaction_limit": 100000
   }
 }
 ```
@@ -211,9 +206,9 @@ return `403 LIMIT_ABOVE_CEILING`.
 ### List your workspaces
 
 `GET https://connect-api.kryptos.io/token/grants` (client ID + secret) lists your active grants, with
-their workspace ids. It also lists your Connect users' grants: white-label workspaces are the ones whose
+their workspace ids. It also lists your Connect users' grants: Integrations API workspaces are the ones whose
 `scopes` include `connect:api`. The [Developer Portal](/docs/developer-portal) shows them too, with a
-**White-label** badge.
+**API workspace** badge.
 
 ## Errors when creating a workspace
 

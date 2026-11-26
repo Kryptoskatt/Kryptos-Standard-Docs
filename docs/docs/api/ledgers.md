@@ -6,7 +6,7 @@ sidebar_position: 8
 
 # Ledgers
 
-**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+**Available to:** Workspace token ([Integrations API](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
 
 A ledger is one leg of a transaction — a single asset moving in, out, or paid as a fee. This endpoint
 queries them directly, across transactions, which is what you want for balance reconciliation and
@@ -27,11 +27,9 @@ field**, and nests handler errors as `{ error: { code, message } }`. Leg writes 
 transaction's legs) are in the [API Reference](/docs/api-reference/kryptos-api).
 
 :::info Computed fields
-`costbasis`, `proceeds` and `profit` are **`null` for API callers** (OAuth, Connect, API keys, white-label
-workspace tokens), except a white-label workspace token whose workspace has
-[Accounting](/docs/integrations-api/white-label) enabled. `beforeBalance`/`afterBalance` and the
-`ltAfterBalance`/`gtAfterBalance` filters need the balance calculation: not computed for white-label
-workspaces unless Balances is enabled.
+`costbasis`, `proceeds` and `profit` are **`null` for API callers** (OAuth, Connect, API keys, Integrations API
+workspace tokens). `beforeBalance`/`afterBalance` and the `ltAfterBalance`/`gtAfterBalance` filters need
+the balance calculation, which Integrations API workspaces don't run.
 :::
 
 ## Request

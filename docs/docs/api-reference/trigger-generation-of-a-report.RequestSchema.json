@@ -1,1 +1,0 @@
-{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["year","reportKey"],"properties":{"year":{"type":"integer","minimum":2015,"maximum":2100},"reportKey":{"type":"string","minLength":1,"description":"Report identifier from the catalog (report_types.platform)."}}}}}}}

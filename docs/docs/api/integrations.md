@@ -6,7 +6,7 @@ sidebar_position: 11
 
 # Integrations
 
-**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key (read). See [Access by credential](/docs/api/access-matrix).
+**Available to:** Workspace token ([Integrations API](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key (read). See [Access by credential](/docs/api/access-matrix).
 
 A connected exchange, wallet or blockchain address, with its sync state and per-asset holdings.
 
@@ -20,7 +20,7 @@ A connected exchange, wallet or blockchain address, with its sync state and per-
 | <span className="badge badge--get">GET</span> | `/v1/integrations/{id}/assets` | Per-asset holdings breakdown (not available to workspace tokens) |
 
 **Connecting accounts.** In [Kryptos Connect](/docs/kryptos-connect/overview), users connect through
-the widget, which handles credentials and CSV upload for you. A [White-label](/docs/integrations-api/overview)
+the widget, which handles credentials and CSV upload for you. A [Integrations API](/docs/integrations-api/overview)
 server connects them itself with `POST /v1/integrations` (wallet address or exchange API key), and can
 also update, sync, resync, test credentials and delete; see the
 [quickstart](/docs/integrations-api/quickstart) and the [API Reference](/docs/api-reference/kryptos-api).
@@ -47,7 +47,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 | `status`, `excludeStatus` | string | — | Comma-separated: `pending`, `active`, `inactive`, `suspended`, `error` |
 | `syncStatus` | string | — | Latest sync state: `completed`, `partially_synced`, `in_progress`, `failed`, `cancelled`, `deletion_queued`, `delete_in_progress`, `deletion_stranded` |
 | `search` | string | — | Match on alias, address and account name |
-| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's. Not computed for white-label workspaces unless Balances is enabled |
+| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's. Not computed for Integrations API workspaces |
 | `fields` | string | — | `summary` returns a lighter payload, see below |
 | `includeProviderCounts` | boolean | `false` | Also return `providerCounts`, the per-provider tally for the workspace |
 | `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |

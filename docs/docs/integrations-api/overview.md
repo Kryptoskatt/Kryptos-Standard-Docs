@@ -1,37 +1,50 @@
 ---
 id: overview
-title: White-label backend
+title: Integrations API
 sidebar_position: 1
 ---
 
-# White-label backend
+# Integrations API
 
 :::info Early access
-White-label is enabled per developer workspace and needs a **production** client. Request access from
-the [Developer Portal](/docs/developer-portal#white-label-workspaces) or at
+The Integrations API is enabled per developer workspace and needs a **production** client. Request access from
+the [Developer Portal](/docs/developer-portal#integrations-api-workspaces) or at
 [support@kryptos.io](mailto:support@kryptos.io).
 :::
 
-Run your crypto product on Kryptos. White-label is the whole Kryptos backend behind **your** brand: your
-server creates a Kryptos workspace for each of your customers, and Kryptos connects their wallets and
-exchanges, keeps them synced, and turns the activity into transactions, holdings, balances and tax
-figures that you read through one API. Your customers never see Kryptos and never need a Kryptos account:
-the workspaces belong to your app.
+Your customers' crypto data through one API. Your server creates a Kryptos workspace for each of your
+customers, and Kryptos connects their wallets and exchanges, keeps them synced, and gives you their
+transactions and holdings through one API. What you do with the data (display, analysis, your own
+ledger or tax engine) is up to your product. Your customers never see Kryptos and never need a Kryptos
+account: the workspaces belong to your app.
 
-## Everything in one backend
+## What you get
 
 | Layer | What Kryptos does for each workspace | Read more |
 | --- | --- | --- |
 | **Connections** | 5,000+ sources: wallet addresses on 100+ chains, exchange API keys, CSV uploads. First sync on connect, then kept up to date. | [Integrations](/docs/api/integrations) |
 | **Transactions** | One normalised model for every source: incoming and outgoing assets, fees, a label (trade, deposit, staking reward…), priced per leg in the workspace's currency. Read and write. | [Transactions](/docs/api/transactions), [Ledgers](/docs/api/ledgers) |
 | **Holdings** | Balances, DeFi positions, NFTs and liabilities as each exchange or chain reports them. | [Holdings](/docs/api/holdings) |
-| **Balances** | Calculated balances per wallet and asset, portfolio value over time, reconciliation (missing prices, missing purchases, balance gaps). Enabled by Kryptos for your client. | [Balances and accounting](/docs/integrations-api/white-label) |
-| **Accounting and tax** | Cost basis and lots, realised and unrealised gains, disposals per tax year, tax reports. Enabled by Kryptos for your client. | [Balances and accounting](/docs/integrations-api/white-label) |
 
-Kryptos enables Balances and Accounting for your client, and every workspace you create gets them. If
-you need only the data, to run your own calculations, that's the
-**[Integrations only](/docs/integrations-api/integrations-only)** setup: same workspaces, same token, same
-API.
+## What the workspace token can call
+
+| Area | Access |
+| --- | --- |
+| Integrations, syncs, CSV uploads, credentials | Read and write |
+| Transactions and ledgers | Read and write |
+| Holdings, liabilities, DeFi, NFTs (as each exchange or chain reports them) | Read |
+| Labels, asset search, background tasks | Read |
+
+The [API Reference](/docs/api-reference/kryptos-api) lists every endpoint a workspace token can call, with
+its parameters.
+
+## What it doesn't include
+
+- **Computed balances, cost basis, gains and tax reports.** Kryptos doesn't compute them for these
+  workspaces. Holdings come only from what each exchange or chain reports: their cost-basis and profit
+  fields are empty (`0` or `null`), and a CSV-only account has no holdings.
+- **Account features:** members, invites, workspace settings and billing are never available to a
+  workspace token.
 
 ## How it works
 
@@ -41,7 +54,7 @@ API.
    starts on its own.
 3. **Wait for the sync:** poll `GET /v1/integrations/{id}` until `lastSyncStatus` is `completed`, or listen
    for the `integration.updated` webhook.
-4. **Read what you need:** transactions, holdings, balances, gains and reports, all with the same token.
+4. **Read the data:** transactions, ledgers and holdings, all with the same token.
 
 The [quickstart](/docs/integrations-api/quickstart) walks through these steps with real requests.
 
@@ -65,7 +78,7 @@ Creating a workspace returns an **access token for that workspace only**. Use it
 ## Limits
 
 Kryptos sets these when it enables your developer workspace; the
-[Developer Portal](/docs/developer-portal#white-label-workspaces) shows them.
+[Developer Portal](/docs/developer-portal#integrations-api-workspaces) shows them.
 
 | Limit | Default |
 | --- | --- |
@@ -74,9 +87,9 @@ Kryptos sets these when it enables your developer workspace; the
 | Workspace creates per client | 30 per minute |
 | Token issues per client | 120 per minute |
 
-## White-label, Connect or OAuth?
+## Integrations API, Connect or OAuth?
 
-- **White-label:** your customers, your workspaces, your brand. No Kryptos account.
+- **Integrations API:** your customers, your workspaces, your server. No Kryptos account.
 - **[Kryptos Connect](/docs/kryptos-connect/overview):** your users share *their* Kryptos data with you
   through a widget, with consent. Read only.
 - **[OAuth](/docs/authentication/oauth):** your app acts for a Kryptos user inside their own account.

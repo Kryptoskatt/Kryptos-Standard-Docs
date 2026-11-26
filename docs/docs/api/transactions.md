@@ -6,7 +6,7 @@ sidebar_position: 7
 
 # Transactions
 
-**Available to:** Workspace token ([White-label](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+**Available to:** Workspace token ([Integrations API](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
 
 The transaction record, with filtering across labels, types, accounts, assets, addresses and time.
 
@@ -29,9 +29,8 @@ API — **`{ data, meta }` with no `success` field**, and handler errors nested 
 
 :::info Tax fields for API callers
 `totalCostbasis` and `totalGains` (and each leg's `costbasis`, `proceeds`, `profit`) are **`null` for
-API callers** — OAuth, Connect, API keys and white-label workspace tokens — except a white-label
-workspace token whose workspace has [Accounting](/docs/integrations-api/white-label) enabled. The
-same callers can't sort or filter by gains: `sortBy=totalGains` and `minTotalGains` return
+API callers** — OAuth, Connect, API keys and Integrations API workspace tokens. The same callers can't
+sort or filter by gains: `sortBy=totalGains` and `minTotalGains` return
 `403 GAINS_FILTER_NOT_AVAILABLE` (except `minTotalGains` at the high-P&L threshold reported by the
 reconciliation summary).
 :::
@@ -88,7 +87,7 @@ Boolean flags (pass `true`):
 Spam- and Ignore-labelled transactions are **excluded by default**. Totals computed from an
 unfiltered list will not match a UI that shows them.
 
-¹ Set by the balance calculation. Not computed for white-label workspaces unless Balances is enabled.
+¹ Set by the balance calculation. Not computed for Integrations API workspaces.
 
 Ranges, sorting and paging:
 
@@ -167,7 +166,7 @@ Ranges, sorting and paging:
 | `description`, `notes` | string | Free text |
 | `importSource` | object | `type` (`API`/`CSV`/`Manual`), `importedAt`, `walletId`, `csvLink`, `syncId`, `functionName` |
 | `isManual`, `isEdited`, `isDefiTrx`, `isNFTTrx` | boolean | Provenance and classification flags |
-| `isMissingTransaction` | boolean | Set by the balance stage — the running balance went negative here. Not computed for white-label workspaces unless Balances is enabled |
+| `isMissingTransaction` | boolean | Set by the balance stage — the running balance went negative here. Not computed for Integrations API workspaces |
 | `protocol` | object | DeFi protocol context, when applicable |
 | `tags` | array | User tags |
 | `comments` | array | `{ id, text, timestamp, author }` |

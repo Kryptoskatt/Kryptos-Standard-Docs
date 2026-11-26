@@ -20,7 +20,7 @@ NFT holdings across chains, individually or grouped by collection.
 | <span className="badge badge--get">GET</span> | `/v1/nfts/portfolio/{portfolioId}` | Individual NFTs, one portfolio |
 | <span className="badge badge--get">GET</span> | `/v1/nfts/portfolio/{portfolioId}/{contractAddress}/{tokenId}` | One NFT, one portfolio |
 
-Workspace tokens ([White-label](/docs/integrations-api/overview)) use the three workspace-wide endpoints;
+Workspace tokens ([Integrations API](/docs/integrations-api/overview)) use the three workspace-wide endpoints;
 the portfolio forms aren't needed there.
 
 ## Request

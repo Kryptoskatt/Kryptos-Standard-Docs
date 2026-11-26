@@ -66,7 +66,7 @@ Create a link token endpoint on your backend that the Web SDK's `generateLinkTok
 
 Returns `201 Created`. Errors: `400` with `Invalid scopes: …` (a scope your client doesn't have),
 `400 TOKEN_CLIENT_MISMATCH` (the `access_token` belongs to another client),
-`400 CONNECT_API_TOKEN_NOT_RESUMABLE` (a white-label workspace token), and `401` for bad client
+`400 CONNECT_API_TOKEN_NOT_RESUMABLE` (a Integrations API workspace token), and `401` for bad client
 credentials. An expired or revoked `access_token` is not an error: you get a plain link token without
 `has_existing_grant`.
 
@@ -876,7 +876,7 @@ await updateTransactionLimit("cgrant_abc123", { enableLimiter: false });
 
 | Field              | Type    | Required | Description                                      |
 | ------------------ | ------- | -------- | ------------------------------------------------ |
-| `transactionLimit` | number  | No*      | Positive integer. Per-user limit. Not capped, except for white-label workspaces (see below). |
+| `transactionLimit` | number  | No*      | Positive integer. Per-user limit. Not capped, except for Integrations API workspaces (see below). |
 | `enableLimiter`    | boolean | No*      | Whether the limiter is active for this user.     |
 
 \* At least one field is required.
@@ -954,7 +954,7 @@ listed per grant by [`GET /token/grants`](#list-connected-grants).
 | 401    | -                 | Invalid client credentials.                              |
 | 403    | `ACCESS_DENIED`   | Grant does not belong to this client.                    |
 | 403    | `WORKSPACE_NOT_BOUND` | The grant has no workspace (an old grant): the user must reconnect. |
-| 403    | `LIMIT_ABOVE_CEILING` | White-label workspace: the limit is above the ceiling Kryptos set for your client, or you tried to switch the limiter off. |
+| 403    | `LIMIT_ABOVE_CEILING` | Integrations API workspace: the limit is above the ceiling Kryptos set for your client, or you tried to switch the limiter off. |
 | 404    | `GRANT_NOT_FOUND` | No grant found with this ID.                             |
 
 :::info Guest accounts only

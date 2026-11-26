@@ -1,1 +1,0 @@
-{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"wid","in":"query","required":false,"schema":{"type":"string"},"description":"Not needed: the workspace comes from your token. If you send it, it must be your `workspace_id`."},{"name":"method","in":"query","schema":{"type":"string"}}]}

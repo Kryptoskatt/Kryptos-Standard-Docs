@@ -37,7 +37,7 @@ tokens are validated against the grant that issued them, so nothing else is requ
 Client credentials remain the credential where they belong: the calls on `connect-api.kryptos.io`
 that authenticate your application rather than a user. That's Kryptos Connect's
 [link-token and token-exchange endpoints](/docs/kryptos-connect/backend), session checks and grant
-management, and the [white-label](/docs/integrations-api/quickstart) workspace endpoints
+management, and the [Integrations API](/docs/integrations-api/quickstart) workspace endpoints
 (`/developer/workspaces`, `/developer/workspaces/{id}/token`,
 `/token/grants`, `/token/revoke`, `/developer/grants/{id}/transaction-limit`). Keep them server-side.
 
@@ -45,7 +45,7 @@ Get an access token by one of these routes:
 
 | Route | Use when | Guide |
 | --- | --- | --- |
-| White-label backend | Your server creates workspaces for your own customers (a token bound to each workspace) | [White-label backend](/docs/integrations-api/overview) |
+| Integrations API | Your server creates workspaces for your own customers (a token bound to each workspace) | [Integrations API](/docs/integrations-api/overview) |
 | Kryptos Connect | You embed the widget and your users share their Kryptos data with you (read only) | [Connect overview](/docs/kryptos-connect/overview) |
 | Authorization Code + PKCE | Your app acts for users signed in with their own Kryptos accounts | [OAuth 2.0](/docs/authentication/oauth) |
 
@@ -77,7 +77,7 @@ workspace you mean depends on your credential:
 - **Access tokens issued through Kryptos Connect or OAuth are bound to one workspace.** Omit the
   workspace parameter — it is already in the token. Passing a *different* workspace id is rejected
   with `403 forbidden`.
-- **White-label workspace tokens are bound to the workspace your app created.** Same rule, except that
+- **Integrations API workspace tokens are bound to the workspace your app created.** Same rule, except that
   integration, sync, CSV and credential endpoints take `workspaceId`: send the token's own workspace.
 - **API keys are bound to one workspace too**, chosen when the key is created. Omit the workspace
   parameter — it is already on the key. Passing a *different* workspace id is rejected with
@@ -101,7 +101,7 @@ Each endpoint requires one scope, listed on its page as **Required Permission**.
 OAuth flows additionally use the standard OIDC scopes `openid`, `profile`, `email` and
 `offline_access`. The full vocabulary includes write scopes and further resources — see
 [Available Scopes](/docs/authentication/oauth#available-scopes). OAuth apps request scopes at
-authorization; white-label workspace tokens get a fixed set from Kryptos.
+authorization; Integrations API workspace tokens get a fixed set from Kryptos.
 
 `contacts:read` is **not** in the default client scope set — your client must be registered with it, not
 just request it. See [Scopes](/docs/authentication/oauth#available-scopes).

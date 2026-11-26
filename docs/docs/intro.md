@@ -25,7 +25,7 @@ Each guide covers one way of building on Kryptos, from setup to your first API c
 
 | Use case | Build this when | Guide |
 | --- | --- | --- |
-| **White-label backend** (early access) | Kryptos is the backend of your crypto product: your customers' wallets and exchanges, transactions, balances and tax, under your brand and without a Kryptos account. Need only the data? Use the [Integrations only](/docs/integrations-api/integrations-only) setup. | [White-label backend](/docs/integrations-api/overview) |
+| **Integrations API** (early access) | Your server creates a workspace per customer, connects their wallets and exchanges, and reads their transactions and holdings. Your customers don't need a Kryptos account. | [Integrations API](/docs/integrations-api/overview) |
 | **Kryptos Connect** | Your users connect their wallets and exchanges, or their Kryptos account, and share that data with your app (read only) | [Kryptos Connect](/docs/kryptos-connect/overview) |
 | **Sign in with Kryptos** | Your app acts for a Kryptos user inside their own account, with OAuth 2.0 | [OAuth 2.0](/docs/authentication/oauth) |
 | **API keys** | You automate one of your own Kryptos workspaces, server to server. Each key is valid for a single workspace, the one it was created in (paid plans) | [API keys](/docs/authentication/api-key) |
@@ -44,7 +44,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/holdings" \
 ```
 
 Send your access token as a bearer token (API keys use the `x-api-key` header instead). The **[API Reference](/docs/api-reference/kryptos-api)**
-lists the White-label endpoints; [Access by credential](/docs/api/access-matrix) shows what OAuth,
+lists the Integrations API endpoints; [Access by credential](/docs/api/access-matrix) shows what OAuth,
 Connect and API keys can reach.
 
 :::tip Migrating?

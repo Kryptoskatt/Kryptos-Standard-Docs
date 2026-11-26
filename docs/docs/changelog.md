@@ -12,24 +12,19 @@ All notable changes to the Kryptos API.
 
 ## November 2026
 
-**New — White-label backend (early access)**
+**New — Integrations API (early access)**
 
 - Create workspaces for your own customers from your server with your client ID and secret
   ([`POST /developer/workspaces`](/docs/integrations-api/quickstart#1-create-a-workspace)), connect their
   wallets and exchanges, and read clean, priced transactions with one token per workspace.
 - The token can call a fixed set of endpoints, listed in the [API Reference](/docs/api-reference/kryptos-api). Request access from the
-  [Developer Portal](/docs/developer-portal#white-label-workspaces).
+  [Developer Portal](/docs/developer-portal#integrations-api-workspaces).
 - New: [Pick your use case](/docs/intro#pick-your-use-case) and
   [Access by credential](/docs/api/access-matrix).
 - Workspace tokens can read [holdings](/docs/api/holdings), liabilities, [DeFi](/docs/api/defi) and
   [NFTs](/docs/api/nfts) as each exchange or chain reports them.
 - `primaryPortfolioId` is no longer needed when you connect an integration: it goes into the workspace's
   default portfolio.
-- [White-label](/docs/integrations-api/white-label) (early access): Kryptos computes balances, cost
-  basis, gains and tax reports for the workspaces your app creates.
-- **Balances and Accounting:** Kryptos enables them for your client, and every workspace you create gets
-  them (`features` in the create response). With Accounting, the workspace token gets real cost basis and
-  gains and generates tax reports; without a feature, its endpoints return `403 FEATURE_NOT_ENABLED`.
 - Workspace tokens now last **24 hours**. Get a fresh one any time with
   [`POST /developer/workspaces/{workspace_id}/token`](/docs/integrations-api/quickstart#get-a-fresh-token);
   `revoke_existing: true` ends the others at once. Tokens issued earlier keep working.

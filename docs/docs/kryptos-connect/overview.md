@@ -16,7 +16,7 @@ and agree to share that data with you. The workspace belongs to the user; your b
 **read-only** access token for it. Users without a Kryptos account are created as guests on the fly.
 
 Building on your own customers' data without them having Kryptos accounts? Use the
-[White-label backend](/docs/integrations-api/overview). Need to act inside a Kryptos user's account? Use
+[Integrations API](/docs/integrations-api/overview). Need to act inside a Kryptos user's account? Use
 [OAuth 2.0](/docs/authentication/oauth). Compare them in
 [Pick your use case](/docs/intro#pick-your-use-case).
 :::

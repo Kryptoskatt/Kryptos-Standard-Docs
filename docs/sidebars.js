@@ -79,13 +79,11 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "White-label backend",
+      label: "Integrations API",
       collapsed: false,
       items: [
         "integrations-api/overview",
         "integrations-api/quickstart",
-        "integrations-api/white-label",
-        "integrations-api/integrations-only",
       ],
     },
     {

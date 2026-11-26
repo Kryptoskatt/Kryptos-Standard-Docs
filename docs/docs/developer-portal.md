@@ -13,7 +13,7 @@ secret), and watch the accounts and workspaces your app reaches. Every integrati
 
 | Integration | What you need from the portal |
 | --- | --- |
-| [White-label backend](/docs/integrations-api/overview) | A **production** client, with [white-label workspaces](#white-label-workspaces) enabled |
+| [Integrations API](/docs/integrations-api/overview) | A **production** client, with [Integrations API workspaces](#integrations-api-workspaces) enabled |
 | [Kryptos Connect](/docs/kryptos-connect/overview) | A client with its allowed origins |
 | [OAuth 2.0](/docs/authentication/oauth) | A client with its redirect URIs |
 
@@ -115,28 +115,26 @@ Connect distinguishes two grant types:
 You can also manage transaction limits via the API using your client credentials. See [Update Transaction Limit](/docs/kryptos-connect/backend#update-transaction-limit) in the backend guide.
 :::
 
-## White-label workspaces
+## Integrations API workspaces
 
-The [White-label backend](/docs/integrations-api/overview) lets your production clients create workspaces
-for your own customers. Kryptos enables it per developer workspace. The **White-label workspaces** card
+The [Integrations API](/docs/integrations-api/overview) lets your production clients create workspaces
+for your own customers. Kryptos enables it per developer workspace. The **Integrations API** card
 on the **Connected Accounts** page shows where you stand:
 
 - **Not enabled:** the card explains the product and has a **Request access** button, which emails
   support with your workspace details.
-- **Enabled:** the card shows your limits (workspaces per client, transactions per workspace), the
-  features Kryptos enabled for your client ([Balances, Accounting](/docs/integrations-api/white-label)),
-  and the endpoints a workspace token can call.
+- **Enabled:** the card shows your limits (workspaces per client, transactions per workspace) and the
+  endpoints a workspace token can call.
 
-Workspaces your app creates appear in the accounts list with a **White-label** badge. From there you
-can see its [Balances and Accounting](/docs/integrations-api/white-label) (set by Kryptos), lower its
-transaction limit, or revoke it. The limit can't go above the one Kryptos set,
+Workspaces your app creates appear in the accounts list with a **API workspace** badge. From there you
+can lower its transaction limit, or revoke it. The limit can't go above the one Kryptos set,
 and the limiter can't be switched off.
 
 ## Next Steps
 
 Pick the guide for what you're building:
 
-- **[White-label quickstart →](/docs/integrations-api/quickstart)** - Create a workspace, add a wallet, read its transactions
+- **[Integrations API quickstart →](/docs/integrations-api/quickstart)** - Create a workspace, add a wallet, read its transactions
 - **[Kryptos Connect →](/docs/kryptos-connect/overview)** - Embed the widget and exchange its token
 - **[OAuth 2.0 →](/docs/authentication/oauth)** - Implement the authorization code flow with PKCE
 - **[API keys →](/docs/authentication/api-key)** - Automate your own workspace (paid plans)

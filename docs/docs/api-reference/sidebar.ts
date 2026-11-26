@@ -23,8 +23,8 @@ const sidebar: SidebarsConfig = {
           items: [
             {
               type: "doc",
-              id: "api-reference/create-a-white-label-workspace",
-              label: "Create a white-label workspace",
+              id: "api-reference/create-an-integrations-api-workspace",
+              label: "Create an Integrations API workspace",
               className: "api-method post",
             },
             {
@@ -405,12 +405,6 @@ const sidebar: SidebarsConfig = {
             },
             {
               type: "doc",
-              id: "api-reference/get-the-disposal-lots-consumed-by-this-transaction",
-              label: "Get the disposal lots consumed by this transaction",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
               id: "api-reference/bulk-update-ledger-entries-for-a-transaction",
               label: "Bulk update ledger entries for a transaction",
               className: "api-method patch",
@@ -487,24 +481,6 @@ const sidebar: SidebarsConfig = {
           items: [
             {
               type: "doc",
-              id: "api-reference/dashboard-totals-summary",
-              label: "Dashboard totals summary",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/workspace-wide-value-graph",
-              label: "Workspace-wide value graph",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/single-assets-value-cost-basis-graph",
-              label: "Single asset's value + cost-basis graph",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
               id: "api-reference/de-fi-positions",
               label: "DeFi positions",
               className: "api-method get",
@@ -538,170 +514,6 @@ const sidebar: SidebarsConfig = {
               id: "api-reference/liability-positions",
               label: "Liability positions",
               className: "api-method get",
-            },
-          ],
-        },
-        {
-          type: "category",
-          label: "Calculated Balances",
-          link: {
-            type: "doc",
-            id: "api-reference/calculated-balances",
-          },
-          collapsed: true,
-          items: [
-            {
-              type: "doc",
-              id: "api-reference/workspace-wide-derived-balances-reconstructed-from-ledgers-with-live-prices",
-              label: "Workspace-wide derived balances (reconstructed from ledgers, with live prices)",
-              className: "api-method get",
-            },
-          ],
-        },
-        {
-          type: "category",
-          label: "Reconciliation",
-          link: {
-            type: "doc",
-            id: "api-reference/reconciliation",
-          },
-          collapsed: true,
-          items: [
-            {
-              type: "doc",
-              id: "api-reference/ledger-legs-with-no-resolved-price-grouped-by-asset-wallet",
-              label: "Ledger legs with no resolved price, grouped by asset + wallet",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/sells-with-no-prior-buy-negative-running-balance-grouped-by-asset-wallet",
-              label: "Sells with no prior buy (negative running balance), grouped by asset + wallet",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/api-reported-vs-calculated-ledger-derived-balance-mismatches",
-              label: "API-reported vs calculated (ledger-derived) balance mismatches",
-              className: "api-method get",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "Accounting & tax",
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: "doc",
-          id: "api-reference/kryptos-api",
-        },
-        {
-          type: "category",
-          label: "Accounting",
-          link: {
-            type: "doc",
-            id: "api-reference/accounting",
-          },
-          collapsed: true,
-          items: [
-            {
-              type: "doc",
-              id: "api-reference/resolved-accounting-settings-method-fiscal-toggles",
-              label: "Resolved accounting settings (method, fiscal, toggles)",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/last-calculation-time-whether-any-output-exists",
-              label: "Last calculation time + whether any output exists",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/list-per-fiscal-year-tax-reports",
-              label: "List per-fiscal-year tax reports",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/distinct-fiscal-years-that-have-a-report-and-still-hold-transactions-fy-picker",
-              label: "Distinct fiscal years that have a report and still hold transactions (FY picker)",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/lot-level-disposal-drill-down-for-a-fiscal-year",
-              label: "Lot-level disposal drill-down for a fiscal year",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/start-of-year-end-of-year-open-lots-for-a-fiscal-year",
-              label: "Start-of-year / end-of-year open lots for a fiscal year",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/open-lots-current-or-as-of-a-past-timestamp",
-              label: "Open lots (current, or as of a past timestamp)",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/underwater-positions-tax-loss-harvesting-simulation",
-              label: "Underwater positions + tax-loss-harvesting simulation",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/on-demand-derived-breakdown-income-expenses-gifts-other-gains-unmatched",
-              label: "On-demand derived breakdown (income / expenses / gifts / other-gains / unmatched)",
-              className: "api-method get",
-            },
-          ],
-        },
-        {
-          type: "category",
-          label: "Reports",
-          link: {
-            type: "doc",
-            id: "api-reference/reports",
-          },
-          collapsed: true,
-          items: [
-            {
-              type: "doc",
-              id: "api-reference/list-report-types-generatable-for-the-workspace-country",
-              label: "List report types generatable for the workspace country",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/trigger-generation-of-a-report",
-              label: "Trigger generation of a report",
-              className: "api-method post",
-            },
-            {
-              type: "doc",
-              id: "api-reference/list-every-generation-run-of-this-workspace",
-              label: "List every generation run of this workspace",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/get-a-signed-download-url-for-one-report-run",
-              label: "Get a signed download URL for one report run",
-              className: "api-method get",
-            },
-            {
-              type: "doc",
-              id: "api-reference/get-a-signed-download-url-for-the-latest-run-of-a-report",
-              label: "Get a signed download URL for the latest run of a report",
-              className: "menu__list-item--deprecated api-method get",
             },
           ],
         },

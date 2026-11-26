@@ -19,7 +19,7 @@ and write, within those scopes and what the user's role allows, but never manage
 
 Only reading data users share with you? [Kryptos Connect](/docs/kryptos-connect/overview) is simpler.
 Serving your own customers without Kryptos accounts? Use the
-[White-label backend](/docs/integrations-api/overview).
+[Integrations API](/docs/integrations-api/overview).
 :::
 
 ## Endpoints

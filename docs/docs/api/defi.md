@@ -20,7 +20,7 @@ Lending, borrowing, staking, farming, derivatives and reward positions across pr
 Portfolio-scoped forms: `/v1/defi/portfolio/{portfolioId}`, `/v1/defi/portfolio/{portfolioId}/totals`,
 and the category shortcuts `/v1/defi/portfolio/{portfolioId}/staking`, `/lending` and `/farming`
 (shorthand for `?category=…`). They exist only per portfolio; workspace-wide, use
-`/v1/defi?category=staking`. Workspace tokens ([White-label](/docs/integrations-api/overview)) can call
+`/v1/defi?category=staking`. Workspace tokens ([Integrations API](/docs/integrations-api/overview)) can call
 the three workspace-wide endpoints only.
 
 ## Request

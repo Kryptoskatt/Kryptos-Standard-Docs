@@ -10,7 +10,7 @@ Each kind of credential can reach a different part of the API. Within what it ca
 needs the endpoint's scope (listed on each endpoint page as **Required Permission**), and an OAuth token
 is also limited by the user's role.
 
-| | [Workspace token](/docs/integrations-api/overview) (White-label) | [Connect](/docs/kryptos-connect/overview) | [OAuth](/docs/authentication/oauth) | [API key](/docs/authentication/api-key) |
+| | [Workspace token](/docs/integrations-api/overview) (Integrations API) | [Connect](/docs/kryptos-connect/overview) | [OAuth](/docs/authentication/oauth) | [API key](/docs/authentication/api-key) |
 | --- | --- | --- | --- | --- |
 | [Integrations](/docs/api/integrations), syncs | Read, write | Read | Read, write | Read |
 | CSV uploads, credentials | Read, write | Read | Read, write | — |
@@ -18,10 +18,10 @@ is also limited by the user's role.
 | [Transactions](/docs/api/transactions), [ledgers](/docs/api/ledgers) | Read, write | Read | Read, write | Read, write |
 | [Labels](/docs/api/labels), [asset search](/docs/api/assets) | Read | Read | Read | — |
 | [Holdings](/docs/api/holdings), liabilities, [DeFi](/docs/api/defi), [NFTs](/docs/api/nfts) (as reported by the exchange or chain) | Read | Read | Read | Read |
-| Calculated balances, dashboard, graphs, reconciliation (computed from transaction and price history) | Read, with [Balances](/docs/integrations-api/white-label) enabled | Read | Read | Read |
+| Calculated balances, dashboard, graphs, reconciliation (computed from transaction and price history) | — | Read | Read | Read |
 | [Spam](/docs/api/spam), [counterparties](/docs/api/counterparties) | — | Read | Read, write | Read, write |
 | [Contacts](/docs/api/contacts) | — | Read | Read, write | — |
-| Accounting, reports | Read and generate reports, with [Accounting](/docs/integrations-api/white-label) enabled | Read | Read, write (incl. generating reports) | Read, write (not generating reports) |
+| Accounting, reports | — | Read | Read, write (incl. generating reports) | Read, write (not generating reports) |
 | Chart of accounts, recalculation | — | — | Read, write | Read, write |
 | The workspace and its tax settings | — | Read | Read; write tax settings | Read, write |
 | List the user's workspaces | — | — | Read | — |
@@ -44,7 +44,7 @@ refuse those tokens.
 ## Why the differences
 
 - **Workspace tokens** belong to workspaces your app created. They get the data endpoints the
-  White-label backend needs and nothing else, so a leaked token can't reach accounts or billing.
+  Integrations API needs and nothing else, so a leaked token can't reach accounts or billing.
 - **Connect tokens** are read-only: a user shared their data with you, they didn't hand you their account.
 - **OAuth tokens** act as the user, within the scopes they approved and their role, but account
   management (who has access, billing) always needs the user in the Kryptos app.
