@@ -6,7 +6,19 @@ sidebar_position: 2
 
 # Developer Portal Setup
 
-Follow these steps to set up your developer account and create OAuth clients for the Kryptos Connect API.
+The [Developer Portal](https://dashboard.kryptos.io/) is where you register your app with Kryptos. You
+create a **developer workspace** (your team's space), add **clients** to it (each with a client ID and
+secret), and watch the accounts and workspaces your app reaches. Every integration except
+[API keys](/docs/authentication/api-key) starts here:
+
+| Integration | What you need from the portal |
+| --- | --- |
+| [Integrations API](/docs/integrations-api/overview) | A **production** client, with [Integrations API workspaces](#integrations-api-workspaces) enabled |
+| [Kryptos Connect](/docs/kryptos-connect/overview) | A client with its allowed origins |
+| [OAuth 2.0](/docs/authentication/oauth) | A client with its redirect URIs |
+
+Clients start in **sandbox**. Ask [support@kryptos.io](mailto:support@kryptos.io) to promote a client to
+**production** when you're ready to go live.
 
 ## Step 1: Sign Up on the Developer Portal
 
@@ -32,7 +44,8 @@ Click on **Create Client** to register a new OAuth application. Fill in the requ
 
 - **Client Name** - A descriptive name for your application
 - **Redirect URIs** - The callback URLs where users will be redirected after authorization
-- **Scopes** - The permissions your application needs
+- **OAuth & Connect scopes** - The permissions your application can ask users for. Connect sessions
+  only ever ask for the read scopes in this list; write scopes apply to OAuth apps.
 
 ![Create OAuth Client](/img/developer-portal/client-creation.png)
 
@@ -76,6 +89,13 @@ Save your Client Secret securely - it will only be shown once! Store it in a sec
 
 ![Save Client Credentials](/img/developer-portal/secret-saving.png)
 
+**If your secret leaks**, rotate it from the client's settings (admin role). The old secret stops working
+at once, so update your servers right away. Tokens already issued keep working; revoke the affected grants
+if they may have leaked too.
+
+**If Kryptos switches your client off** (for example over abuse or an unpaid account), every access token
+your client holds stops on its next request, refreshes fail, and no new sessions can start.
+
 ## Step 6: Configure Transaction Limits (Optional)
 
 Cap how many transactions each user imports through your app — useful for free tiers, pilots, or trial flows. Configured on the **Connected Accounts** page in your workspace.
@@ -95,12 +115,29 @@ Connect distinguishes two grant types:
 You can also manage transaction limits via the API using your client credentials. See [Update Transaction Limit](/docs/kryptos-connect/backend#update-transaction-limit) in the backend guide.
 :::
 
+## Integrations API workspaces
+
+The [Integrations API](/docs/integrations-api/overview) lets your production clients create workspaces
+for your own customers. Kryptos enables it per developer workspace. The **Integrations API** card
+on the **Connected Accounts** page shows where you stand:
+
+- **Not enabled:** the card explains the product and has a **Request access** button, which emails
+  support with your workspace details.
+- **Enabled:** the card shows your limits (workspaces per client, transactions per workspace) and the
+  endpoints a workspace token can call.
+
+Workspaces your app creates appear in the accounts list with an **API workspace** badge. From there you
+can lower its transaction limit, or revoke it. The limit can't go above the one Kryptos set,
+and the limiter can't be switched off.
+
 ## Next Steps
 
-Now that you have your OAuth credentials, you're ready to implement the authentication flow:
+Pick the guide for what you're building:
 
-- **[OAuth 2.0 Authentication →](/docs/authentication/oauth)** - Learn how to implement the authorization code flow with PKCE
-- **[API Key Authentication →](/docs/authentication/api-key)** - Alternative authentication for paid plans
+- **[Integrations API quickstart →](/docs/integrations-api/quickstart)** - Create a workspace, add a wallet, read its transactions
+- **[Kryptos Connect →](/docs/kryptos-connect/overview)** - Embed the widget and exchange its token
+- **[OAuth 2.0 →](/docs/authentication/oauth)** - Implement the authorization code flow with PKCE
+- **[API keys →](/docs/authentication/api-key)** - Automate your own workspace (paid plans)
 
 ## Need Help?
 

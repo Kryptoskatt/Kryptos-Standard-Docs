@@ -6,6 +6,8 @@ sidebar_position: 11
 
 # Integrations
 
+**Available to:** Workspace token ([Integrations API](/docs/integrations-api/overview)) · OAuth · Connect (read) · API key (read). See [Access by credential](/docs/api/access-matrix).
+
 A connected exchange, wallet or blockchain address, with its sync state and per-asset holdings.
 
 **Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `integrations:read`
@@ -14,12 +16,18 @@ A connected exchange, wallet or blockchain address, with its sync state and per-
 | --- | --- | --- |
 | <span className="badge badge--get">GET</span> | `/v1/integrations` | List, filter, paginate |
 | <span className="badge badge--get">GET</span> | `/v1/integrations/{id}` | One integration, with sync and CSV history |
-| <span className="badge badge--get">GET</span> | `/v1/integrations/search` | Typeahead search |
 | <span className="badge badge--get">GET</span> | `/v1/integrations/sync-status` | Most recent sync time |
-| <span className="badge badge--get">GET</span> | `/v1/integrations/{id}/assets` | Per-asset holdings breakdown |
+| <span className="badge badge--get">GET</span> | `/v1/integrations/{id}/assets` | Per-asset holdings breakdown (not available to workspace tokens) |
 
-Users connect accounts through the [Kryptos Connect widget](/docs/kryptos-connect/overview), which
-handles credentials, OAuth and CSV upload for you.
+**Connecting accounts.** In [Kryptos Connect](/docs/kryptos-connect/overview), users connect through
+the widget, which handles credentials and CSV upload for you. An [Integrations API](/docs/integrations-api/overview)
+server connects them itself with `POST /v1/integrations` (wallet address or exchange API key), and can
+also update, sync, resync, test credentials and delete; see the
+[quickstart](/docs/integrations-api/quickstart) and the [API Reference](/docs/api-reference/kryptos-api).
+
+**Always send `workspaceId`** on integration-service endpoints (`/v1/integrations`, `/v1/sync`,
+`/v1/csv`, `/v1/credentials`, `/v1/portfolios`). With a workspace-bound token it must be the token's
+own workspace; any other value returns `403`.
 
 ## List integrations
 
@@ -32,19 +40,20 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations?workspaceId=WORKSPACE_ID&
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `workspaceId` | string | — | Required unless your token is workspace-bound |
+| `workspaceId` | string | — | **Required.** Your token's workspace |
 | `primaryPortfolioId` | string | — | Scope to one portfolio |
 | `providerId` | string | — | Filter by provider |
 | `providerType` | string | — | `exchange`, `blockchain`, `wallet`, `service`, `aggregator`, `custom` |
-| `status` | string | — | `pending`, `active`, `inactive`, `suspended`, `error` |
+| `status`, `excludeStatus` | string | — | Comma-separated: `pending`, `active`, `inactive`, `suspended`, `error` |
+| `syncStatus` | string | — | Latest sync state: `completed`, `partially_synced`, `in_progress`, `failed`, `cancelled`, `deletion_queued`, `delete_in_progress`, `deletion_stranded` |
 | `search` | string | — | Match on alias, address and account name |
-| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's |
+| `hasMissingBalance` | boolean | — | Only accounts whose calculated balance disagrees with the provider's. Not computed for Integrations API workspaces |
 | `fields` | string | — | `summary` returns a lighter payload, see below |
 | `includeProviderCounts` | boolean | `false` | Also return `providerCounts`, the per-provider tally for the workspace |
 | `sortBy` | string | `createdAt` | `alias`, `addedOn`, `createdAt`, `updatedAt`, `lastSyncedAt`, `netValue`, `txnCount` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
 | `page` | integer | `1` | Page number |
-| `limit` | integer | `50` | 1–100, silently clamped |
+| `limit` | integer | `50` | 1–100; larger values return 400 |
 
 ### Response
 
@@ -139,9 +148,6 @@ rather than out of the raw metadata bag they are derived from.
 separate aggregate over every integration, not a summary of the page you asked for, so it is opt-in:
 pass `?includeProviderCounts=true` and it appears beside `pagination`.
 
-If the tally is all you need, [`GET /v1/integrations/counts-by-provider`](#helpers) answers it
-directly without paging the list.
-
 ### The nested `provider`
 
 On the **list**, `provider` carries only what a row renders — `id`, `name`, `publicName`, `logo` and
@@ -215,7 +221,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/integrations/int_9f2c/assets?workspace
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `workspaceId` | string | — | Required unless your token is workspace-bound |
+| `workspaceId` | string | — | **Required.** Your token's workspace |
 | `q` | string | — | Match on asset symbol or name, max 100 characters |
 | `includeSpam` | boolean | `false` | Include assets flagged as spam |
 | `minValue` | number | — | Drop assets worth less than this |
@@ -227,9 +233,5 @@ Returns `{ success, data: { assets, pagination } }` — the per-asset detail beh
 
 ## Helpers
 
-**`GET /v1/integrations/search`** — typeahead. Both `workspaceId` and `q` are required; omitting either
-returns `400`. Returns `{ success, data: { integrations } }`.
-
 **`GET /v1/integrations/sync-status`** — returns `{ success, data: { lastSyncedAt } }`, the most recent
-sync across the workspace. It takes only an optional `portfolioId`; the workspace comes from your token
-rather than a query parameter.
+sync across the workspace. It also takes an optional `portfolioId`.

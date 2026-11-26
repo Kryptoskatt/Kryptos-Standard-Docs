@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Ledger entries deleted","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"deletedCount":{"type":"integer","example":2,"description":"Ledger entries deleted."}}}}}}}}}}

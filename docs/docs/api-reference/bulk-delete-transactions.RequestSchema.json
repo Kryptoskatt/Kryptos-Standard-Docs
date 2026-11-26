@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["ids"],"properties":{"ids":{"type":"array","items":{"type":"string","format":"uuid"},"minItems":1,"description":"Transaction ids to delete (at least one).","example":["11111111-1111-1111-1111-111111111111"]}}}}}}}

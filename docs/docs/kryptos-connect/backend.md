@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 # Backend Implementation
 
-This guide covers the server-side implementation required for Kryptos Connect. Your backend is responsible for securely creating link tokens, exchanging public tokens for long-lived access tokens, managing user sessions, and making authenticated API calls on behalf of your users.
+This guide covers the server-side implementation required for Kryptos Connect. Your backend is responsible for securely creating link tokens, exchanging public tokens for an access token and a refresh token, refreshing the access token, managing user sessions, and making authenticated API calls on behalf of your users.
 
 ## Architecture
 
@@ -42,8 +42,8 @@ This guide covers the server-side implementation required for Kryptos Connect. Y
        │                       ├──────────────────────►│
        │                       │                       │
        │                       │◄──────────────────────┤
-       │                       │ access_token (15 yr)  │
-       │◄──────────────────────┤ grant_id              │
+       │                       │ access_token +        │
+       │◄──────────────────────┤ refresh_token,grant_id│
        │   Success             │                       │
 ```
 
@@ -55,12 +55,27 @@ Create a link token endpoint on your backend that the Web SDK's `generateLinkTok
 
 **Authentication:** Client credentials via `X-Client-Id` and `X-Client-Secret` headers
 
+**Request body:**
+
+| Field          | Type   | Required | Description                                                                                                                                                                  |
+| -------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scopes`       | string | Yes      | Space-separated. Every scope must be one your client has, or the call fails. It does **not** narrow the session: the user is always asked for your client's read scopes. |
+| `access_token` | string | No       | The user's current access token, to resume their session (see [Resume Existing Session](#resume-existing-session)).                                                        |
+| `state`        | string | No       | Your own value, kept with the link token.                                                                                                                                  |
+| `metadata`     | object | No       | Your own data, kept with the link token.                                                                                                                                   |
+
+Returns `201 Created`. Errors: `400` with `Invalid scopes: …` (a scope your client doesn't have),
+`400 TOKEN_CLIENT_MISMATCH` (the `access_token` belongs to another client),
+`400 CONNECT_API_TOKEN_NOT_RESUMABLE` (an Integrations API workspace token), and `401` for bad client
+credentials. An expired or revoked `access_token` is not an error: you get a plain link token without
+`has_existing_grant`.
+
 ### Choosing the Right Approach
 
 | Scenario                                | Include `access_token`? | `isAuthorized` | User Flow (UI)                            | Returns `public_token` |
 | --------------------------------------- | ----------------------- | -------------- | ----------------------------------------- | ---------------------- |
-| First-time user connecting to Kryptos   | No                   | `false`        | CONNECT → INTEGRATION (account created)   | Yes                 |
-| User doesn't have an access token yet   | No                   | `false`        | CONNECT → INTEGRATION (account created)   | Yes                 |
+| First-time user connecting to Kryptos   | No                   | `false`        | AUTH → INTEGRATION → CONSENT              | Yes                 |
+| User doesn't have an access token yet   | No                   | `false`        | AUTH → INTEGRATION → CONSENT              | Yes                 |
 | Returning user with stored access token | Yes                  | `true`         | INTEGRATION only (account already exists) | No                  |
 | Adding more integrations for user       | Yes                  | `true`         | INTEGRATION only (account already exists) | No                  |
 
@@ -106,10 +121,12 @@ app.post("/api/kryptos/create-link-token", async (req, res) => {
       },
     );
 
-    // Return format expected by Web SDK's generateLinkToken
+    // `has_existing_grant` is only present when a valid access_token was supplied and
+    // accepted. An expired or revoked token silently yields a plain link token, so read the
+    // response rather than assuming the token still worked.
     res.json({
       link_token: response.data.data.link_token,
-      isAuthorized: !!existingAccessToken, // true = skip auth, false = full flow
+      isAuthorized: !!response.data.data.has_existing_grant, // true = skip auth, false = full flow
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to create link token" });
@@ -124,6 +141,7 @@ app.post("/api/kryptos/create-link-token", async (req, res) => {
 from flask import Flask, request, jsonify
 import requests
 import os
+import time
 
 app = Flask(__name__)
 
@@ -155,10 +173,11 @@ def create_link_token():
 
         data = response.json()["data"]
 
-        # Return format expected by Web SDK's generateLinkToken
+        # `has_existing_grant` is only present when a valid access_token was supplied and
+        # accepted. An expired or revoked token silently yields a plain link token.
         return jsonify({
             "link_token": data["link_token"],
-            "isAuthorized": bool(existing_access_token),
+            "isAuthorized": bool(data.get("has_existing_grant")),
         })
     except Exception as e:
         return jsonify({"error": "Failed to create link token"}), 500
@@ -203,10 +222,11 @@ curl_close($ch);
 
 $result = json_decode($response, true);
 
-// Return format expected by Web SDK's generateLinkToken
+// `has_existing_grant` is only present when a valid access_token was supplied and
+// accepted. An expired or revoked token silently yields a plain link token.
 echo json_encode([
     'link_token' => $result['data']['link_token'],
-    'isAuthorized' => !empty($existingAccessToken),
+    'isAuthorized' => !empty($result['data']['has_existing_grant']),
 ]);
 ?>
 ```
@@ -252,7 +272,7 @@ echo json_encode([
 
 ## Step 2: Exchange Public Token
 
-Create an endpoint to exchange the public token for a long-lived access token. The Web SDK's `onSuccess` callback will send the `public_token` to this endpoint.
+Create an endpoint to exchange the public token for an access token and a refresh token. The Web SDK's `onSuccess` callback will send the `public_token` to this endpoint.
 
 **Endpoint:** `POST https://connect-api.kryptos.io/token/exchange`
 
@@ -279,11 +299,13 @@ app.post("/api/kryptos/exchange-token", async (req, res) => {
       },
     );
 
-    const { access_token, grant_id, workspace_id } = response.data.data;
+    const { access_token, refresh_token, expires_in, grant_id, workspace_id } = response.data.data;
 
-    // Store tokens securely for the user
+    // Store tokens securely (encrypted) for the user
     await saveUserTokens(req.user.id, {
       access_token,
+      refresh_token,
+      access_token_expires_at: Date.now() + expires_in * 1000,
       grant_id,
       workspace_id,
     });
@@ -320,6 +342,8 @@ def exchange_token():
         save_user_tokens(
             request.user_id,
             access_token=data["access_token"],
+            refresh_token=data["refresh_token"],
+            access_token_expires_at=time.time() + data["expires_in"],
             grant_id=data["grant_id"],
             workspace_id=data["workspace_id"],
         )
@@ -361,6 +385,8 @@ $data = $result['data'];
 // Store tokens securely for the user
 saveUserTokens($userId, [
     'access_token' => $data['access_token'],
+    'refresh_token' => $data['refresh_token'],
+    'access_token_expires_at' => time() + $data['expires_in'],
     'grant_id' => $data['grant_id'],
     'workspace_id' => $data['workspace_id'],
 ]);
@@ -379,39 +405,140 @@ echo json_encode(['success' => true]);
   "success": true,
   "data": {
     "access_token": "cat_abc123xyz789",
+    "refresh_token": "crt_abc123xyz789",
     "grant_id": "cgrant_abc123xyz789",
     "token_type": "Bearer",
     "expires_in": 473040000,
+    "refresh_token_expires_in": 2592000,
     "scope": "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
     "workspace_id": "uuid-workspace-123"
   }
 }
 ```
 
-:::info Long-Lived Access Tokens
-Access tokens are valid for **15 years** (473,040,000 seconds). No refresh tokens are needed. Store the `grant_id` to allow users to revoke access later.
+:::info Access and refresh tokens
+Store the `access_token`, the `refresh_token` (30 days) and the `grant_id` (to revoke access later).
+Exchanged access tokens currently last 15 years, so apps that never refresh keep working; this will change
+to **24 hours** on an announced date. Build against `expires_in` and refresh as shown in
+[Step 3](#step-3-refresh-the-access-token).
 :::
 
 :::tip Complete Integration Flow
 **First Connection (New User):**
 
 1. Frontend → `generateLinkToken()` returns `{ link_token, isAuthorized: false }`
-2. SDK Flow: INIT → CONNECT → INTEGRATION → STATUS
-3. User authenticates and connects integrations
-4. `onSuccess` receives `{ public_token: "..." }`
-5. Backend exchanges `public_token` for `access_token`
-6. **IMPORTANT:** Store `access_token` in database for future use
+2. SDK flow: AUTH → INTEGRATION → CONSENT
+3. User signs in, connects integrations and consents
+4. `onConnectSuccess` receives `{ public_token: "..." }`
+5. Backend exchanges `public_token` for `access_token` and `refresh_token`
+6. **IMPORTANT:** Store both (encrypted) in your database for future use
 
 **Subsequent Connections (Returning User):**
 
 1. Frontend → `generateLinkToken()` returns `{ link_token, isAuthorized: true }`
-2. SDK Flow: INIT → INTEGRATION → STATUS (authentication skipped)
+2. SDK flow: INTEGRATION (sign-in and consent skipped)
 3. User connects more integrations
-4. `onSuccess` receives `null` (no new token needed)
+4. `onConnectSuccess` receives `null` (no new token needed)
 5. Integrations are added to user's existing account
 :::
 
-## Step 3: Make API Calls
+## Step 3: Refresh the Access Token
+
+Refresh with the standard OAuth 2.0 refresh flow at the [OAuth](/docs/authentication/oauth) token endpoint,
+authenticating with your client ID and secret (HTTP Basic). There is no Connect-specific refresh endpoint.
+
+**Endpoint:** `POST https://oauth.kryptos.io/oidc/token`
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript" default>
+
+```javascript
+async function refreshKryptosToken(userId) {
+  const { refresh_token } = await loadUserTokens(userId);
+
+  const response = await axios.post(
+    "https://oauth.kryptos.io/oidc/token",
+    new URLSearchParams({ grant_type: "refresh_token", refresh_token }),
+    {
+      auth: {
+        username: process.env.KRYPTOS_CLIENT_ID,
+        password: process.env.KRYPTOS_CLIENT_SECRET,
+      },
+    },
+  );
+
+  const tokens = response.data;
+  // Always store the refresh token you get back: it can be a new one.
+  await saveUserTokens(userId, {
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    access_token_expires_at: Date.now() + tokens.expires_in * 1000,
+  });
+  return tokens.access_token;
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+def refresh_kryptos_token(user_id):
+    refresh_token = load_user_tokens(user_id)["refresh_token"]
+
+    response = requests.post(
+        "https://oauth.kryptos.io/oidc/token",
+        data={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        auth=(os.getenv("KRYPTOS_CLIENT_ID"), os.getenv("KRYPTOS_CLIENT_SECRET")),
+    )
+    response.raise_for_status()
+    tokens = response.json()
+
+    # Always store the refresh token you get back: it can be a new one.
+    save_user_tokens(
+        user_id,
+        access_token=tokens["access_token"],
+        refresh_token=tokens["refresh_token"],
+        access_token_expires_at=time.time() + tokens["expires_in"],
+    )
+    return tokens["access_token"]
+```
+
+</TabItem>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST https://oauth.kryptos.io/oidc/token \
+  -u "$KRYPTOS_CLIENT_ID:$KRYPTOS_CLIENT_SECRET" \
+  -d grant_type=refresh_token \
+  -d refresh_token=crt_abc123xyz789
+```
+
+</TabItem>
+</Tabs>
+
+**Response:**
+
+```json
+{
+  "access_token": "Xk3v...",
+  "token_type": "Bearer",
+  "expires_in": 86400,
+  "refresh_token": "crt_abc123xyz789",
+  "scope": "openid profile email offline_access portfolios:read transactions:read ..."
+}
+```
+
+**Rules:**
+
+- **Refresh shortly before `expires_in` runs out**, or when an API call returns `401`.
+- **Always store the `refresh_token` from the response.** It stays the same until it is past 70% of its
+  30-day life, then a new one replaces it and the old one stops working.
+- **Refresh one at a time per user.** A refresh token that was already replaced, or revoked, fails with
+  `400 invalid_grant` and revokes the grant: the user has to reconnect.
+- **Refresh from your backend only.** It needs your client secret, so a leaked refresh token alone is
+  useless.
+
+## Step 4: Make API Calls
 
 Use the access token to call Kryptos APIs:
 
@@ -425,13 +552,20 @@ async function getUserHoldings(accessToken) {
 }
 ```
 
+Refreshed access tokens work the same way. The access token is **read-only**: it carries your client's read scopes, and it is meant for reading the
+user's data (transactions, ledgers, holdings, balances, accounting, reports, integrations, syncs and
+portfolios). Calls that change data fail with `403 insufficient_scope`, because the token carries no
+`:write` scope. Account endpoints (invites, members, workspace management, billing) are not meant for
+it either: billing refuses it today with `403 MACHINE_ROUTE_NOT_ALLOWED`, and the other account
+endpoints are being switched to the same refusal service by service.
+
 ---
 
 ## Session Management
 
 ### Resume Existing Session
 
-Pass an existing access token when creating a link token to skip the authentication flow for returning users:
+Pass the user's current access token when creating a link token to skip the authentication flow for returning users. If it has expired, refresh it first ([Step 3](#step-3-refresh-the-access-token)):
 
 ```javascript
 async function createLinkTokenWithSession(userId, existingAccessToken) {
@@ -505,7 +639,8 @@ async function checkSession(accessToken) {
     "workspace_id": "uuid-workspace-456",
     "workspace_name": "My Workspace",
     "granted_scopes": "openid profile offline_access email portfolios:read transactions:read integrations:read tax:read accounting:read reports:read workspace:read users:read",
-    "grant_id": "cgrant_abc123"
+    "grant_id": "cgrant_abc123",
+    "token_expires_at": "2041-11-16T10:15:00.000Z"
   }
 }
 ```
@@ -517,10 +652,14 @@ async function checkSession(accessToken) {
   "success": true,
   "data": {
     "has_valid_session": false,
-    "reason": "token_expired"
+    "reason": "TOKEN_EXPIRED"
   }
 }
 ```
+
+`reason` is `no_token_provided`, `workspace_not_bound`, or the token error code: `TOKEN_NOT_FOUND`,
+`TOKEN_EXPIRED`, `GRANT_INACTIVE` or `TOKEN_PAYLOAD_MISMATCH`. An access token issued to another client
+returns `400 TOKEN_CLIENT_MISMATCH`.
 
 ### Revoke Grant
 
@@ -737,7 +876,7 @@ await updateTransactionLimit("cgrant_abc123", { enableLimiter: false });
 
 | Field              | Type    | Required | Description                                      |
 | ------------------ | ------- | -------- | ------------------------------------------------ |
-| `transactionLimit` | number  | No*      | Positive integer. Per-user limit (not capped).   |
+| `transactionLimit` | number  | No*      | Positive integer. Per-user limit. Not capped, except for Integrations API workspaces (see below). |
 | `enableLimiter`    | boolean | No*      | Whether the limiter is active for this user.     |
 
 \* At least one field is required.
@@ -814,6 +953,8 @@ listed per grant by [`GET /token/grants`](#list-connected-grants).
 | 400    | `NOT_ANON_USER`   | User is not a Guest account. Limits only apply to Guest users. |
 | 401    | -                 | Invalid client credentials.                              |
 | 403    | `ACCESS_DENIED`   | Grant does not belong to this client.                    |
+| 403    | `WORKSPACE_NOT_BOUND` | The grant has no workspace (an old grant): the user must reconnect. |
+| 403    | `LIMIT_ABOVE_CEILING` | Integrations API workspace: the limit is above the ceiling Kryptos set for your client, or you tried to switch the limiter off. |
 | 404    | `GRANT_NOT_FOUND` | No grant found with this ID.                             |
 
 :::info Guest accounts only
@@ -918,20 +1059,9 @@ client credentials.
 
 ## Error Handling
 
-### Common Errors
+Errors look different on each host.
 
-| Error Code                 | Description                  | Solution                             |
-| -------------------------- | ---------------------------- | ------------------------------------ |
-| `INVALID_CLIENT`           | Invalid client credentials   | Verify client_id and client_secret   |
-| `INVALID_TOKEN`            | Token expired or invalid     | Re-authenticate user                 |
-| `TOKEN_EXPIRED`            | Link or public token expired | Create new link token                |
-| `TOKEN_ALREADY_USED`       | Token was already consumed   | Create new link token                |
-| `INVALID_SCOPE`            | Requested scope not allowed  | Check allowed scopes for your client |
-| `INVALID_GRANT`            | Grant revoked or invalid     | Re-authenticate user                 |
-| `INSUFFICIENT_PERMISSIONS` | User lacks required role     | User must be owner/admin             |
-| `WORKSPACE_NOT_FOUND`      | Workspace doesn't exist      | Verify workspace ID                  |
-
-### Error Response Format
+### Connect API (`connect-api.kryptos.io`)
 
 ```json
 {
@@ -941,21 +1071,67 @@ client credentials.
 }
 ```
 
-### Handling Revoked Grants
+| Status | `code`                   | Meaning                                                    | What to do                               |
+| ------ | ------------------------ | ---------------------------------------------------------- | ---------------------------------------- |
+| 401    | (none)                   | `Invalid client credentials` or `Client is inactive`       | Check your client ID and secret; contact Kryptos if your client was switched off |
+| 400    | (none)                   | `Invalid scopes: …` on `/link-token`                       | Request only scopes your client has      |
+| 404    | `TOKEN_NOT_FOUND`        | Link, public or access token not found                     | Start a new session                      |
+| 401    | `TOKEN_EXPIRED`          | Link, public or access token expired                       | Start a new session, or refresh          |
+| 401    | `TOKEN_USED`             | Public or link token already used                          | Start a new session                      |
+| 401    | `TOKEN_REVOKED`          | Token revoked                                              | Start a new session                      |
+| 401    | `GRANT_INACTIVE`         | The user's grant was revoked                               | The user must reconnect                  |
+| 401    | `TOKEN_PAYLOAD_MISMATCH` | Token doesn't match its grant                              | The user must reconnect                  |
+| 400    | `TOKEN_CLIENT_MISMATCH`  | The token belongs to another client                        | Use your own client's token              |
+| 404    | `GRANT_NOT_FOUND`        | No grant with this ID                                      | Check the `grant_id`                     |
+| 403    | `ACCESS_DENIED`          | The grant belongs to another client                        | Use your own grants                      |
+| 403    | `WORKSPACE_NOT_BOUND`    | An old grant with no workspace                             | The user must reconnect                  |
+| 400    | `NOT_ANON_USER`          | Transaction limits apply to Guest users only               | Don't set limits on linked users         |
 
-Since access tokens are long-lived, the grant may be revoked before the token expires. Handle this case:
+### Kryptos API (`api-v2.kryptos.io`)
+
+OAuth-style errors, with no `success` field:
+
+| Status | `error`              | Meaning                                                   | What to do                     |
+| ------ | -------------------- | --------------------------------------------------------- | ------------------------------ |
+| 401    | `invalid_token`      | The access token expired, was revoked, or doesn't exist   | Refresh, then reconnect        |
+| 401    | `invalid_client`     | `Client is inactive`: Kryptos switched your client off    | Contact Kryptos                |
+| 403    | `insufficient_scope` | The token lacks the endpoint's scope (every write, for a Connect token) | Read only; see [Step 4](#step-4-make-api-calls) |
+| 403    | `forbidden` with `"code": "MACHINE_ROUTE_NOT_ALLOWED"` | The endpoint is not available to Connect tokens | See [Step 4](#step-4-make-api-calls) |
+
+See [Error Codes](/docs/reference/errors) for the full list.
+
+### OAuth token endpoint (`oauth.kryptos.io/oidc/token`)
+
+| Status | `error`          | Meaning                                                              | What to do           |
+| ------ | ---------------- | -------------------------------------------------------------------- | -------------------- |
+| 400    | `invalid_grant`  | Refresh token expired, replaced, or its grant revoked                | The user must reconnect |
+| 401    | `invalid_client` | Wrong client ID or secret, or the client is switched off             | Check credentials    |
+
+### Handling Expired Tokens and Revoked Grants
+
+A `401` from the API means the access token expired or access was revoked. Refresh once; if the refresh
+fails with `invalid_grant`, the grant is gone (the user disconnected, you revoked it, a replaced refresh
+token was reused, or Kryptos switched your client off) and the user has to reconnect:
 
 ```javascript
-async function makeApiCallWithCheck(endpoint, accessToken, grantId) {
+async function callKryptos(userId, endpoint) {
+  let { access_token } = await loadUserTokens(userId);
   try {
-    return await makeApiCall(endpoint, accessToken);
+    return await makeApiCall(endpoint, access_token);
   } catch (error) {
-    if (error.response?.status === 401) {
-      // Token or grant invalid - user needs to re-authenticate
+    if (error.response?.status !== 401) throw error;
+  }
+
+  try {
+    access_token = await refreshKryptosToken(userId);
+  } catch (error) {
+    if (error.response?.data?.error === "invalid_grant") {
+      await markKryptosDisconnected(userId); // ask the user to reconnect
       throw new Error("Access revoked. Please reconnect your account.");
     }
     throw error;
   }
+  return makeApiCall(endpoint, access_token);
 }
 ```
 

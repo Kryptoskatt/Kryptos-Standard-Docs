@@ -30,27 +30,20 @@ survive; parsing it as a float loses precision on large balances.
 | [`transaction.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/transaction.ts) | Transaction and ledger related types      |
 | [`holdings.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/holdings.ts)       | Portfolio holdings related types          |
 | [`defi.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/defi.ts)               | DeFi portfolio and protocol related types |
-| [`nft-balance.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/nft-balance.ts) | NFT balance and collection related types  |
+| [`nft-balance.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/nft-balance.ts) | NFT types (older shape; use `NftItem` below) |
 | [`tax.ts`](https://github.com/Kryptoskatt/Kryptos-Standard-Docs/blob/main/types/tax.ts)                 | Tax calculation and PnL related types     |
 
 ## Installation
 
-```typescript
-import {
-  Asset,
-  Transaction,
-  TaxPnL,
-  HoldingsType,
-  NFTBalance,
-  DefiHolding,
-} from "@kryptos/types";
-```
-
-Or copy the type files directly:
+There is no npm package. Copy the interfaces on this page, or the type files from the repository, into
+your project:
 
 ```bash
 cp -r types/ your-project/src/types/
 ```
+
+The interfaces on this page are kept in line with the API; if a repository file disagrees (for example
+on `quantity`, which is a decimal string), follow this page.
 
 ## Type Categories
 
@@ -68,7 +61,7 @@ interface Asset {
   standard?: string;
   explorerUrl?: string;
   category?: string;
-  type: "crypto" | "nft" | "fiat";
+  type: "crypto" | "nft" | "fiat" | "stablecoin";
   providerId?: {
     coingecko?: string;
     coinmarketcap?: string;
@@ -108,8 +101,10 @@ interface Transaction {
   outgoingAssets: LedgerLeg[];
   fee: LedgerLeg[];
   netValue?: { fiatValue: number | null; currency: string };
-  totalCostbasis?: number;
-  totalGains?: number;
+  // null for API callers (OAuth, Connect, API keys, Integrations API workspace tokens); also null
+  // until accounting has run.
+  totalCostbasis?: number | null;
+  totalGains?: number | null;
   explorerLink?: string | null;
 }
 
@@ -187,23 +182,24 @@ interface TaxPnL {
 }
 ```
 
-### NFT Balance Types
+### NFT Types
 
-Specialized types for NFT holdings including collection information, metadata, and last sale information.
+One item from [`GET /v1/nfts`](/docs/api/nfts). Name, image and attributes are in `assetRaw` as the
+provider reported them.
 
 ```typescript
-interface NFTBalance {
+interface NftItem {
   id: string;
+  assetId?: string;
   contractAddress: string;
   tokenId: string;
-  name: string;
-  description?: string;
-  ercType: "ERC-721" | "ERC-1155";
-  price: { price: number; baseCurrency: string };
-  collection: {
-    name: string;
-    floorPrice: { price: number; baseCurrency: string }[];
-  };
+  chain: string;
+  assetRaw: Record<string, unknown>; // name, image, attributes as reported
+  price: PriceModel;
+  collection: Record<string, unknown>;
+  lastSale?: Record<string, unknown>;
+  source: AccountType; // the connected account holding it
+  isSpam: boolean;
 }
 ```
 
@@ -244,7 +240,6 @@ import { Asset } from "./types/asset";
 import { Transaction } from "./types/transaction";
 import { HoldingsType } from "./types/holdings";
 import { DefiHolding } from "./types/defi";
-import { NFTBalance } from "./types/nft-balance";
 
 // Define an asset
 const bitcoin: Asset = {

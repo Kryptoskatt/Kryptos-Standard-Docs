@@ -108,6 +108,10 @@ Each webhook request includes the following headers:
 There is **no header for `grant_id` or `workspace_id`** — they are envelope fields in the JSON body.
 Parse the body to read them.
 
+The signature covers the **body only**, not `X-Webhook-Timestamp`, so there is no built-in replay
+protection. Deduplicate on `X-Webhook-Id` (the same across retries of one delivery), and reject deliveries
+whose timestamp is too old if replays matter to you.
+
 ### Signature Verification Examples
 
 <Tabs>
@@ -122,6 +126,8 @@ function verifyWebhookSignature(payload, signature, secret) {
     .update(payload)
     .digest('hex');
 
+  // timingSafeEqual throws on different lengths: a missing or short header is simply invalid.
+  if (typeof signature !== 'string' || signature.length !== expectedSignature.length) return false;
   return crypto.timingSafeEqual(
     Buffer.from(signature),
     Buffer.from(expectedSignature)
@@ -226,13 +232,14 @@ def handle_webhook():
 
 ## Retry Behavior
 
-Kryptos will retry failed webhook deliveries with exponential backoff:
+Kryptos makes up to **3 attempts** per delivery, one straight after another (no backoff):
 
-- **Maximum retries:** 2 (3 total attempts)
-- **Timeout:** 10 seconds per delivery
-- **Retryable status codes:** `429`, `500`, `502`, `503`, `504`
+- **Timeout:** 10 seconds per attempt
+- **Retried:** `429`, `5xx`, timeouts and network errors
+- **Not retried:** any other `4xx`, so return `4xx` only for a delivery you never want again
 
-Your endpoint should return a `2xx` status code within 10 seconds to acknowledge receipt. Any other response (or a timeout) triggers a retry.
+Return a `2xx` within 10 seconds to acknowledge receipt. Because retries come immediately, a short
+outage on your side can lose a delivery: treat webhooks as a signal and reconcile with the API.
 
 ## Managing Webhooks
 
@@ -255,5 +262,5 @@ From the Developer Portal, you can:
 ## Next Steps
 
 - [Webhook Events Reference](/docs/webhooks/events) — Detailed payload structures for each event type
-- [Integrations API](/docs/api/integrations) — Query integration data via the API
+- [Integrations endpoints](/docs/api/integrations) — Query integration data via the API
 - [Developer Portal Setup](/docs/developer-portal) — Workspace and client configuration

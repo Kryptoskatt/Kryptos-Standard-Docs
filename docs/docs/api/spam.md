@@ -6,6 +6,8 @@ sidebar_position: 10
 
 # Spam
 
+**Available to:** OAuth · Connect (read) · API key. See [Access by credential](/docs/api/access-matrix).
+
 The assets a workspace has flagged as spam. Airdropped scam tokens are the usual case — flagging keeps
 them out of balances, totals and transaction lists.
 

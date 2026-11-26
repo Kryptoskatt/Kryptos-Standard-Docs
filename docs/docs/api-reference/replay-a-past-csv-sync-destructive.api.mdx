@@ -1,0 +1,77 @@
+---
+id: replay-a-past-csv-sync-destructive
+title: "Replay a past CSV sync (destructive)"
+description: "Deletes the transactions a previous `csv`-kind sync produced, then re-parses the exact same files from storage. Use it after a parser fix, or when an import came out wrong."
+sidebar_label: "Replay a past CSV sync (destructive)"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Replay a past CSV sync (destructive)"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/csv/resync"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes the transactions a previous `csv`-kind sync produced, then re-parses the exact same files from storage. Use it after a parser fix, or when an import came out wrong.
+
+Scope is **that sync run only** — API-fetched data and other CSV imports on the same integration are untouched. Legs the transfer detector consumed into a merged Transfer are included: on a transfer shared with another integration, only this import’s leg is removed and the surviving side is relabelled from what remains, so it re-pairs once the files are back in.
+
+Every file linked to the sync is replayed, including ones that previously ended `failed` or `partial` — that is usually the reason to resync at all.
+
+Returns a NEW syncId to poll via `GET /sync/{syncId}`; the old run is linked as `retryOfSyncId` and its deletion counts land on the new sync’s `deletionReport`. The delete runs in the worker ahead of the re-parse, so a 202 means queued, not finished.
+
+User-owned fields (label, fiat value, notes, comments, tags, per-leg price overrides, COA journals) are carried across the replay and re-applied to the re-imported rows.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./replay-a-past-csv-sync-destructive.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./replay-a-past-csv-sync-destructive.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

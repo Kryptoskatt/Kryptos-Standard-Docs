@@ -6,6 +6,8 @@ sidebar_position: 15
 
 # Contacts
 
+**Available to:** OAuth · Connect (read). See [Access by credential](/docs/api/access-matrix).
+
 Named people and companies, with the on-chain addresses attached to them. Naming an address makes it
 appear as that name wherever it shows up in transactions.
 

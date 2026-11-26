@@ -1,0 +1,69 @@
+---
+id: record-a-file-put-to-a-csv-upload-url-url-as-an-upload
+title: "Record a file PUT to a /csv/upload-url URL as an upload"
+description: "Creates the same `uploaded` record as `POST /csv/upload` for a file already in storage. Processing is not triggered — call `POST /csv/sync` with the returned uploadId."
+sidebar_label: "Record a file PUT to a /csv/upload-url URL as an upload"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVV81u2zgQfhWCl6aAbKdFL6ubN/G2RtPGsJ1iF4ERj8mxxUYmVZLyTw0DfYhe9vX6JIuhJEux3ez2uDokITkznJ+P30x23MPC8fieX40+8UnEJTphVeaV0TzmVxbBo2M+QeZgiWyaZ6kBiXLKLApjJQPHpoPb0Zh1hFt1iuMpmxvLgM1VigxSiyC3TGnmvLGwwDYbWCPQOaUXTDmmjWfeqsUCLUr249t3JiBNm2bdVospWyufBFcs+txqlKy4ri/bPOIWv+To/O9Gbnm8C0tlUfLY2xwjLoz2qD0dQZalSgDF2PnsKNAddyLBJdBffpshj7mZfUbhS7uFoXuutMeFDZp9ySOeWbNSEm1YULQD8AmlMbMmQ+sVOjL5VK2+w3mr9ILvnxg6OT4uyjhB1rD4wrFKO2LGshezPH18UVbgvd1m3jhGe625sUvwoSptuvTg8L9e2duA8OmWin3I/WzLjuveym0aLHu1xK9G4znLuIFlltJWL6csdW6Mlkbzffgo3y4z2hWZe335in499eYuXFYCECW7CNB0CWRIHh579ZL/QvUhTW/nPL5/HgcuF4Tf00pXB3XcM2NSBN0MnAC5j7gED6fBDcvwWQZb8p7vQz59yFi/LvuouKmnV5iaDPk+OnX5qW/Vfc9LFTlrRgDWwpZHXHlcuv9q4Cc4J8h9hOUZYJSHI/W1eRhwjrY6HYfdM5jS+ZLqItyKR3yTuuLnhk/2EXcefO6eh2JFa7zA4BxUmlv8hSyQ1hKdg8W52OibFKbfXF6eFr16iRUbKs18olzzmf/49rcr+Y7NTSrRsotp/+On7k3/+uGP/k3vYdAdv5u+jAJDBuZVjpkV2oK91VdkAjJ2MQ3C49vbh5vu8G2PNEwhU9EIkwYLP5bgRcIupoPh7af+dW/48KE/+tAdX72bvuQhljensTQwGmzMTa5luEMbnxDlr6GKBCXzhh14KJj87fn0VO3E4kI5HzrGxbR7M+x1r/96GPbe9kfj3rB3TQ7uI75pPRYM2BIWJWqvIA3tbm3so8tAYMubR6TnaSAvuBs3HrVTRrvAA4+45fFPDEV8BWmOzxrcTwgZPjGSxzwzLryYwLq8QVKuUwXEI+7QrtAW1+c25TFPvM9c3OlAplqr1+3Sl7YyndWrE7YeWCNzERZ0uUORW+W3wdwMwaLtkmfx/aR5PCIOLCDfFDpgmVwg34IYEVsQOtudDrlgIRdneobEgrZs5yDrQucQqULtn7AHZOo9hqdH9hMEGa7VgUb4n62roNLqy1p/hMKi/3UbpR4hh1rDsB4pehVVnHTzmk6aTbzerbtsvVf3x+MmSB7OTfC85PyqhXcHfcIbWlck+lX78mzyG+8vKMVMhCmurooLw8HW5JaJ3HmzROuK4arYC7lg/WsGWjIXUhJYRTNhtEbhaaEsW0OaondBDDciAb3AYkVPtBTyFrSDgEYXscSkUulFIbU0Fuuh7gg0bfY2VxJjVkFfGuGawKd1p1EL14JMdYjwVgrXYagyzi8hNPiy0MNyZi34cXA3JvqB4xGG3Q1vaJAAXdLUcZ539TzxvxqRy8fgceM7WQoq4C0QzK6kpKqFVlMAjT0lLU0inhB7xfd8t5uBwzub7ve0/SVHS+wyITq0CmaE23tqveVDq2n0qshbKzTyA3uezmQ0zRQaXSEw88/KNgmWEsIjPiv/C1gaSToW1hQKrHnMiZlDHQPVhb0dT0Ev8tC7eWGTvn8AgWGR1Q==
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Record a file PUT to a /csv/upload-url URL as an upload"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/csv/uploads/register"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Creates the same `uploaded` record as `POST /csv/upload` for a file already in storage. Processing is not triggered — call `POST /csv/sync` with the returned uploadId.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./record-a-file-put-to-a-csv-upload-url-url-as-an-upload.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./record-a-file-put-to-a-csv-upload-url-url-as-an-upload.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

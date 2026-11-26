@@ -1,0 +1,1 @@
+{"responses":{"201":{"description":"Batch written","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"savedCount":{"type":"integer","example":2,"description":"Transactions saved (new or updated)."},"errorCount":{"type":"integer","example":0,"description":"Transactions that failed to process."}}}}}}}}}}

@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"Customer 42"},"country_code":{"type":"string","example":"US"},"base_currency_code":{"type":"string","example":"USD"},"timezone":{"type":"string","example":"UTC"}},"required":[]}}}}}

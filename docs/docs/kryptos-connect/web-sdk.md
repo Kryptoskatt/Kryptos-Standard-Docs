@@ -76,7 +76,8 @@ import { useEffect, useState } from "react";
 const CLIENT_ID = "your-client-id"; // public — safe in frontend code
 
 function App() {
-  const [accessToken, setAccessToken] = useState(null);
+  // The access token never reaches the browser: your backend stores it per user.
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     KryptosConnect.init({
@@ -88,28 +89,24 @@ function App() {
     });
   }, []);
 
-  // Your backend holds the client secret, calls POST /link-token, and returns
-  // { link_token, isAuthorized }.
-  async function generateLinkToken(existingAccessToken?: string | null) {
-    const res = await fetch("/api/kryptos/link-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token: existingAccessToken ?? undefined }),
-    });
+  // Your backend holds the client secret, looks up the logged-in user's stored access token,
+  // calls POST /link-token, and returns { link_token, isAuthorized }. See Backend, Step 1.
+  async function generateLinkToken() {
+    const res = await fetch("/api/kryptos/create-link-token", { method: "POST" });
     return res.json(); // { link_token, isAuthorized }
   }
 
   async function handleSuccess(consent) {
     if (!consent) return; // returning user — consent was skipped, nothing to exchange
 
-    // Your backend calls POST /token/exchange and stores the access token.
-    const res = await fetch("/api/kryptos/exchange", {
+    // Your backend calls POST /token/exchange and stores the access and refresh tokens
+    // against the logged-in user. See Backend, Step 2.
+    const res = await fetch("/api/kryptos/exchange-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ public_token: consent.public_token }),
     });
-    const data = await res.json();
-    setAccessToken(data.access_token);
+    if (res.ok) setConnected(true);
   }
 
   return (
@@ -139,10 +136,10 @@ function App() {
         Link your crypto account
       </KryptosConnectButton>
 
-      {/* Re-authorize with stored access token */}
-      {accessToken && (
+      {/* Returning user: the backend resumes their session with the stored token */}
+      {connected && (
         <KryptosConnectButton
-          generateLinkToken={() => generateLinkToken(accessToken)}
+          generateLinkToken={generateLinkToken}
           onConnectSuccess={handleSuccess}
           onConnectError={(err) => console.error(err)}
         >
@@ -161,10 +158,10 @@ The SDK handles two flows based on the `isAuthorized` flag returned from `genera
 ### Flow 1: New User (`isAuthorized: false` or undefined)
 
 ```
-click → AUTH → INTEGRATION → onConnectSuccess({ public_token })
+click → AUTH → INTEGRATION → CONSENT → onConnectSuccess({ public_token })
 ```
 
-Exchange `public_token` server-side for a long-lived `access_token`.
+Exchange `public_token` server-side for an `access_token` and a `refresh_token` ([Backend, Step 2](/docs/kryptos-connect/backend#step-2-exchange-public-token)). Refresh the access token from your backend when it expires ([Step 3](/docs/kryptos-connect/backend#step-3-refresh-the-access-token)).
 
 ### Flow 2: Returning User (`isAuthorized: true`)
 
@@ -172,7 +169,7 @@ Exchange `public_token` server-side for a long-lived `access_token`.
 click → INTEGRATION → onConnectSuccess(null)
 ```
 
-Pass stored `access_token` in the link-token request body and return `isAuthorized: true`. No new token is issued.
+Your backend passes the user's stored `access_token` to `POST /link-token` and returns `isAuthorized` from the response's `has_existing_grant` ([Backend, Step 1](/docs/kryptos-connect/backend#step-1-create-link-token)). Sign-in and consent are skipped and no new token is issued.
 
 ## `KryptosConnect.init` Config
 
@@ -356,9 +353,10 @@ Fetch available integration IDs from the public Kryptos API endpoint (see [Publi
 </KryptosConnectButton>
 
 // Dedicated buttons for popular integrations
-<KryptosConnectButton integrationName="binance">Connect Binance</KryptosConnectButton>
-<KryptosConnectButton integrationName="coinbase">Connect Coinbase</KryptosConnectButton>
-<KryptosConnectButton integrationName="metamask">Connect MetaMask</KryptosConnectButton>
+const connectProps = { generateLinkToken, onConnectSuccess: handleSuccess, onConnectError: (err) => console.error(err) };
+<KryptosConnectButton {...connectProps} integrationName="binance">Connect Binance</KryptosConnectButton>
+<KryptosConnectButton {...connectProps} integrationName="coinbase">Connect Coinbase</KryptosConnectButton>
+<KryptosConnectButton {...connectProps} integrationName="metamask">Connect MetaMask</KryptosConnectButton>
 ```
 
 :::info

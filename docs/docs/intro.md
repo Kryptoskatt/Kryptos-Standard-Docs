@@ -10,7 +10,7 @@ A comprehensive API for accessing cryptocurrency portfolio data, transactions, D
 
 ## Overview
 
-Kryptos Connect APIs provide access to:
+The Kryptos APIs provide access to:
 
 - **Portfolio Holdings** -- Track crypto assets across multiple wallets and chains
 - **Transaction History** -- Complete transaction records with advanced filtering
@@ -19,24 +19,20 @@ Kryptos Connect APIs provide access to:
 - **Portfolio Insights** -- Net worth, cost basis, allocation, and value over time
 - **Reconciliation** -- Find missing prices, missing purchases, and unconnected accounts
 
-## AI Plugins
+## Pick your use case
 
-Not building an app? Bring your Kryptos data straight into your AI assistant, with no code and no API key. Both need a Pro membership or a paid Enterprise subscription.
+Each guide covers one way of building on Kryptos, from setup to your first API call.
 
-- **[ChatGPT](/docs/mcp/chatgpt)** -- Install the Kryptos plugin from ChatGPT's Plugins page in seven steps
-- **[MCP Integration](/docs/mcp/mcp-overview)** -- Connect Claude, Cursor and other MCP clients to the Kryptos MCP server
+| Use case | Build this when | Guide |
+| --- | --- | --- |
+| **Integrations API** (early access) | Your server creates a workspace per customer, connects their wallets and exchanges, and reads their transactions and holdings. Your customers don't need a Kryptos account. | [Integrations API](/docs/integrations-api/overview) |
+| **Kryptos Connect** | Your users connect their wallets and exchanges, or their Kryptos account, and share that data with your app (read only) | [Kryptos Connect](/docs/kryptos-connect/overview) |
+| **Sign in with Kryptos** | Your app acts for a Kryptos user inside their own account, with OAuth 2.0 | [OAuth 2.0](/docs/authentication/oauth) |
+| **API keys** | You automate one of your own Kryptos workspaces, server to server. Each key is valid for a single workspace, the one it was created in (paid plans) | [API keys](/docs/authentication/api-key) |
+| **AI plugins** | You want your Kryptos data in ChatGPT, Claude or Cursor, with no code | [AI plugins](/docs/mcp/chatgpt) |
 
-## Authentication Options
-
-Kryptos provides two ways to access user portfolio data:
-
-### OAuth 2.0 Authentication
-
-Standard OAuth 2.0 flow for web applications where users authenticate directly with Kryptos. **[OAuth 2.0 Guide](/docs/authentication/oauth)**
-
-### Kryptos Connect Widget
-
-A pre-built widget (Web SDK & Mobile SDK) that handles the complete authentication flow for embedded integrations. **[Kryptos Connect Guide](/docs/kryptos-connect/overview)**
+Every use case except API keys and AI plugins starts with the
+**[Developer Portal setup](/docs/developer-portal)**, where you get your client ID and secret.
 
 ## Quick Start
 
@@ -47,24 +43,13 @@ curl -X GET "https://api-v2.kryptos.io/v1/holdings" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-A bearer token is the only header you need. See the **[API Overview](/docs/api/overview)** for the
-base URL, workspace resolution, response shapes and error codes.
-
-:::info Step-by-Step Guide
-New to Kryptos Connect? Follow our **[Developer Portal Setup Guide](/docs/developer-portal)** for detailed instructions with screenshots.
-:::
+Send your access token as a bearer token (API keys use the `x-api-key` header instead). The **[API Reference](/docs/api-reference/kryptos-api)**
+lists the Integrations API endpoints; [Access by credential](/docs/api/access-matrix) shows what OAuth,
+Connect and API keys can reach.
 
 :::tip Migrating?
 If you built against `connect.kryptos.io/api`, see **[Migrating from the previous API](/docs/api/migrating-from-connect-apis)** for the complete list of changes.
 :::
-
-## Next Steps
-
-1. **[Developer Portal Setup](/docs/developer-portal)** -- Create your account and get credentials
-2. **[Set up Authentication](/docs/authentication/oauth)** -- Configure OAuth 2.0 flow
-3. **[API Overview](/docs/api/overview)** -- Base URL, auth, envelopes, and scopes
-4. **[Explore Endpoints](/docs/api/holdings)** -- Browse the API reference
-5. **[View Types](/docs/reference/types)** -- TypeScript definitions
 
 ## Support
 

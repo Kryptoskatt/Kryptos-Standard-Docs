@@ -6,7 +6,64 @@ sidebar_position: 99
 
 # Changelog
 
-All notable changes to the Kryptos Connect API.
+All notable changes to the Kryptos API.
+
+---
+
+## November 2026
+
+**New — Integrations API (early access)**
+
+- Create workspaces for your own customers from your server with your client ID and secret
+  ([`POST /developer/workspaces`](/docs/integrations-api/quickstart#1-create-a-workspace)), connect their
+  wallets and exchanges, and read clean, priced transactions with one token per workspace.
+- The token can call a fixed set of endpoints, listed in the [API Reference](/docs/api-reference/kryptos-api). Request access from the
+  [Developer Portal](/docs/developer-portal#integrations-api-workspaces).
+- New: [Pick your use case](/docs/intro#pick-your-use-case) and
+  [Access by credential](/docs/api/access-matrix).
+- Workspace tokens can read [holdings](/docs/api/holdings), liabilities, [DeFi](/docs/api/defi) and
+  [NFTs](/docs/api/nfts) as each exchange or chain reports them.
+- `primaryPortfolioId` is no longer needed when you connect an integration: it goes into the workspace's
+  default portfolio.
+- Workspace tokens now last **24 hours**. Get a fresh one any time with
+  [`POST /developer/workspaces/{workspace_id}/token`](/docs/integrations-api/quickstart#get-a-fresh-token);
+  `revoke_existing: true` ends the others at once. Tokens issued earlier keep working.
+
+**New — Connect refresh tokens**
+
+- `/token/exchange` now also returns a `refresh_token` (30 days). Redeem it at the standard OAuth endpoint
+  `POST https://oauth.kryptos.io/oidc/token` (`grant_type=refresh_token`) for a new 24-hour access token:
+  see [Backend, Step 3](/docs/kryptos-connect/backend#step-3-refresh-the-access-token).
+- Exchanged access tokens still last 15 years for now, so nothing breaks. They will move to 24 hours on an
+  announced date: build against `expires_in` and refresh now.
+
+**Changed — token security**
+
+- Switching off an OAuth client now stops **every** token it holds (OAuth and Connect) on the next request.
+- An authorization code can be redeemed only once, and a refresh token that was replaced or revoked can't
+  be used again: either attempt fails with `invalid_grant` and revokes the grant. See
+  [Token Refresh](/docs/authentication/oauth#token-refresh).
+- Revoking a token takes effect on the Kryptos API immediately.
+
+**Changed — Connect access tokens are read-only**
+
+- A Connect session now asks the user for your client's scopes **minus every `:write` scope**, so the
+  access token you receive can read but not change data. Write scopes on your client apply to
+  [OAuth](/docs/authentication/oauth) apps only. Tokens issued before this change keep their scopes.
+- The widget is unaffected: users still add and manage integrations in it.
+
+**Changed — account management is being closed to OAuth and Connect tokens**
+
+- Inviting people, changing members or roles, organizations, creating, deleting or resetting
+  workspaces, notifications and billing **will** return `403 MACHINE_ROUTE_NOT_ALLOWED` to OAuth and
+  Connect tokens, whatever scopes they carry. Billing refuses them today; the other endpoints follow
+  service by service (see [Access by credential](/docs/api/access-matrix)) and
+  [Error Codes](/docs/reference/errors).
+
+**Changed — API keys can't read workspace access**
+
+- [API keys](/docs/authentication/api-key) can no longer read members, invites, or CPA invitations and
+  licences.
 
 ---
 
@@ -69,8 +126,7 @@ just what a row renders:
 
 `providerCounts` is now **opt-in**. It is a workspace-wide tally rather than a summary of the page you
 asked for, and it cost a separate aggregate on every list call — pass `?includeProviderCounts=true`
-to get it back, or read [`GET /v1/integrations/counts-by-provider`](/docs/api/integrations#helpers),
-which answers the same question directly.
+to get it back.
 
 Three undocumented fields also stopped being returned: `functionConfig`, and the `createdBy` /
 `updatedBy` identifiers. They were never part of this reference. `deletedAt` and `metadataUpdatedAt`

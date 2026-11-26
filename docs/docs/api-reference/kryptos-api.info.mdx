@@ -1,0 +1,67 @@
+---
+id: kryptos-api
+title: "Kryptos API"
+description: "The Integrations API: create workspaces for your customers with your client ID and secret, then connect their wallets and exchanges and read their transactions, holdings and more with the workspace token. Guide: https://docs.kryptos.io/docs/integrations-api/overview"
+sidebar_label: Introduction
+sidebar_position: 0
+hide_title: true
+custom_edit_url: null
+---
+
+import Heading from "@theme/Heading";
+
+<Heading as={"h1"} className={"openapi__heading"} children={"Kryptos API"}></Heading>
+
+<p className="kp-api-lead">
+  Create a workspace for each of your customers, connect their wallets and exchanges, and read their
+  transactions and holdings, all with one token.
+</p>
+
+<div className="kp-api-facts">
+  <div className="kp-api-fact">
+    <span className="kp-api-fact__label">Base URL</span>
+    <code>{"https://api-v2.kryptos.io/v1"}</code>
+  </div>
+  <div className="kp-api-fact">
+    <span className="kp-api-fact__label">Authentication</span>
+    <code>Authorization: Bearer &lt;workspace token&gt;</code>
+  </div>
+  <div className="kp-api-fact">
+    <span className="kp-api-fact__label">Start here</span>
+    <span>
+      <a href="/docs/integrations-api/quickstart">Quickstart</a> ·{" "}
+      <a href="/docs/integrations-api/overview">Overview</a>
+    </span>
+  </div>
+</div>
+
+## Authentication
+
+<div className="kp-api-auth">
+
+| Credential | Send it as | Use it for |
+| --- | --- | --- |
+| **Workspace token** | `Authorization: Bearer <token>` | Every endpoint in this reference except Workspace management. Lasts 24 hours. |
+| **Client ID and secret** | `X-Client-Id` and `X-Client-Secret` headers | **Workspace management**: creating workspaces, issuing fresh tokens, limits and revocation, on `https://connect-api.kryptos.io` |
+
+</div>
+
+Keep the client secret on your server. Workspace tokens are safe to cache for their 24 hours; get a
+fresh one with `POST /developer/workspaces/{workspace_id}/token`.
+
+## Your first call
+
+```bash
+curl "https://api-v2.kryptos.io/v1/transactions?limit=50" \
+  -H "Authorization: Bearer $WORKSPACE_TOKEN"
+```
+
+Response shapes, pagination and error codes are the same across endpoints: see the
+[API Overview](/docs/api/overview) and [Error codes](/docs/reference/errors).
+
+<p className="kp-api-download">
+  <a href="/openapi/kryptos-public.json" download>Download the OpenAPI spec</a> to
+  generate a client or import it into Postman.
+</p>
+
+      

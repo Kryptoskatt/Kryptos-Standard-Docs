@@ -1,0 +1,1 @@
+{"responses":{"201":{"description":"Transaction created","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"savedCount":{"type":"integer","example":2,"description":"Transactions saved."}}}}}}}}}}

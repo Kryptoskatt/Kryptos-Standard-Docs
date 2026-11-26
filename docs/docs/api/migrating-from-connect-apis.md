@@ -9,8 +9,15 @@ sidebar_position: 21
 If you built against `https://connect.kryptos.io/api`, this page is the complete list of what changes.
 Endpoint paths, field names, response envelopes and authentication headers all move.
 
-Nothing about the OAuth or Kryptos Connect **authorization** flow changes — the same client
-credentials, the same link tokens, the same access tokens. Only the data endpoints move.
+The OAuth and Kryptos Connect **authorization** flows keep the same client credentials and link tokens.
+The data endpoints move, and Connect tokens changed:
+
+:::info Connect tokens
+- `/token/exchange` now also returns a `refresh_token`. Access tokens from the exchange still last 15
+  years for now, but will move to **24 hours** on an announced date: refresh them as described in
+  [Backend, Step 3](/docs/kryptos-connect/backend#step-3-refresh-the-access-token).
+- Connect access tokens are **read-only**: they carry your client's scopes minus every `:write` scope.
+:::
 
 ## 1. Base URL
 
@@ -63,7 +70,7 @@ returned_count, totalCount, hasNextPage, hasPreviousPage }` no longer exists any
 | Previously | Now |
 | --- | --- |
 | `GET /v1/holdings` | [`GET /v1/holdings`](/docs/api/holdings) — same path, new fields |
-| `GET /v1/holdings/graph` | **No equivalent** — portfolio value over time is not exposed |
+| `GET /v1/holdings/graph` | `GET /v1/graphs?range=…` — portfolio value over time (also `/v1/graphs/asset/{assetId}`). The response shape differs. |
 | `GET /v1/defi-holdings` | [`GET /v1/defi`](/docs/api/defi) |
 | `GET /v1/nft-holdings` | [`GET /v1/nfts`](/docs/api/nfts) |
 | `GET /v1/userinfo` | [`GET /v1/users/me`](/docs/api/userinfo) |
@@ -127,7 +134,6 @@ Parsing them as floats will corrupt large balances.
 - **`GET /v1/profiling`** — investor classification and portfolio-composition analytics. There is no
   equivalent, and no combination of the current endpoints reproduces the classification, size tier or
   activity level.
-- **`GET /v1/holdings/graph`** — portfolio value over time.
 - **The entire `/v0/*` surface** — `GET /v0/wallets`, `GET /v0/transactions`, `GET /v0/nft-holdings`,
   `GET /v0/defi-holdings`. The read endpoints map onto their v1 equivalents:
 
@@ -174,5 +180,5 @@ Worth knowing about, because some of it replaces workarounds:
 6. Replace `summary` reads with the top-level `totalValue`, plus the NFT and DeFi totals if you need them.
 7. Switch ledger quantities to a decimal type.
 8. Replace `/v0` read calls with their v1 equivalents.
-9. Decide what to do about `profiling` and `holdings/graph` if you used them.
+9. Decide what to do about `profiling` if you used it, and move `holdings/graph` to `GET /v1/graphs`.
 10. If you write data, talk to support before migrating.

@@ -6,8 +6,16 @@ sidebar_position: 13
 
 # Portfolios
 
+**Available to:** Workspace token (read) · OAuth · Connect (read) · API key (read). See [Access by credential](/docs/api/access-matrix).
+
 A portfolio groups connected accounts inside a workspace. Every integration belongs to exactly one, and
 most portfolio-data endpoints can be scoped to one.
+
+:::tip Integrations API workspaces don't need portfolios
+An [Integrations API](/docs/integrations-api/overview) workspace token can read portfolios, but you never need
+to: every integration you create goes into the workspace's default portfolio, and every read is
+workspace-wide.
+:::
 
 **Base URL:** `https://api-v2.kryptos.io` · **Required Permission:** `portfolios:read`
 
@@ -26,7 +34,7 @@ curl -X GET "https://api-v2.kryptos.io/v1/portfolios?workspaceId=WORKSPACE_ID" \
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `workspaceId` | string | — | Required unless your token is workspace-bound |
+| `workspaceId` | string | — | **Required.** Your token's workspace |
 | `page` | integer | `1` | Page number |
 | `limit` | integer | `50` | 1–100 |
 

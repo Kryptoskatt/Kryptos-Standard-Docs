@@ -42,21 +42,48 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
 | Status | `error` | Cause |
 | --- | --- | --- |
 | 401 | `unauthorized` | No credentials, or an invalid/expired token |
+| 401 | `invalid_client` (`Client is inactive`) | Kryptos switched off the OAuth client this token was issued to |
 | 403 | `insufficient_scope` | Valid credential, but it lacks the endpoint's scope |
-| 403 | `forbidden` | Not a member of the workspace, or the token is bound to a different one |
+| 403 | `forbidden` | The request names a workspace other than the one your token or key is bound to |
+| 403 | `forbidden` with `"code": "MACHINE_ROUTE_NOT_ALLOWED"` | This endpoint is not available to this kind of token (OAuth, Connect or Integrations API workspace token) |
 | 400 | `bad_request` | Workspace id required but not supplied |
 | 500 | `server_error` | Failure while authenticating |
 
 **Solutions**
 
 - `unauthorized` — send `Authorization: Bearer …` or `x-api-key`, not both. Check the token hasn't
-  expired; access tokens last 24 hours on the OAuth flow.
+  expired: OAuth access tokens, Connect tokens from a refresh, and Integrations API workspace tokens last 24
+  hours.
+  Refresh it (or, for an Integrations API workspace, [get a fresh one](/docs/integrations-api/quickstart#get-a-fresh-token)).
+- `invalid_client` — every token of the client stops when Kryptos switches it off. Contact
+  [support@kryptos.io](mailto:support@kryptos.io).
 - `insufficient_scope` — `error_description` names the missing scope. Request it at authorization time,
   or add it to your API key. Note `contacts:*`, `invoices:*` and `swaps:*` are not in the default client
   scope set.
-- `forbidden` — either you passed a workspace your credential can't reach, or you passed one at all on a
-  workspace-bound token. See [Workspaces](/docs/api/overview#workspaces).
-- `bad_request` — API keys and first-party sessions must pass `?wid=`; OAuth tokens must not.
+- `forbidden` — the request names a workspace other than the one your token or key is bound to. Naming
+  the same workspace is fine. See [Workspaces](/docs/api/overview#workspaces).
+- `bad_request` — a signed-in app session (or a legacy unbound API key) must pass `?wid=`. Tokens and
+  bound keys don't need it.
+- `MACHINE_ROUTE_NOT_ALLOWED` — not a scope problem, so adding scopes won't help. Integrations API workspace
+  tokens reach only the integration, transaction and holdings endpoints (see the
+  [API Reference](/docs/api-reference/kryptos-api) and [Access by credential](/docs/api/access-matrix)). For OAuth and
+  Connect tokens, account management (invites, members, workspaces) and billing are being closed off: see
+  [OAuth](/docs/authentication/oauth#what-an-oauth-token-cant-do) and
+  [Connect](/docs/kryptos-connect/backend#step-4-make-api-calls).
+- Errors from creating and managing Integrations API workspaces are listed in the
+  [Integrations API quickstart](/docs/integrations-api/quickstart#errors-when-creating-a-workspace).
+
+### The OAuth token endpoint
+
+`POST https://oauth.kryptos.io/oidc/token` (code exchange and refresh, for OAuth and Connect) answers in
+the same shape:
+
+| Status | `error` | Cause |
+| --- | --- | --- |
+| 400 | `invalid_grant` | The code or refresh token is unknown, expired, already used, or its grant was revoked. A reused code or a replaced refresh token also revokes the grant. |
+| 401 | `invalid_client` | Wrong client ID or secret, or the client is switched off |
+
+After `invalid_grant` on a refresh, the user has to connect or sign in again.
 
 ## Shape 2: wrapped application errors
 
@@ -111,8 +138,8 @@ Validation errors carry the offending fields:
 **Solutions**
 
 - `EXTERNAL_SERVICE_ERROR` and `RATE_LIMIT_EXCEEDED` are transient — retry with exponential backoff.
-- `CONFLICT` on integration creation usually means the alias is taken. Check first with
-  `GET /v1/integrations/alias-exists`.
+- `CONFLICT` on integration creation usually means the alias is taken: use another alias, or leave
+  it out.
 - `CREDENTIAL_VALIDATION_FAILED` is the exchange's verdict, not ours. Validate up front with
   `POST /v1/integrations/test-credentials` rather than discovering it on the first sync.
 

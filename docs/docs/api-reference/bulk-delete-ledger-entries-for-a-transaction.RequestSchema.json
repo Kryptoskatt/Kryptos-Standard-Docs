@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["ids"],"properties":{"ids":{"type":"array","items":{"type":"string","format":"uuid"},"minItems":1,"description":"Ledger entry ids to delete (at least one).","example":["22222222-2222-2222-2222-222222222222"]}}}}}}}

@@ -10,21 +10,28 @@ sidebar_position: 2
 API key support is available for **paying customers only**. Contact [support@kryptos.io](mailto:support@kryptos.io) for more information.
 :::
 
-API keys authenticate your own application against your own workspaces — server-to-server, with no user
+API keys authenticate your own application against one of your own workspaces — server-to-server, with no user
 in the loop. To access *another* user's data, use [OAuth 2.0](/docs/authentication/oauth) or
 [Kryptos Connect](/docs/kryptos-connect/overview) instead.
 
 ## What a key can reach
 
-:::caution `/v1/users/*` only
-API keys authenticate against the user endpoints — `GET /v1/users/me` and the profile writes.
-**Every other endpoint in this reference accepts a bearer token and rejects `x-api-key` with
-`401 unauthorized`**, including `/v1/holdings`, `/v1/transactions` and `/v1/integrations`.
+A key is bound to **one workspace** and works only while that workspace has an **active paid plan**
+(otherwise `403 PAID_PLAN_REQUIRED`). It can call:
 
-For portfolio, transaction and integration data use an [access token](/docs/authentication/oauth) or
-[Kryptos Connect](/docs/kryptos-connect/overview). Broader API-key coverage is on the roadmap — talk
-to [support@kryptos.io](mailto:support@kryptos.io) if it blocks you.
-:::
+| Area | Endpoints (under `/v1`) | Methods |
+| --- | --- | --- |
+| Portfolio | `holdings`, `calculated-balances`, `liabilities`, `defi`, `nfts`, `dashboard`, `graphs` | All the endpoint supports |
+| Transactions | `transactions`, `ledgers`, `spam`, `reconciliation`, `counter-parties` | All |
+| Accounting and reports | `accounting`, `reports`, `enterprise/reports`, `coa`, `audit`, `audit-log` | All, except report generation |
+| Other | `recompute`, `quote`, `swaps`, `staking`, `tasks`, `POST auto-sync/trigger` | All |
+| The key's workspace | `workspaces/{wid}` (GET, PATCH), and its `tax-settings`, `tax-information`, `custom-asset-prices`, `chain-comply/case` | All |
+| Integrations | `integrations`, `portfolios`, `sync` | **GET only** |
+| Your profile | [`users/me`](/docs/api/userinfo) | GET, PATCH |
+
+Everything else refuses keys with `403 forbidden` (`This endpoint does not accept API keys`). That
+includes report generation and AI briefings (they queue work and spend credits), adding or removing
+integrations, and creating, deleting or resetting workspaces.
 
 ## Usage
 
@@ -32,7 +39,7 @@ Send the key in the `x-api-key` header:
 
 ```bash
 curl -X GET "https://api-v2.kryptos.io/v1/users/me" \
-  -H "x-api-key: kryptos_live_xxxxxxxxxxxxxxxxxxxx"
+  -H "x-api-key: sk_live_xxxxxxxxxxxxxxxxxxxx"
 ```
 
 Two differences from a bearer token:
@@ -40,8 +47,10 @@ Two differences from a bearer token:
 - **No `Authorization` header.** Send `x-api-key` on its own, not both.
 - **The workspace comes from the key.** A key is bound to one workspace when it is created, so you do
   not pass `?wid=`. Passing a *different* workspace id is rejected with `403 forbidden`. Keys issued
-  before workspace binding carry no workspace and resolve it from `?wid=` instead; those are rejected
-  outright once binding is enforced, so reissue them.
+  before workspace binding carry no workspace and are refused with `403` (`This API key is not bound to
+  a workspace. Create a new key.`): create a new one.
+
+Keys start with `sk_live_` (or `sk_test_` for test keys).
 
 ## Creating API Keys
 
@@ -52,28 +61,21 @@ Two differences from a bearer token:
    - Name your key (e.g., "Production API")
    - Select scopes
    - Optional: Set IP restrictions
-   - Optional: Set expiration date
+   - Expiry: 90 days by default, at most 365. Every key expires
 5. **Copy your key** (shown only once!)
 
 Keys are created, rotated and revoked from the dashboard only — **a key cannot mint or manage keys,
 including itself.** That is deliberate: a leaked key cannot be used to create more.
 
+For the same reason a key can't read or change **who has access** to the workspace: members, invites,
+and CPA invitations and licences are not available to keys, not even to read. Manage them in the app.
+
 ## Scopes
 
-API keys use the **same scope vocabulary as OAuth tokens**. Given the surface a key can reach today,
-one pair matters:
-
-| Scope | Grants access to |
-| --- | --- |
-| `users:read` | [`GET /v1/users/me`](/docs/api/userinfo) |
-| `users:write` | The profile writes |
-
-The rest of the vocabulary (`portfolios`, `transactions`, `integrations`, `contacts`, …) applies to
-access tokens — see [Available Scopes](/docs/authentication/oauth#available-scopes). A key may carry
-them, but no endpoint currently accepts a key for those resources.
-
-Write scopes and further resources (`tax`, `accounting`, `reports`, `invoices`, `swaps`, `workspace`)
-exist in the same vocabulary — see [Available Scopes](/docs/authentication/oauth#available-scopes).
+API keys use the **same scope vocabulary as OAuth tokens** (see
+[Available Scopes](/docs/authentication/oauth#available-scopes)), chosen when you create the key. An
+endpoint the key can reach still needs the key to carry its scope: `portfolios:read` for holdings,
+`transactions:read` for transactions and ledgers, `transactions:write` to edit them, and so on.
 
 Each endpoint page lists the scope it needs as **Required Permission**. A key missing it gets
 `403 insufficient_scope` with the missing scope named in `error_description`.
@@ -87,7 +89,7 @@ their write counterparts.
 2. **Use environment variables** to store keys
 3. **Rotate keys regularly** from the dashboard
 4. **Use IP restrictions** when your callers have stable addresses
-5. **Set an expiry** so a forgotten key doesn't live forever
+5. **Plan for expiry**: every key expires (90 days by default, 365 at most), so rotate before it does
 6. **Revoke keys you no longer use** rather than leaving them valid
 
 ## Example

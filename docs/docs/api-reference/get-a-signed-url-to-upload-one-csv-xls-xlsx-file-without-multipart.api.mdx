@@ -1,0 +1,69 @@
+---
+id: get-a-signed-url-to-upload-one-csv-xls-xlsx-file-without-multipart
+title: "Get a signed URL to upload one CSV/XLS/XLSX file without multipart"
+description: "Upload in three steps, for clients that send the file to storage themselves: (1) this call returns a 15-minute signed PUT URL for a server-chosen path in the integration’s upload folder; (2) PUT the file to `uploadUrl` with header `Content-Type: <contentType>`; (3) call `POST /csv/uploads/register` with `filePath`. Size is checked at register (`maxBytes`)."
+sidebar_label: "Get a signed URL to upload one CSV/XLS/XLSX file without multipart"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV+Fu2zYQfpUDfyWAZDtuu67qMCBt0yJo0AZ1UnQzjJimzhYbiVTJk2M3MLDX2OvtSYYj7Vip3WDdj/2agcCmdLz7ePfdfcytIDnzIhuKl4OPYpSIHL1yuiZtjcjEZV1amYM2QIVDBE9Y+wSm1oEqNRryQIUk8GhyoAJhqksEsuDJOjlDflZ5LOfoMzg4OgQqtAclyxIcUuOMBwlHT9JKm4YQvJ4ZzOH88gIuP5yFMBI8ujm6VBXWo4FaUhHxIGhDOHOSsf71x58emoh2assc3XM46B8GV21c42hz6cox3GgqoECZo4PxS2sIDaUXyxoz+EXFJa9+HT+Hg0eHEfX4/P3gArrKz7vRk+86nGlP6NYOxxzqXFIx7sBAf0XgAxeorjEHSbCxhoNxJRcvloR+fNgRiXD4pUFPL2y+FNltWGqHucjINZiINSB+Jeu61Cocu/vZc51uhVcFVpJ/0bJGkQk7+YyK1n6jo6FoJew0F4lgqO9khVz42tkaHWn07OW+5datJ6fNTHzLk9Ot+TbdEyytmXlO+0HVeIIJbip3Y921r6XCw45YtXDsCVTJxRmaGRUie9LrfRv4NQcyskJAk2sz4wAd5ecJdBalB+vC96IDr7RDRdZp9CBNDqqQTipC58E25HWOMDxOf5fp1176rHOVjkA6hNzZusac64MLWdUlQ5toI43ClJzM0af9Xv9xCCJW4cMp97U1Pmay3+vx133Yg3tEFz9QXlmW76ciGz5caN8ohd7v1nXzYpvoibUlStM+ITNulYhcktyF/mF9OKjlkhtA8IlJU0hNiweDGOnEzLG0NYpVsgv5PrZNvIet7hp4lyxrJnHz7WPStoLKz9NN+974q0fTZ7Kvuj9PjqY/qT52j57+1Os/7cVP+v1y35XtIkTaA2fT4q2XobPQ8Vtc1NqhP6Z9aKfWVZJExmnBlHSFkV+jyLHH+2i16SOeOcbSvk6Ag/Hpu4/HZ6evrl6fnp1cXfx2fjI+FMHj473Vto1TGNxNbWPyHyHrP6FoItA56/4lVaey9MzV6GNvCdB7OdtXnhZvT3j7lqoxxYv02i1rsj5VDnM0pGUZpPJueqVkr5HxWNlQwUfABaHx2hofevQalyL7jqNEzGXZ4IMOVyM+ABU2F5morQ/tEOgtWhqUNq4UiYhCGQPzk0wURLXPul1Z63Te76xRdLTtzo92Zvi5s3mjwoLDelSN07QM7iYoHbpjxpQNR+3XAy52LFjb6C7ZDIGxBTOuYTDaCX7RFgUIWVjfEDCHyRKi7OYYK+S6d7Y+CEi8jNxTKlnrt7gUidDsP8q8SIQJMiM+pS/DlvQ03+4foHJIP+5jvY85wz3wYavkJxue7ihqq9HvxO8BZWEIUxugrSn7NhYTjs9PmUrofMzkUae3N7ut0Rw2ZaAcSmql3YcL19I2DlTjyVYsjuFOE5+Fw8Lpq6CfPpw5YTU3oKwxqIgX2sGNLEukKLO4UIU0s7XoOpT52oicNF4GuvkECluyekeryjqMcWmXFR140+gcM9hwO7fKt5nN624r2T6Vte7aObq5xhvOJPdRJcOoWlfyDRJfNKMo882T7OYyaQ3Cy8HH7qezAf99ilcbRmcbgqopSdfS0bcpv90Oyf8v0f/dJXrdt4QL6tal1Ibr3cS7QpybQxZ/kYjW5BwlouDRmg3F7e1Eerx05WrFj7806HgAjnhWOy0n3HnD0SrZzILtjG8ffTvad/WRr0Fxx7FSWNODtu3pzzkTiZis/z+obM57nLxhXZU3IhMsG4F+YRqHZ7eilGbWBP0T0Sd//gY8pdqP
+sidebar_class_name: "post api-method"
+info_path: docs/api-reference/kryptos-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get a signed URL to upload one CSV/XLS/XLSX file without multipart"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/csv/upload-url"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Upload in three steps, for clients that send the file to storage themselves: (1) this call returns a 15-minute signed PUT URL for a server-chosen path in the integration’s upload folder; (2) PUT the file to `uploadUrl` with header `Content-Type: <contentType>`; (3) call `POST /csv/uploads/register` with `filePath`. Size is checked at register (`maxBytes`).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  parameters={undefined}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./get-a-signed-url-to-upload-one-csv-xls-xlsx-file-without-multipart.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./get-a-signed-url-to-upload-one-csv-xls-xlsx-file-without-multipart.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

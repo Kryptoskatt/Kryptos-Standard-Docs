@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Ledger entries updated","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"updatedCount":{"type":"integer","example":2,"description":"Ledger entries updated."}}}}}}}}}}

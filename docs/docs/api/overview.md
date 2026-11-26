@@ -34,31 +34,36 @@ That single header is all you need. Earlier versions of this API also required `
 `X-Client-Secret` on every data call; **they are no longer part of the data-call contract.** Access
 tokens are validated against the grant that issued them, so nothing else is required.
 
-Client credentials remain the credential where they belong: the Kryptos Connect
-[link-token and token-exchange endpoints](/docs/kryptos-connect/backend), which authenticate your
-application rather than a user. Keep those server-side.
+Client credentials remain the credential where they belong: the calls on `connect-api.kryptos.io`
+that authenticate your application rather than a user. That's Kryptos Connect's
+[link-token and token-exchange endpoints](/docs/kryptos-connect/backend), session checks and grant
+management, and the [Integrations API](/docs/integrations-api/quickstart) workspace endpoints
+(`/developer/workspaces`, `/developer/workspaces/{id}/token`,
+`/token/grants`, `/token/revoke`, `/developer/grants/{id}/transaction-limit`). Keep them server-side.
 
-Get an access token by either route:
+Get an access token by one of these routes:
 
 | Route | Use when | Guide |
 | --- | --- | --- |
-| Authorization Code + PKCE | Your users sign in with their own Kryptos accounts | [OAuth 2.0](/docs/authentication/oauth) |
-| Kryptos Connect | You embed the widget and your users link accounts through it | [Connect overview](/docs/kryptos-connect/overview) |
+| Integrations API | Your server creates workspaces for your own customers (a token bound to each workspace) | [Integrations API](/docs/integrations-api/overview) |
+| Kryptos Connect | You embed the widget and your users share their Kryptos data with you (read only) | [Connect overview](/docs/kryptos-connect/overview) |
+| Authorization Code + PKCE | Your app acts for users signed in with their own Kryptos accounts | [OAuth 2.0](/docs/authentication/oauth) |
+
+Each kind of token can call a different set of endpoints: see [Access by credential](/docs/api/access-matrix).
 
 ### API keys
 
-Enterprise customers can call the API with a long-lived key instead of an access token:
+Workspaces on a paid plan can call the API with a key instead of an access token. A key is bound to one workspace:
 
 ```bash
 curl -X GET "https://api-v2.kryptos.io/v1/users/me" \
-  -H "x-api-key: kryptos_live_xxxx"
+  -H "x-api-key: sk_live_xxxx"
 ```
 
-:::caution API keys reach `/v1/users/*` only
-Every other endpoint documented here accepts a bearer token and **not** `x-api-key` — sending a key
-to `/v1/holdings` returns `401 unauthorized`. Use an [access token](/docs/authentication/oauth) for
-portfolio, transaction and integration data. Wider API-key coverage is on the roadmap; contact
-[support@kryptos.io](mailto:support@kryptos.io) if you need it.
+:::info API keys need a paid plan
+A key is bound to one workspace with an active paid plan, and reaches most data endpoints: holdings,
+transactions, ledgers, accounting, reports and more (integrations read only). See
+[What a key can reach](/docs/authentication/api-key#what-a-key-can-reach).
 :::
 
 API keys carry the same scopes as access tokens and are bound to one workspace when created. See
@@ -72,10 +77,12 @@ workspace you mean depends on your credential:
 - **Access tokens issued through Kryptos Connect or OAuth are bound to one workspace.** Omit the
   workspace parameter — it is already in the token. Passing a *different* workspace id is rejected
   with `403 forbidden`.
+- **Integrations API workspace tokens are bound to the workspace your app created.** Same rule, except that
+  integration, sync, CSV and credential endpoints take `workspaceId`: send the token's own workspace.
 - **API keys are bound to one workspace too**, chosen when the key is created. Omit the workspace
   parameter — it is already on the key. Passing a *different* workspace id is rejected with
-  `403 forbidden`. Keys minted before workspace binding carry none; those resolve the workspace from
-  `?wid=WORKSPACE_ID` instead, and are rejected outright once binding is enforced.
+  `403 forbidden`. Keys minted before workspace binding carry none and are refused
+  (`403`, "This API key is not bound to a workspace. Create a new key.").
 
 ## Scopes
 
@@ -93,8 +100,8 @@ Each endpoint requires one scope, listed on its page as **Required Permission**.
 
 OAuth flows additionally use the standard OIDC scopes `openid`, `profile`, `email` and
 `offline_access`. The full vocabulary includes write scopes and further resources — see
-[Available Scopes](/docs/authentication/oauth#available-scopes) — but the endpoints documented here are
-**read-only**, so the five above are all you need to request.
+[Available Scopes](/docs/authentication/oauth#available-scopes). OAuth apps request scopes at
+authorization; Integrations API workspace tokens get a fixed set from Kryptos.
 
 `contacts:read` is **not** in the default client scope set — your client must be registered with it, not
 just request it. See [Scopes](/docs/authentication/oauth#available-scopes).
@@ -166,7 +173,7 @@ Transactions and ledgers return no `success` field at all, and nest their errors
 | Page number | Integrations, providers, portfolios | `?page=1&limit=50` (limit 1–100) | `pagination: { page, limit, total, totalPages, hasMore }` |
 | Page number, in `meta` | Contacts, counterparties | `?page=1&limit=50` | `meta: { total, page, limit }` — no `totalPages`/`hasMore` |
 | Offset, flattened | Holdings, DeFi, calculated balances | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount`, `offset`, `limit`, `hasMore` |
-| Offset, in `meta` | Transactions, ledgers | `?offset=0&limit=50` (limit 1–200) | `meta: { limit, offset, hasMore, total }` |
+| Offset, in `meta` | Transactions, ledgers | `?offset=0&limit=50` (limit 1–1000) | `meta: { limit, offset, hasMore, total }` |
 | Totals only | NFTs, NFT collections | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount` only — no `offset`/`limit`/`hasMore` echoed |
 
 Three details worth hard-coding into a client:
