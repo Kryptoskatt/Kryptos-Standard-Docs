@@ -173,7 +173,7 @@ Transactions and ledgers return no `success` field at all, and nest their errors
 | Page number | Integrations, providers, portfolios | `?page=1&limit=50` (limit 1–100) | `pagination: { page, limit, total, totalPages, hasMore }` |
 | Page number, in `meta` | Contacts, counterparties | `?page=1&limit=50` | `meta: { total, page, limit }` — no `totalPages`/`hasMore` |
 | Offset, flattened | Holdings, DeFi, calculated balances | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount`, `offset`, `limit`, `hasMore` |
-| Offset, in `meta` | Transactions, ledgers | `?offset=0&limit=50` (limit 1–200) | `meta: { limit, offset, hasMore, total }` |
+| Offset, in `meta` | Transactions, ledgers | `?offset=0&limit=50` (limit 1–1000) | `meta: { limit, offset, hasMore, total }` |
 | Totals only | NFTs, NFT collections | `?offset=0&limit=50` (limit 1–1000) | top-level `totalCount` only — no `offset`/`limit`/`hasMore` echoed |
 
 Three details worth hard-coding into a client:

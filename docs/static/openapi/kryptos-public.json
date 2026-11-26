@@ -1583,7 +1583,7 @@
             "in": "query",
             "schema": {
               "type": "integer",
-              "maximum": 200,
+              "maximum": 1000,
               "default": 50
             }
           },
@@ -2734,7 +2734,7 @@
             "in": "query",
             "schema": {
               "type": "integer",
-              "maximum": 200
+              "maximum": 1000
             }
           },
           {

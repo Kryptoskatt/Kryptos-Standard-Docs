@@ -101,7 +101,7 @@ Ranges, sorting and paging:
 | `coaSyncStatus` | string | — | `synced`, `unsynced` (enterprise) |
 | `sortBy` | string | `timestamp` | `timestamp`, `netValue`, `totalGains` (restricted for API callers), `createdAt` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
-| `limit` | integer | `50` | 1–200; larger values return 400 |
+| `limit` | integer | `50` | 1–1000; larger values return 400 |
 | `offset` | integer | `0` | Rows to skip |
 
 ### Response

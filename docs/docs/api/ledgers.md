@@ -64,7 +64,7 @@ Filters and paging:
 | `gtAfterBalance` | string | — | Running balance strictly **greater than** this |
 | `sortBy` | string | `timestamp` | `timestamp` or `createdAt` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
-| `limit` | integer | `50` | 1–200; larger values return 400 |
+| `limit` | integer | `50` | 1–1000; larger values return 400 |
 | `offset` | integer | `0` | Rows to skip |
 
 `ltAfterBalance` and `gtAfterBalance` are **decimal strings, not numbers** — `"0"`, `"-0.000001"`,
