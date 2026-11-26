@@ -1577,3 +1577,63 @@ article a.post[class*="cardContainer"] h2::before { content: "post"; color: #60a
 article a.put[class*="cardContainer"] h2::before { content: "put"; color: #a78bfa; background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.22); }
 article a.patch[class*="cardContainer"] h2::before { content: "patch"; color: #fbbf24; background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); }
 article a.delete[class*="cardContainer"] h2::before { content: "del"; color: #f87171; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.22); }
+
+/* --- API Reference landing page (src/api/openapiPages.cjs) ------------------ */
+
+.kp-api-lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--kp-text-secondary);
+  max-width: 46rem;
+  margin: 0.25rem 0 1.5rem;
+}
+.kp-api-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.kp-api-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  background: var(--kp-surface);
+  border: 1px solid var(--kp-border);
+  border-radius: 10px;
+}
+.kp-api-fact__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kp-text-muted);
+}
+.kp-api-fact code {
+  font-size: 0.78rem;
+  padding: 0;
+  background: none;
+  border: none;
+  overflow-wrap: anywhere;
+}
+.kp-api-download {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--kp-text-secondary);
+}
+@media (max-width: 900px) {
+  .kp-api-facts { grid-template-columns: 1fr; }
+}
+
+/* --- Sidebar: never scroll sideways; let long group names wrap ------------- */
+
+.theme-doc-sidebar-container .menu,
+.theme-doc-sidebar-container nav {
+  overflow-x: hidden;
+}
+.theme-doc-sidebar-container .menu__link {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.kp-api-auth table code { white-space: nowrap; }

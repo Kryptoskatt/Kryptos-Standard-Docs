@@ -125,6 +125,8 @@ const config = {
             specPath: "static/openapi/kryptos-public.json",
             outputDir: "docs/api-reference",
             downloadUrl: "/openapi/kryptos-public.json",
+            // Custom landing page and endpoint pages: src/api/openapiPages.cjs
+            markdownGenerators: require("./src/api/openapiPages.cjs"),
             hideSendButton: false,
             showSchemas: false,
             sidebarOptions: {
@@ -249,9 +251,6 @@ const config = {
       { highlight: "bash", language: "curl", logoClass: "curl" },
       { highlight: "javascript", language: "nodejs", logoClass: "nodejs", variant: "axios" },
       { highlight: "python", language: "python", logoClass: "python", variant: "requests" },
-      { highlight: "go", language: "go", logoClass: "go" },
-      { highlight: "php", language: "php", logoClass: "php" },
-      { highlight: "java", language: "java", logoClass: "java", variant: "unirest" },
     ],
     prism: {
       theme: prismThemes.github,
