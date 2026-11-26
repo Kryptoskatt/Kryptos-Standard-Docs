@@ -20,7 +20,7 @@ A connected exchange, wallet or blockchain address, with its sync state and per-
 | <span className="badge badge--get">GET</span> | `/v1/integrations/{id}/assets` | Per-asset holdings breakdown (not available to workspace tokens) |
 
 **Connecting accounts.** In [Kryptos Connect](/docs/kryptos-connect/overview), users connect through
-the widget, which handles credentials and CSV upload for you. A [Integrations API](/docs/integrations-api/overview)
+the widget, which handles credentials and CSV upload for you. An [Integrations API](/docs/integrations-api/overview)
 server connects them itself with `POST /v1/integrations` (wallet address or exchange API key), and can
 also update, sync, resync, test credentials and delete; see the
 [quickstart](/docs/integrations-api/quickstart) and the [API Reference](/docs/api-reference/kryptos-api).

@@ -21,7 +21,7 @@ Portfolio-scoped forms: `/v1/defi/portfolio/{portfolioId}`, `/v1/defi/portfolio/
 and the category shortcuts `/v1/defi/portfolio/{portfolioId}/staking`, `/lending` and `/farming`
 (shorthand for `?category=…`). They exist only per portfolio; workspace-wide, use
 `/v1/defi?category=staking`. Workspace tokens ([Integrations API](/docs/integrations-api/overview)) can call
-the three workspace-wide endpoints only.
+the workspace-wide endpoints only (`/v1/defi`, `/v1/defi/totals` and `/v1/defi/networks`).
 
 ## Request
 

@@ -175,6 +175,7 @@ curl -X POST "https://connect-api.kryptos.io/developer/workspaces/WORKSPACE_ID/t
 - Earlier tokens keep working until they expire. **If a token may have leaked**, send
   `{ "revoke_existing": true }`: every other token of that workspace stops at once, and the data stays.
 - At most 120 tokens per client per minute (`429 RATE_LIMITED`).
+- `503 TEMPORARILY_UNAVAILABLE`: a dependency was briefly down. Retry.
 
 ### Revoke a workspace
 
@@ -225,4 +226,4 @@ their workspace ids. It also lists your Connect users' grants: Integrations API 
 | `503` | `TEMPORARILY_UNAVAILABLE` | Retry. |
 
 Calls with the workspace token follow the usual [error codes](/docs/reference/errors). An endpoint that
-a workspace token can't call returns `403 MACHINE_ROUTE_NOT_ALLOWED`; the [API Reference](/docs/api-reference/kryptos-api) marks which ones it can.
+a workspace token can't call returns `403 MACHINE_ROUTE_NOT_ALLOWED`. The [API Reference](/docs/api-reference/kryptos-api) documents the ones you build on.

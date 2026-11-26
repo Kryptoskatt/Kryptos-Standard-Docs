@@ -54,7 +54,7 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
 - `unauthorized` — send `Authorization: Bearer …` or `x-api-key`, not both. Check the token hasn't
   expired: OAuth access tokens, Connect tokens from a refresh, and Integrations API workspace tokens last 24
   hours.
-  Refresh it (or, for a Integrations API workspace, [get a fresh one](/docs/integrations-api/quickstart#get-a-fresh-token)).
+  Refresh it (or, for an Integrations API workspace, [get a fresh one](/docs/integrations-api/quickstart#get-a-fresh-token)).
 - `invalid_client` — every token of the client stops when Kryptos switches it off. Contact
   [support@kryptos.io](mailto:support@kryptos.io).
 - `insufficient_scope` — `error_description` names the missing scope. Request it at authorization time,
@@ -65,7 +65,8 @@ OAuth 2.0 format, with **no `success` field**. Emitted before your request reach
 - `bad_request` — a signed-in app session (or a legacy unbound API key) must pass `?wid=`. Tokens and
   bound keys don't need it.
 - `MACHINE_ROUTE_NOT_ALLOWED` — not a scope problem, so adding scopes won't help. Integrations API workspace
-  tokens reach only the endpoints in the [API Reference](/docs/api-reference/kryptos-api). For OAuth and
+  tokens reach only the integration, transaction and holdings endpoints (see the
+  [API Reference](/docs/api-reference/kryptos-api) and [Access by credential](/docs/api/access-matrix)). For OAuth and
   Connect tokens, account management (invites, members, workspaces) and billing are being closed off: see
   [OAuth](/docs/authentication/oauth#what-an-oauth-token-cant-do) and
   [Connect](/docs/kryptos-connect/backend#step-4-make-api-calls).

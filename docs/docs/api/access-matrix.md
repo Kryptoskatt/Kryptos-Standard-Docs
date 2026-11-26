@@ -32,8 +32,8 @@ is also limited by the user's role.
 | Notifications, billing | — | — | — | — |
 
 `—` means the credential is refused with `403` (`MACHINE_ROUTE_NOT_ALLOWED` for tokens,
-`This endpoint does not accept API keys` for keys). The exact endpoint list for workspace tokens is the
-[API Reference](/docs/api-reference/kryptos-api).
+`This endpoint does not accept API keys` for keys). The [API Reference](/docs/api-reference/kryptos-api)
+documents the workspace-token endpoints you build on; this table is the full picture.
 
 :::note Rolling out
 Workspace tokens, API keys and billing are enforced today. For OAuth and Connect tokens, the limits in

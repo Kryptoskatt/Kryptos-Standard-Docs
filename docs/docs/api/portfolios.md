@@ -12,7 +12,7 @@ A portfolio groups connected accounts inside a workspace. Every integration belo
 most portfolio-data endpoints can be scoped to one.
 
 :::tip Integrations API workspaces don't need portfolios
-A [Integrations API](/docs/integrations-api/overview) workspace token can read portfolios, but you never need
+An [Integrations API](/docs/integrations-api/overview) workspace token can read portfolios, but you never need
 to: every integration you create goes into the workspace's default portfolio, and every read is
 workspace-wide.
 :::

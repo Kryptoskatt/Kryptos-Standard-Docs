@@ -33,16 +33,21 @@ account: the workspaces belong to your app.
 | Integrations, syncs, CSV uploads, credentials | Read and write |
 | Transactions and ledgers | Read and write |
 | Holdings, liabilities, DeFi, NFTs (as each exchange or chain reports them) | Read |
-| Labels, asset search, background tasks | Read |
+| Portfolios (only the default one, created for you) | Read |
+| Labels, asset search | Read |
+| Background tasks | Read, cancel |
 
-The [API Reference](/docs/api-reference/kryptos-api) lists every endpoint a workspace token can call, with
-its parameters.
+The [API Reference](/docs/api-reference/kryptos-api) documents the endpoints you build on, with their
+parameters. Account, settings, billing, balance and accounting endpoints return
+`403 MACHINE_ROUTE_NOT_ALLOWED`.
 
 ## What it doesn't include
 
 - **Computed balances, cost basis, gains and tax reports.** Kryptos doesn't compute them for these
   workspaces. Holdings come only from what each exchange or chain reports: their cost-basis and profit
   fields are empty (`0` or `null`), and a CSV-only account has no holdings.
+- **Transfer matching.** A move between two of a customer's own accounts comes back as a separate
+  withdrawal and deposit, not as one `transfer`.
 - **Account features:** members, invites, workspace settings and billing are never available to a
   workspace token.
 
@@ -68,8 +73,8 @@ Creating a workspace returns an **access token for that workspace only**. Use it
   the long-lived credential, so a leaked workspace token is useless within a day, and losing one never
   loses the workspace.
 - **Fixed access.** Its scopes are set by Kryptos, whatever scopes your client has. The
-  [API Reference](/docs/api-reference/kryptos-api) lists every endpoint it can call; anything else returns
-  `403 MACHINE_ROUTE_NOT_ALLOWED`. Members, invites, workspace settings and billing are never available
+  [API Reference](/docs/api-reference/kryptos-api) documents the endpoints you build on; account, settings,
+  billing, balance and accounting endpoints return `403 MACHINE_ROUTE_NOT_ALLOWED`. Members, invites, workspace settings and billing are never available
   to it.
 - **Revocable.** Suspect a leak? Get a fresh token with `revoke_existing: true` and every other token of
   that workspace stops at once. `POST /token/revoke` ends the workspace's access for good. If Kryptos

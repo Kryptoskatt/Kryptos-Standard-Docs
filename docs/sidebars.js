@@ -28,7 +28,7 @@ const TAG_PAGES = {
   Users: "api/userinfo",
 };
 const GROUP_PAGES = {
-  "Portfolio & balances": ["api/defi", "api/nfts"],
+  "Holdings & positions": ["api/defi", "api/nfts"],
 };
 /** Every hand-written resource page; any not attached to a generated group is listed under "Other resources". */
 const ALL_RESOURCE_PAGES = [

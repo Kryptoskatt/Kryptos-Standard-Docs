@@ -126,7 +126,7 @@ on the **Connected Accounts** page shows where you stand:
 - **Enabled:** the card shows your limits (workspaces per client, transactions per workspace) and the
   endpoints a workspace token can call.
 
-Workspaces your app creates appear in the accounts list with a **API workspace** badge. From there you
+Workspaces your app creates appear in the accounts list with an **API workspace** badge. From there you
 can lower its transaction limit, or revoke it. The limit can't go above the one Kryptos set,
 and the limiter can't be switched off.
 

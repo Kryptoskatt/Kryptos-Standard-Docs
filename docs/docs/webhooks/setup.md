@@ -262,5 +262,5 @@ From the Developer Portal, you can:
 ## Next Steps
 
 - [Webhook Events Reference](/docs/webhooks/events) — Detailed payload structures for each event type
-- [Integrations API](/docs/api/integrations) — Query integration data via the API
+- [Integrations endpoints](/docs/api/integrations) — Query integration data via the API
 - [Developer Portal Setup](/docs/developer-portal) — Workspace and client configuration

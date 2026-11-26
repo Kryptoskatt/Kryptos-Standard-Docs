@@ -439,7 +439,7 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Portfolio & balances",
+      label: "Holdings & positions",
       collapsible: true,
       collapsed: true,
       items: [

@@ -31,7 +31,7 @@
     },
     {
       "name": "Portfolio",
-      "description": "Dashboard, graphs, DeFi, NFTs, liabilities"
+      "description": "DeFi positions, NFTs and liabilities as each exchange or chain reports them"
     },
     {
       "name": "Transactions",
@@ -426,24 +426,6 @@
               "type": "boolean",
               "default": false
             }
-          },
-          {
-            "name": "calculatedBalances",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "Show Calculated Balance — swaps the data source to `calculated_balances`, returning every wallet's ledger-derived balances (API wallets included) instead of provider-reported holdings."
-          },
-          {
-            "name": "excludeCalculatedBalances",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "description": "Drop ledger-derived rows from the holdings list, returning only provider-reported balances. Derived rows are the ones projected for CSV-fed and custom wallets, which have no provider to report a balance. Default false = both are returned."
           },
           {
             "name": "offset",
@@ -12634,7 +12616,7 @@
       ]
     },
     {
-      "name": "Portfolio & balances",
+      "name": "Holdings & positions",
       "tags": [
         "Holdings",
         "Portfolio"

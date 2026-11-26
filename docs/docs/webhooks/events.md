@@ -56,7 +56,7 @@ The `data` object carries no user identifier. `walletId` cannot stand in for one
 
 ## Integration Events
 
-Triggered when a user's wallet or exchange connection changes. The `data` fields match the response format of the [Integrations API](/docs/api/integrations).
+Triggered when a user's wallet or exchange connection changes. The `data` fields match the response format of the [Integrations endpoints](/docs/api/integrations).
 
 ### Events
 
@@ -101,7 +101,7 @@ Triggered when a user's wallet or exchange connection changes. The `data` fields
 | `provider`           | string  | Provider identifier (e.g., `binance`, `ethereum`)                                       |
 | `providerPublicName` | string  | Human-readable provider name                                                            |
 | `publicAddress`      | string  | Wallet address, for address-based connections. **Empty string** — never `null` — for exchanges, OAuth and CSV integrations, which have no address |
-| `walletId`           | string  | Unique wallet/integration identifier — the `id` used by the [Integrations API](/docs/api/integrations) |
+| `walletId`           | string  | Unique wallet/integration identifier — the `id` used by the [Integrations endpoints](/docs/api/integrations) |
 | `logoUrl`            | string  | Provider logo URL; `""` if the provider record has none                                 |
 | `isContract`         | boolean | **Always `false`.** v2 does not perform contract detection, so this is reported rather than inferred |
 | `alias`              | string  | User-defined alias for the integration; `""` if unset                                   |

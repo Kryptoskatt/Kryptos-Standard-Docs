@@ -66,7 +66,7 @@ Create a link token endpoint on your backend that the Web SDK's `generateLinkTok
 
 Returns `201 Created`. Errors: `400` with `Invalid scopes: …` (a scope your client doesn't have),
 `400 TOKEN_CLIENT_MISMATCH` (the `access_token` belongs to another client),
-`400 CONNECT_API_TOKEN_NOT_RESUMABLE` (a Integrations API workspace token), and `401` for bad client
+`400 CONNECT_API_TOKEN_NOT_RESUMABLE` (an Integrations API workspace token), and `401` for bad client
 credentials. An expired or revoked `access_token` is not an error: you get a plain link token without
 `has_existing_grant`.
 
