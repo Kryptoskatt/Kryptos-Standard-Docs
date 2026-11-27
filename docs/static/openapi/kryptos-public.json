@@ -1593,7 +1593,16 @@
             "schema": {
               "type": "integer",
               "default": 0
-            }
+            },
+            "description": "Rows to skip. Each request reads and discards every skipped row, so deep offsets get slower page by page and can time out on large workspaces. To read a whole workspace, use `cursor`."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Keyset paging: pass `meta.nextCursor` from the previous page to get the rows after it. Every page costs the same at any depth, and rows sharing a timestamp are never repeated or skipped. Only with `sortBy=timestamp` (the default) and `offset=0`; keep the same filters and `sortOrder` across pages (a cursor sent with a different `sortOrder` is rejected with 400). Opaque: do not build or edit it."
           },
           {
             "name": "sortBy",
@@ -1653,6 +1662,11 @@
                         "total": {
                           "type": "integer",
                           "description": "Exact count of rows matching the current filters (short-cached), for page-count pagination."
+                        },
+                        "nextCursor": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Pass as `cursor` to get the next page. Set on every `sortBy=timestamp` page that has a next page (offset-paged ones included); null on the last page and for other sort columns."
                         }
                       }
                     }

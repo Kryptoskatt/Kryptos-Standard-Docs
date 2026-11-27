@@ -102,7 +102,33 @@ Ranges, sorting and paging:
 | `sortBy` | string | `timestamp` | `timestamp`, `netValue`, `totalGains` (restricted for API callers), `createdAt` |
 | `sortOrder` | string | `desc` | `asc` or `desc` |
 | `limit` | integer | `50` | 1–1000; larger values return 400 |
-| `offset` | integer | `0` | Rows to skip |
+| `offset` | integer | `0` | Rows to skip. Gets slower the deeper you page; use `cursor` to read a whole workspace |
+| `cursor` | string | — | `meta.nextCursor` from the previous page. Only with `sortBy=timestamp` and `offset=0` |
+
+### Reading a whole workspace
+
+Use `cursor`, not `offset`, to read every transaction. Each `offset` request reads and discards all the
+rows before the page, so deep pages get slower and can time out on large workspaces. A cursor page
+costs the same at any depth.
+
+1. Request the first page: `GET /v1/transactions?limit=1000&sortBy=timestamp&sortOrder=asc`.
+2. Send `meta.nextCursor` back as `cursor`, with the same filters, `sortBy` and `sortOrder`:
+   `GET /v1/transactions?limit=1000&sortBy=timestamp&sortOrder=asc&cursor=<meta.nextCursor>`.
+3. Stop when `meta.nextCursor` is `null`.
+
+Every transaction comes back exactly once, including transactions that share a timestamp. To resume
+an interrupted read, keep the last `nextCursor` you received and continue from it.
+
+Treat the cursor as opaque: don't build or edit it. These requests return `400`:
+
+- an invalid cursor;
+- a cursor with `sortBy` other than `timestamp`, or with an `offset` above 0;
+- a cursor sent with a different `sortOrder` from the page that issued it.
+
+The cursor does not record your filters. Changing filters between pages returns a mix of the two result
+sets without an error, so keep them the same for the whole read.
+
+`meta.total` is the total for your filters, not the number of rows left.
 
 ### Response
 
@@ -150,9 +176,12 @@ Ranges, sorting and paging:
       "fee": []
     }
   ],
-  "meta": { "limit": 50, "offset": 0, "hasMore": true, "total": 1284 }
+  "meta": { "limit": 50, "offset": 0, "hasMore": true, "total": 1284, "nextCursor": "eyJ0IjoxNzIxMDg4MDAwMDAwLCJpZCI6IjhmMTRlNDVmLWNlZWEtNDY3YS05YTNiLTFjMmYwZDdlNWE5MSIsIm8iOiJkZXNjIn0" }
 }
 ```
+
+`meta.nextCursor` is set on every `sortBy=timestamp` page that has a next page, including pages
+fetched with `offset`. It is `null` on the last page and when sorting by any other column.
 
 ### Response Fields
 

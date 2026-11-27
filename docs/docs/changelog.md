@@ -12,6 +12,14 @@ All notable changes to the Kryptos API.
 
 ## November 2026
 
+**New — cursor paging for transactions**
+
+- `GET /v1/transactions` takes a `cursor` and returns `meta.nextCursor`. To read every transaction in a
+  workspace, send each page's `nextCursor` back as `cursor` until it is `null`. Every page is equally fast,
+  however deep you go, while deep `offset` pages get slower and can time out. See
+  [Reading a whole workspace](/docs/api/transactions#reading-a-whole-workspace).
+- `offset` paging still works as before.
+
 **New — Integrations API (early access)**
 
 - Create workspaces for your own customers from your server with your client ID and secret
